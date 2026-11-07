@@ -1,10 +1,10 @@
 /**
  * @file Calibration.cpp
  * @brief Calibration routines for various sensors.
- * 
- * This file contains functions and routines for calibrating different sensors, 
+ *
+ * This file contains functions and routines for calibrating different sensors,
  * as well as managing their calibration data.
- * 
+ *
  * @details
  * - `accelCalibrate()`: Calibrates the accelerometers.
  * - `magCalibrate()`: Calibrates the magnetometer.
@@ -14,7 +14,7 @@
  * - `baroCalibrate()`: Calibrates the barometric pressure sensor.
  * - `setCanardTrim()`: Calibrates canard trim settings.
  * - `wiggleServo()`: Moves a specified servo for calibration purposes.
- * 
+ *
  * @section changelog Change Log
  * - 17 JUL 21: Initial breakout created.
  * - 10 SEP 21: Barometer calibration routine created.
@@ -212,7 +212,6 @@ void accelCalibrate()
   Serial.println(gyro.biasZ);
 
 } // end accelerometer/gyro calibration
-
 
 /**
  * @brief Calibration routine for the IMU magnetometer.

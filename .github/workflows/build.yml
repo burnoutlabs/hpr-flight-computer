@@ -98,20 +98,46 @@ jobs:
           PROJECT: ${{ matrix.project }}
         run: pio test -e native -d "firmware/${PROJECT}"
 
+  # The firmware sources must match .clang-format (`just fmt` fixes them).
+  format:
+    name: clang-format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: extractions/setup-just@v4
+
+      # .clang-format is written for clang-format 19, the major used locally;
+      # the runner's default clang-format is another major, which can format
+      # the same file differently.
+      - name: Install clang-format 19
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang-format-19
+          clang-format-19 --version
+
+      - name: Check formatting
+        env:
+          CLANG_FORMAT: clang-format-19
+        run: just fmt-check
+
   # A single check to mark as required on master, so adding or removing an
   # env or a test job does not mean editing branch protection.
   all-builds:
     name: all builds
     if: always()
-    needs: [firmware, host-tests]
+    needs: [firmware, host-tests, format]
     runs-on: ubuntu-24.04
     steps:
-      - name: Require every firmware build and the host tests to pass
+      - name: Require every firmware build, the host tests and the format check to pass
         env:
           FIRMWARE: ${{ needs.firmware.result }}
           HOST_TESTS: ${{ needs.host-tests.result }}
+          FORMAT: ${{ needs.format.result }}
         run: |
           echo "firmware matrix result: ${FIRMWARE}"
           echo "host tests result: ${HOST_TESTS}"
+          echo "format check result: ${FORMAT}"
           test "${FIRMWARE}" = success
           test "${HOST_TESTS}" = success
+          test "${FORMAT}" = success

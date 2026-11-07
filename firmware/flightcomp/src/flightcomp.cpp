@@ -99,8 +99,6 @@
  * - Stuck-in-a-loop detection and breakout
  */
 
-
-
 //-------CODE START--------
 #include <EEPROM.h>
 #include <TinyGPS++.h>
@@ -156,7 +154,6 @@ struct BoardIo
   static inline __attribute__((always_inline)) void println(const char *text) { Serial.println(text); }
 };
 
-
 /**
  * @brief Renames the closed flight data file to the GNSS liftoff date and time and the rocket name.
  *
@@ -197,7 +194,7 @@ void renameFileSd()
 
 /*!
  * @brief Main flight loop for the flight computer.
- * 
+ *
  * This loop performs sensor sampling, event checking, and other critical tasks during rocket flight.
  */
 void loop(void)

@@ -89,7 +89,7 @@ pio run -d firmware/flightcomp -e teensy41 -t upload
 pio test -d firmware/flightcomp -e native   # host unit tests
 ```
 
-With [just](https://just.systems) installed, `just build` builds every env of both projects, `just test` runs the host unit tests, and `just check` runs the same build and tests as CI. `just --list` shows the other recipes.
+With [just](https://just.systems) installed, `just build` builds every env of both projects, `just test` runs the host unit tests, and `just check` runs the same format check, build and tests as CI (the format check wants clang-format 19; set `CLANG_FORMAT=clang-format-19` if that is not your default `clang-format`). `just --list` shows the other recipes.
 
 The flight computer's unit tests (`firmware/flightcomp/test`, [Unity](https://www.throwtheswitch.org/unity)) build with the host's own C++ compiler in the `native` env, which `pio run` leaves out. They compile the real flight computer sources under test against small stand-ins for the Teensy core and libraries in `test/shim`. The rotation tests run twice: once on the Teensy 4.x double-precision path, and once on the Teensy 3.x single-precision path, built with `-fsingle-precision-constant` as those boards are.
 

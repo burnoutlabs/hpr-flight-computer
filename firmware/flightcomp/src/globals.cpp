@@ -21,10 +21,10 @@ UserSettings settings;
 // Sensor variables
 //-----------------------------------------
 // rawData is defined in Bus_Mgmt.cpp
-sensorData accel;
-sensorData mag;
-sensorData gyro;
-sensorData highG;
+SensorData accel;
+SensorData mag;
+SensorData gyro;
+SensorData highG;
 //-----------------------------------------
 // pyro variables
 //-----------------------------------------
@@ -97,7 +97,7 @@ uint8_t sizeHighGfilter = 30;
 uint8_t filterPosn = 0;
 float highGsmooth;
 float adcConvert = 0.000015259;
-uint16_t ADCmidValue = 32768;
+uint16_t adcMidValue = 32768;
 alignas(4) CalUnion calUnion;
 //-----------------------------------------
 // Altitude & Baro Sensor variables
@@ -205,15 +205,15 @@ FloatUnion floatUnion;
 char userInput;
 int8_t servoTrim[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint32_t timeLastControl = 0UL;
-float Kp = 0.0F;
-float Ki = 0.0F;
-float Kd = 0.0F;
+float kp = 0.0F;
+float ki = 0.0F;
+float kd = 0.0F;
 //-----------------------------------------
 // debug
 //-----------------------------------------
-boolean GPSecho = false;
+boolean gpsEcho = false;
 boolean radioDebug = false;
-boolean TXdataFile = true;
+boolean txDataFile = true;
 //-----------------------------------------
 // loop debug and analysis variables
 //-----------------------------------------

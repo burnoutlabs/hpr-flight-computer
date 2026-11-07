@@ -4,7 +4,7 @@
  *
  * @details
  * The initialization steps are separate functions so that setup() and the in-flight recovery,
- * rapidReset() (Infilght_Recover.cpp), can bring the hardware up the same way.
+ * rapidReset() (InflightRecover.cpp), can bring the hardware up the same way.
  */
 #pragma once
 
@@ -14,7 +14,7 @@ void setup(void);
 void checkPyroContinuity();
 
 // Initialization steps, in the order setup() runs them
-void readHardwareSettingsEEPROM();
+void readHardwareSettingsEeprom();
 void setPinModes();
 void beginGnssSerial();
 void setAnalogResolution();
@@ -25,4 +25,4 @@ void limitSettings();
 void configurePyroChannels();
 void configureRadio();
 void attachServos();
-void readCalibrationEEPROM();
+void readCalibrationEeprom();

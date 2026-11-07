@@ -118,8 +118,8 @@ static void runTelemetryScenario(bool fhss, float txFreq)
   strcpy(settings.callSign, "KK4ELF");
   memset(settings.rocketName, 0, sizeof(settings.rocketName));
   strcpy(settings.rocketName, "Golden Test Rocket");
-  settings.FHSS = fhss;
-  settings.TXfreq = txFreq;
+  settings.fhss = fhss;
+  settings.txFreq = txFreq;
   beginTelemetry();
 
   // Preflight

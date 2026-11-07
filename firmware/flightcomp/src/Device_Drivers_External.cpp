@@ -77,10 +77,10 @@ bool beginExternalAccel()
   accel.timeBtwnSamp = (uint32_t)(1000000 / ODR);
 
   // set the value where the system changes over to the high-G accelerometer
-  // accel.ADCmax = percent threshold * maximum ADC output
+  // accel.adcMax = percent threshold * maximum ADC output
   // percent threshould should be no less than 90%
   // maximum ADC output should be the maximum value the ADC can output, ie 12-bit ADC = 2048, 16-bit ADC = 32768
-  accel.ADCmax = (int)(0.98 * 32768);
+  accel.adcMax = (int)(0.98 * 32768);
 
   return accelResponse;
 }

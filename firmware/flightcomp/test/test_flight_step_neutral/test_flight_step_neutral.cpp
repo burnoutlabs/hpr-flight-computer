@@ -89,6 +89,8 @@ static pyroMap &pyro4 = pyros[3];
 #define firePyros legacyFirePyros
 #define pulsePyro legacyPulsePyro
 
+#include "../legacy_names.h"
+
 #include "../legacy_v4_7_2/fire_and_pulse_pyros.inc"
 
 #include "../legacy_v4_7_2/check_events.inc"
@@ -102,6 +104,8 @@ static bool legacyFlightStep()
 }
 return inFlight;
 }
+
+#include "../legacy_names_end.h"
 
 #undef EEPROM
 #undef Serial
@@ -256,7 +260,7 @@ void test_test_mode_with_pyro_pwm()
   startScenario();
   settings.testMode = true;
   applyTestModeOverrides();
-  sensors.pyroPWM = true;
+  sensors.pyroPwm = true;
   settings.inflightRecover = 1;
   configurePyros('A', 'M', 'A', 'M'); // all four channels pulse
   settings.mainDeployAlt = 400; // above apogee: main fires 1 s after the apogee charge, inside the 15 s

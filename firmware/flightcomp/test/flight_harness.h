@@ -68,10 +68,10 @@ constexpr float STANDARD_GRAVITY = 9.80665F;
 inline void configureSensors()
 {
   accel.gainX = accel.gainY = accel.gainZ = ACCEL_G_PER_COUNT;
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.timeBtwnSamp = ACCEL_SAMPLE_US;
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   gyro.timeBtwnSamp = GYRO_SAMPLE_US;
   highG.gainX = highG.gainY = highG.gainZ = HIGHG_G_PER_COUNT;
   highG.timeBtwnSamp = HIGHG_SAMPLE_US;

@@ -152,7 +152,7 @@ bool beginLSM303_A()
   // CONFIGURE ACCELEROMETER
   //----------------------
   // set max ADC value
-  accel.ADCmax = (int)(0.98 * 2048);
+  accel.adcMax = (int)(0.98 * 2048);
 
   // Set accelerometer to 1300Hz ODR
   write8(LSM303_REGISTER_ACCEL_CTRL_REG1_A, 0b10010111);
@@ -229,7 +229,7 @@ bool beginLSM303_M()
   }
 
   // Set the Max Gain
-  mag.ADCmax = 32768;
+  mag.adcMax = 32768;
 
   // LSM303 has different gains for different axes so we must correct for orientation
   if (mag.orientX == 'X')
@@ -330,7 +330,7 @@ bool beginL3GD20H()
   else
   {
     gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    gyroBus.cs = pins.gyroCS;
+    gyroBus.cs = pins.gyroCs;
     startSPI(&gyroBus, sensors.gyroBusNum);
   }
 
@@ -360,7 +360,7 @@ bool beginL3GD20H()
   // set gain
   write8(GYRO_REGISTER_CTRL_REG4, 0x20);
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
 
   // set data rate 760Hz: 11, 50Hz Bandwidth:01, normal mode, all axes enabled:0b11011111
   write8(GYRO_REGISTER_CTRL_REG1, 0xDF);
@@ -410,7 +410,7 @@ bool beginLSM9DS1_AG()
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    accelBus.cs = pins.accelCS;
+    accelBus.cs = pins.accelCs;
     startSPI(&accelBus, sensors.accelBusNum);
     accelBus.readMask = 0x80;
   }
@@ -446,7 +446,7 @@ bool beginLSM9DS1_AG()
     Serial.println(val);
     return false;
   }
-  accel.ADCmax = (int16_t)(0.9 * 32768);
+  accel.adcMax = (int16_t)(0.9 * 32768);
   accel.gainX = accel.gainY = accel.gainZ = 0.000732;
 
   // Set Gyroscope 2000dps Range, 952 Hz ODR
@@ -461,7 +461,7 @@ bool beginLSM9DS1_AG()
     return false;
   }
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   // set time between samples
   accel.timeBtwnSamp = gyro.timeBtwnSamp = 1050UL;
 
@@ -490,7 +490,7 @@ bool beginLSM9DS1_M()
   else
   {
     magBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    magBus.cs = pins.magCS;
+    magBus.cs = pins.magCs;
     magBus.readMask = 0x80;
     magBus.incMask = 0x40;
     startSPI(&magBus, sensors.magBusNum);
@@ -612,7 +612,7 @@ bool beginLSM6DS3TR()
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    accelBus.cs = gyroBus.cs = pins.accelCS;
+    accelBus.cs = gyroBus.cs = pins.accelCs;
     accelBus.readMask = gyroBus.readMask = 0x80;
     startSPI(&accelBus, sensors.accelBusNum);
   }
@@ -644,7 +644,7 @@ bool beginLSM6DS3TR()
   // Accelerometer set 16G Range, 1.66kHz ODR, ODR/2, 400kHz
   write8(LSM6DS3TR_REGISTER_CTRL1_XL, 0b01110100);
   accel.gainX = accel.gainY = accel.gainZ = 0.000488;
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.timeBtwnSamp = 1201;
 
   // CTRL2_G_ODR: 0111 = 833Hz, 1000 = 1.66kHz, 1001 = 3.33kHz, 1010 = 6.66kHz
@@ -655,7 +655,7 @@ bool beginLSM6DS3TR()
   write8(LSM6DS3TR_REGISTER_CTRL2_G, 0b01111100);
   delay(10);
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   gyro.timeBtwnSamp = 1201;
 
   return true;
@@ -704,7 +704,7 @@ bool beginLSM6DS33()
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    accelBus.cs = gyroBus.cs = pins.accelCS;
+    accelBus.cs = gyroBus.cs = pins.accelCs;
     accelBus.readMask = gyroBus.readMask = 0x80;
     startSPI(&accelBus, sensors.accelBusNum);
   }
@@ -735,13 +735,13 @@ bool beginLSM6DS33()
   // Accelerometer set 16G Range, 1.66kHz ODR, 400Hz BW
   write8(LSM6DS33_REGISTER_CTRL1_XL, 0b10000100);
   accel.gainX = accel.gainY = accel.gainZ = 0.000488;
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.timeBtwnSamp = 602;
 
   // Gyroscope set 2000dps Range, 1.66kHz ODR
   write8(LSM6DS33_REGISTER_CTRL2_G, 0b10001100);
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   gyro.timeBtwnSamp = 602;
 
   return true;
@@ -790,7 +790,7 @@ bool beginLSM6DSOX()
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    accelBus.cs = gyroBus.cs = pins.accelCS;
+    accelBus.cs = gyroBus.cs = pins.accelCs;
     accelBus.readMask = gyroBus.readMask = 0x80;
     startSPI(&accelBus, sensors.accelBusNum);
   }
@@ -831,7 +831,7 @@ bool beginLSM6DSOX()
     return false;
   }
   accel.gainX = accel.gainY = accel.gainZ = 0.000488;
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.timeBtwnSamp = 602;
 
   // Gyroscope set 2000dps Range, 1.66kHz ODR
@@ -846,7 +846,7 @@ bool beginLSM6DSOX()
     return false;
   }
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   gyro.timeBtwnSamp = 602;
 
   return true;
@@ -894,7 +894,7 @@ bool beginMPU6050()
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    accelBus.cs = gyroBus.cs = pins.accelCS;
+    accelBus.cs = gyroBus.cs = pins.accelCs;
     startSPI(&accelBus, sensors.accelBusNum);
     accelBus.readMask = gyroBus.readMask = 0x80;
   }
@@ -921,13 +921,13 @@ bool beginMPU6050()
 
   // Set Accelerometer 16G Range
   write8(MPU6050_REGISTER_ACCEL_CONFIG, 0b00011000);
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.gainX = accel.gainY = accel.gainZ = 1 / 2048;
 
   // Set Gyroscope 2000dps Range
   write8(MPU6050_REGISTER_GYRO_CONFIG, 0b00011000);
   gyro.gainX = gyro.gainY = gyro.gainZ = 1 / 16.4;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   // set time between samples
   accel.timeBtwnSamp = gyro.timeBtwnSamp = 1000UL;
 
@@ -984,7 +984,7 @@ bool beginMPU9250_AG()
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    accelBus.cs = gyroBus.cs = pins.accelCS;
+    accelBus.cs = gyroBus.cs = pins.accelCs;
     startSPI(&accelBus, sensors.accelBusNum);
     accelBus.readMask = gyroBus.readMask = 0x80;
   }
@@ -1014,13 +1014,13 @@ bool beginMPU9250_AG()
   write8(REGISTER_INT_PIN_CFG, REGISTER_VALUE_BYPASS_EN);
   // Set Accelerometer 16G Range
   write8(REGISTER_ACCEL_CONFIG, 0b00011000);
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.gainX = accel.gainY = accel.gainZ = 1.0 / 2048;
 
   // Set Gyroscope 2000dps Range
   write8(REGISTER_GYRO_CONFIG, 0b00011000);
   gyro.gainX = gyro.gainY = gyro.gainZ = 1.0 / 16.4;
-  gyro.ADCmax = 32768;
+  gyro.adcMax = 32768;
   // set time between samples
   accel.timeBtwnSamp = gyro.timeBtwnSamp = 1000UL;
   return true;
@@ -1070,7 +1070,7 @@ bool beginMPU9250_M()
   else
   {
     magBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    magBus.cs = pins.magCS;
+    magBus.cs = pins.magCs;
     magBus.readMask = 0x80;
     magBus.incMask = 0x40;
     startSPI(&magBus, sensors.magBusNum);
@@ -1098,7 +1098,7 @@ bool beginMPU9250_M()
   delay(200);
 
   mag.gainX = mag.gainY = mag.gainZ = 1.0 / 0.6;
-  mag.ADCmax = 32768;
+  mag.adcMax = 32768;
   mag.timeBtwnSamp = 25000UL;
 
   return true;
@@ -1144,7 +1144,7 @@ bool beginLIS3MDL()
   else
   {
     magBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    magBus.cs = pins.magCS;
+    magBus.cs = pins.magCs;
     startSPI(&magBus, sensors.magBusNum);
   }
 
@@ -1279,7 +1279,7 @@ bool beginLPS25H()
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    baroBus.cs = pins.baroCS;
+    baroBus.cs = pins.baroCs;
     baroBus.readMask = 0x80;
     startSPI(&baroBus, sensors.baroBusNum);
   }
@@ -1379,9 +1379,9 @@ void getADXL377()
     highGsumZ += analogRead(A4);
   }
 
-  highG.rawX = (int16_t)((highGsumX / 5) - ADCmidValue);
-  highG.rawY = (int16_t)((highGsumY / 5) - ADCmidValue);
-  highG.rawZ = (int16_t)((highGsumZ / 5) - ADCmidValue);
+  highG.rawX = (int16_t)((highGsumX / 5) - adcMidValue);
+  highG.rawY = (int16_t)((highGsumY / 5) - adcMidValue);
+  highG.rawZ = (int16_t)((highGsumZ / 5) - adcMidValue);
 
 } // endvoid
 
@@ -1408,7 +1408,7 @@ bool beginH3LIS331DL()
   else
   {
     highGBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    highGBus.cs = pins.highG_CS;
+    highGBus.cs = pins.highGCs;
     highGBus.readMask = 0x80;
     highGBus.incMask = 0x40;
     startSPI(&highGBus, sensors.highGBusNum);
@@ -1987,7 +1987,7 @@ boolean beginBMP280()
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    baroBus.cs = pins.baroCS;
+    baroBus.cs = pins.baroCs;
     startSPI(&baroBus, sensors.baroBusNum);
   }
 
@@ -2232,7 +2232,7 @@ boolean beginBMP388()
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    baroBus.cs = pins.baroCS;
+    baroBus.cs = pins.baroCs;
     startSPI(&baroBus, sensors.baroBusNum);
   }
 
@@ -2484,7 +2484,7 @@ bool beginMS56XX()
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-    baroBus.cs = pins.baroCS;
+    baroBus.cs = pins.baroCs;
     startSPI(&baroBus, sensors.baroBusNum);
   }
 

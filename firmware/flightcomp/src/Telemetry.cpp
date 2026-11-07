@@ -107,11 +107,11 @@ void beginTelemetry()
 {
 
   // set the hailing frequency channel
-  if (settings.FHSS)
+  if (settings.fhss)
   {
-    FHSS.hailChnl = telemetry::hailChannel(settings.TXfreq);
+    FHSS.hailChnl = telemetry::hailChannel(settings.txFreq);
     // we need to reset the user defined frequency to be the closest LoRa channel
-    settings.TXfreq = fhssChannelMHz[FHSS.hailChnl];
+    settings.txFreq = fhssChannelMHz[FHSS.hailChnl];
   }
 
   // set the packet header to the callsign
@@ -129,7 +129,7 @@ void buildTelmetryPkt()
   {
 
     // hop frequency
-    if (settings.FHSS)
+    if (settings.fhss)
     {
       hopTXfreq();
     }
@@ -159,7 +159,7 @@ void buildTelmetryPkt()
     }
 
     // set the FHSS flags
-    if (settings.FHSS)
+    if (settings.fhss)
     {
       FHSS.gndPktNum++;
       if (FHSS.gndPktNum % 4 == 0)
@@ -194,7 +194,7 @@ void buildTelmetryPkt()
     pktPosn = (sampNum - 1) * 11 + 6;
 
     // hop frequency if needed
-    if (settings.FHSS && FHSS.hopNow && sampNum >= packetSamples)
+    if (settings.fhss && FHSS.hopNow && sampNum >= packetSamples)
     {
       hopTXfreq();
     }
@@ -241,7 +241,7 @@ void buildTelmetryPkt()
       }
 
       // set FHSS flags
-      if (settings.FHSS)
+      if (settings.fhss)
       {
         if (radio.packetnum % 3 == 0)
         {
@@ -263,7 +263,7 @@ void buildTelmetryPkt()
   {
 
     // hop frequency
-    if (settings.FHSS)
+    if (settings.fhss)
     {
       hopTXfreq();
     }
@@ -282,7 +282,7 @@ void buildTelmetryPkt()
     // send the packet
     sendPkt = true;
     pktSize = telemetry::encodePostflight(dataPacket, pkt);
-    if (settings.FHSS)
+    if (settings.fhss)
     {
       syncFreq = true;
     }

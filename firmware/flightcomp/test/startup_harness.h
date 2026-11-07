@@ -491,16 +491,16 @@ void readFlightSettingsSD()
   settings.silentMode = f.silentMode;
   settings.magSwitchEnable = f.magSwitchEnable;
   settings.inflightRecover = f.inflightRecover;
-  settings.GPSlog = f.GPSlog;
+  settings.gpsLog = f.gpsLog;
   settings.fireTime = f.fireTime;
   settings.pyro4Func = f.pyro4Func;
   settings.pyro3Func = f.pyro3Func;
   settings.pyro2Func = f.pyro2Func;
   settings.pyro1Func = f.pyro1Func;
-  settings.TXenable = f.TXenable;
-  settings.TXpwr = f.TXpwr;
-  settings.TXfreq = f.TXfreq;
-  settings.FHSS = f.FHSS;
+  settings.txEnable = f.txEnable;
+  settings.txPwr = f.txPwr;
+  settings.txFreq = f.txFreq;
+  settings.fhss = f.fhss;
   settings.boosterSeparationDelay = f.boosterSeparationDelay;
   settings.sustainerFireDelay = f.sustainerFireDelay;
   settings.airStart1Event = f.airStart1Event;
@@ -519,15 +519,15 @@ void readFlightSettingsSD()
 void readOrientation()
 {
   logIo("readOrientation");
-  sensorData *all[] = {&accel, &gyro, &mag, &highG};
-  for (sensorData *s : all)
+  SensorData *all[] = {&accel, &gyro, &mag, &highG};
+  for (SensorData *s : all)
   {
     s->ptrX = &s->rawX;
     s->ptrY = &s->rawY;
     s->ptrZ = &s->rawZ;
-    s->ptrXsign = &s->dirX;
-    s->ptrYsign = &s->dirY;
-    s->ptrZsign = &s->dirZ;
+    s->ptrXSign = &s->dirX;
+    s->ptrYSign = &s->dirY;
+    s->ptrZSign = &s->dirZ;
   }
 }
 

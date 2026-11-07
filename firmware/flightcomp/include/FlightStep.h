@@ -685,7 +685,7 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   if (pyroFire)
   {
     // Check if pseudo-PWM is required
-    if (sensors.pyroPWM)
+    if (sensors.pyroPwm)
     {
       pulsePyro(actions);
     }
@@ -816,7 +816,7 @@ inline __attribute__((always_inline)) FlightActions flightStep()
     }
 
     // Compute the current g-load. Use the high-G accelerometer if the IMU is pegged and a high-G accelerometer is present
-    if (abs(accel.z) < accel.ADCmax)
+    if (abs(accel.z) < accel.adcMax)
     {
       accelNow = (float)(accel.z - g) * accel.gainZ;
     }

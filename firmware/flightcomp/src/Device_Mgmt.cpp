@@ -241,7 +241,7 @@ void setPolyMorphs()
   }
 
   // GNSS receiver pointers
-  switch (sensors.GNSS)
+  switch (sensors.gnss)
   {
   case 1: // NEO-M8N
   case 2: // SAM/MAX/NEO-M8Q/W
@@ -278,9 +278,9 @@ void orientAccel()
   accel.rawZ -= accel.biasZ;
 
   // orient sensor data
-  accel.x = *accel.ptrX * *accel.ptrXsign;
-  accel.y = *accel.ptrY * *accel.ptrYsign;
-  accel.z = *accel.ptrZ * *accel.ptrZsign;
+  accel.x = *accel.ptrX * *accel.ptrXSign;
+  accel.y = *accel.ptrY * *accel.ptrYSign;
+  accel.z = *accel.ptrZ * *accel.ptrZSign;
 }
 
 void orientMag()
@@ -295,9 +295,9 @@ void orientMag()
   mag.rawZ -= mag.biasZ;
 
   // translate sensor data
-  mag.x = *mag.ptrX * *mag.ptrXsign;
-  mag.y = *mag.ptrY * *mag.ptrYsign;
-  mag.z = *mag.ptrZ * *mag.ptrZsign;
+  mag.x = *mag.ptrX * *mag.ptrXSign;
+  mag.y = *mag.ptrY * *mag.ptrYSign;
+  mag.z = *mag.ptrZ * *mag.ptrZSign;
 }
 
 void orientGyro()
@@ -312,9 +312,9 @@ void orientGyro()
   gyro.rawZ -= gyro.biasZ;
 
   // orient sensor data
-  gyro.x = *gyro.ptrX * *gyro.ptrXsign;
-  gyro.y = *gyro.ptrY * *gyro.ptrYsign;
-  gyro.z = *gyro.ptrZ * *gyro.ptrZsign;
+  gyro.x = *gyro.ptrX * *gyro.ptrXSign;
+  gyro.y = *gyro.ptrY * *gyro.ptrYSign;
+  gyro.z = *gyro.ptrZ * *gyro.ptrZSign;
 }
 
 void orientHighG()
@@ -329,9 +329,9 @@ void orientHighG()
   highG.rawZ -= highG.biasZ;
 
   // orient sensor data
-  highG.x = *highG.ptrX * *highG.ptrXsign;
-  highG.y = *highG.ptrY * *highG.ptrYsign;
-  highG.z = *highG.ptrZ * *highG.ptrZsign;
+  highG.x = *highG.ptrX * *highG.ptrXSign;
+  highG.y = *highG.ptrY * *highG.ptrYSign;
+  highG.z = *highG.ptrZ * *highG.ptrZSign;
 }
 
 void dummyVoid() {}

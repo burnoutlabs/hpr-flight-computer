@@ -9,7 +9,7 @@
 #include <TinyGPS++.h>
 
 // Set code version
-const float codeVersion = 4.72;
+const float CODE_VERSION = 4.72;
 
 // GPS Setup (defined in flightcomp.cpp)
 extern TinyGPSPlus GPS;

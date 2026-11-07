@@ -62,7 +62,7 @@ void UBLOXrestorDefaults()
 void UBLOXconfig()
 {
 
-  uint8_t gpsVersion = sensors.GNSS;
+  uint8_t gpsVersion = sensors.gnss;
   bool serialOutput = settings.testMode;
   bool VTGoption = settings.flyBack;
 
@@ -305,7 +305,7 @@ void UBLOXpowerSave()
 {
 
   bool serialOutput = settings.testMode;
-  uint8_t gpsVersion = sensors.GNSS;
+  uint8_t gpsVersion = sensors.gnss;
 
   // configure UBLOX chips
   if (gpsVersion < 4)

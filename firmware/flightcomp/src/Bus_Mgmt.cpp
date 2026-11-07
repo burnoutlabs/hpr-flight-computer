@@ -177,6 +177,12 @@ void setGnssSerial()
     gnssSerial = &Serial8;
     break;
 #endif
+
+  // a bus number this board has no serial port for: no port, which beginGnssSerial() reports
+  default:
+    gnssSerial = nullptr;
+    Serial.println(F("not on this board!"));
+    return;
   }
   Serial.println(F("Done!"));
 }

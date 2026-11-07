@@ -612,12 +612,12 @@ void loop(void)
     gnssPowerSave();
     gnss.configPwrSave = true;
   }
-  // Read from serial
-  if (gnssSerial->available() > 0)
+  // Read from serial (no port when the configured bus is not on this board)
+  if (gnssSerial != nullptr && gnssSerial->available() > 0)
   {
     gnss.msgRx = true;
   }
-  while (gnssSerial->available() > 0)
+  while (gnssSerial != nullptr && gnssSerial->available() > 0)
   {
     char c = gnssSerial->read();
     gps.encode(c);

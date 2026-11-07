@@ -140,11 +140,21 @@ void setPinModes()
 
 /**
  * @brief Select the GNSS serial port and start it at the receiver's baud rate.
+ *
+ * A bus number the board has no serial port for leaves no port: the GNSS receiver is then
+ * treated as absent (sensors.gnss 0), so setPolyMorphs() gives it the dummy functions and
+ * loop() does not read the port.
  */
 void beginGnssSerial()
 {
   // Start Harware Serial communication
   setGnssSerial();
+  if (gnssSerial == nullptr)
+  {
+    sensors.gnss = 0;
+    Serial.println("GNSS serial port not available, GNSS disabled");
+    return;
+  }
   if (sensors.gnss == 3)
   {
     gnssSerial->begin(38400);

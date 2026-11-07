@@ -709,6 +709,45 @@ void test_set_poly_morphs_every_id()
   printf("  setPolyMorphs: %d ID sets, identical pointers\n", compared);
 }
 
+//-----------------------------------------
+// setup() fixes: the new setup() alone, where it differs from the reference on purpose
+//-----------------------------------------
+/** Whether the I/O log has an entry that starts with prefix. */
+static bool logHas(const std::string &prefix)
+{
+  for (const std::string &entry : ioLog)
+  {
+    if (entry.compare(0, prefix.size(), prefix) == 0)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * #29: a GNSS bus number the board does not have leaves no GNSS port. setup() reports it, does
+ * not start the port, and runs on with no GNSS receiver, so nothing reaches the port.
+ */
+void test_unsupported_gnss_bus_is_reported_and_skipped()
+{
+  SetupScenario s;
+  s.name = "GNSS on Serial7 of a Teensy 3.2";
+  s.file = sampleSettings();
+  s.gnssBusNum = 7;
+  startScenario(s);
+  boardSerialPorts = 3;
+  setup();
+  boardSerialPorts = 8;
+  TEST_ASSERT_NULL(gnssSerial);
+  TEST_ASSERT_FALSE_MESSAGE(logHas("gnssSerial.begin"), "the missing GNSS port was started");
+  TEST_ASSERT_TRUE_MESSAGE(logHas("println s:GNSS serial port not available, GNSS disabled"), "not reported");
+  TEST_ASSERT_EQUAL_UINT8(0, sensors.gnss);
+  TEST_ASSERT_TRUE(gnssConfig == dummyVoid);
+  TEST_ASSERT_TRUE(gnssPowerSave == dummyVoid);
+  TEST_ASSERT_TRUE(gnssRestoreDefaults == dummyVoid);
+}
+
 void setUp() {}
 void tearDown() {}
 
@@ -728,6 +767,7 @@ int main()
   RUN_TEST(test_other_devices);
   RUN_TEST(test_retired_settings_copy);
   RUN_TEST(test_set_poly_morphs_every_id);
+  RUN_TEST(test_unsupported_gnss_bus_is_reported_and_skipped);
   printf("  setup scenarios compared: %d\n", scenariosRun);
   return UNITY_END();
 }

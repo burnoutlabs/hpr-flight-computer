@@ -531,10 +531,14 @@ void readOrientation()
   }
 }
 
+/** The serial ports the board has, Serial1 to this (Bus_Mgmt.cpp: 3 on a Teensy 3.2, 8 on a 4.1). */
+inline uint8_t boardSerialPorts = 8;
+
+/** setGnssSerial(): as Bus_Mgmt.cpp, a port the board has, else none (null). */
 void setGnssSerial()
 {
   logIo("setGnssSerial " + std::to_string(sensors.gnssBusNum));
-  gnssSerial = &gnssPort;
+  gnssSerial = (sensors.gnssBusNum >= 1 && sensors.gnssBusNum <= boardSerialPorts) ? &gnssPort : nullptr;
 }
 
 //-----------------------------------------

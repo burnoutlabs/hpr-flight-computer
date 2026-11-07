@@ -34,7 +34,8 @@ Consequences worth knowing:
   characters after the 256th overwrite the start.
 - Numbers are converted with `atof()`, so text after the number is ignored and text with no
   number reads as 0.
-- The parser does not check for the end of the file (issue #25).
+- At the end of the file the parser stops: a value the file does not reach is empty, so a
+  number reads as 0 and a character as the NUL character.
 
 ## EEPROMsettings.txt
 

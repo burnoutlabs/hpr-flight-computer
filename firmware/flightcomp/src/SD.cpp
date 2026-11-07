@@ -998,6 +998,10 @@ void writeFloatData(float dataValue, uint8_t decimals)
 /**
  * @brief Parses the next variable from the SD card.
  *
+ * @details Skips to the next '=', skips the one character after it, and copies the rest of the
+ * line into dataString. At the end of the file (read() returns -1) it stops: a value the file
+ * does not reach is empty, and reads as 0.
+ *
  * @param flag Indicates whether to return the parsed variable.
  * @return Parsed float value if flag is true, otherwise null.
  */
@@ -1005,18 +1009,26 @@ float parseNextVariable(bool flag)
 {
   uint8_t charPosn = 0;
   float dataValue;
-  char c;
+  int c;
   charPosn = 0;
   c = '\0';
-  while (c != '=')
+  while (c != '=' && c >= 0)
   {
     c = settingsFile.read();
   }
-  c = settingsFile.read();
-  while (c != '\n' && c != '\r' && charPosn < sizeof(dataString))
+  if (c >= 0)
   {
     c = settingsFile.read();
-    if (c != '\n' && c != '\r')
+  }
+  if (c < 0)
+  {
+    // end of the file: no value
+    dataString[0] = '\0';
+  }
+  while (c != '\n' && c != '\r' && c >= 0 && charPosn < sizeof(dataString))
+  {
+    c = settingsFile.read();
+    if (c != '\n' && c != '\r' && c >= 0)
     {
       dataString[charPosn] = c;
     }

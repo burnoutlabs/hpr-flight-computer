@@ -251,6 +251,73 @@ void test_sample_settings()
   TEST_ASSERT_EQUAL_UINT8(1, settings.serialDebug);
 }
 
+/** The sample text up to and including the line that starts with `lastLine`, with or without its line end. */
+static std::string truncatedAfter(const std::string &text, const std::string &lastLine, bool keepLineEnd)
+{
+  const size_t start = text.find("\n" + lastLine);
+  TEST_ASSERT_TRUE_MESSAGE(start != std::string::npos, lastLine.c_str());
+  const size_t end = text.find('\n', start + 1);
+  return text.substr(0, keepLineEnd ? end + 1 : end);
+}
+
+/** Runs a parser, failing the test if it reads on past the end of the file. */
+static void runToEnd(void (*parser)(), const char *what)
+{
+  try
+  {
+    parser();
+  }
+  catch (const ShimReadPastEnd &e)
+  {
+    char message[160];
+    snprintf(message, sizeof(message), "%s read past the end of the file %ld times without stopping", what, e.reads);
+    TEST_FAIL_MESSAGE(message);
+  }
+}
+
+/** A Settings.txt that ends before its last values: the parser stops, and the missing values read as 0. */
+void test_settings_missing_values_stop_at_end_of_file()
+{
+  resetState();
+  SD.files["Settings.txt"] = truncatedAfter(readSource("Settings.txt"), "TXfreq = ", true);
+  settings.serialDebug = 7;
+  runToEnd(readFlightSettingsSd, "readFlightSettingsSd()");
+
+  // the values in the file are read as before
+  TEST_ASSERT_EQUAL_STRING("Mach Shock", settings.rocketName);
+  TEST_ASSERT_EQUAL_UINT8(13, settings.txPwr);
+  TEST_ASSERT_EQUAL_FLOAT(433.250F, settings.txFreq);
+  // the missing ones are 0
+  TEST_ASSERT_FALSE(settings.fhss);
+  TEST_ASSERT_EQUAL_UINT32(0UL, settings.boosterSeparationDelay);
+  TEST_ASSERT_EQUAL_CHAR('\0', settings.airStart1Event);
+  TEST_ASSERT_EQUAL_INT(0, settings.maxAngle);
+  TEST_ASSERT_EQUAL_UINT8(0, settings.serialDebug);
+}
+
+/** A Settings.txt whose last value has no line end after it is read to its end. */
+void test_settings_last_value_without_line_end()
+{
+  resetState();
+  SD.files["Settings.txt"] = truncatedAfter(readSource("Settings.txt"), "serialDebug = ", false);
+  settings.serialDebug = 7;
+  runToEnd(readFlightSettingsSd, "readFlightSettingsSd()");
+  TEST_ASSERT_EQUAL_UINT8(1, settings.serialDebug);
+  TEST_ASSERT_FALSE(settings.flyBack);
+}
+
+/** An EEPROMsettings.txt that ends before its last values: the parser stops and removes the file. */
+void test_eeprom_settings_missing_values_stop_at_end_of_file()
+{
+  resetState();
+  SD.files["EEPROMsettings.txt"] = truncatedAfter(readSource("EEPROMsettings.txt"), "sdCS = ", true);
+  runToEnd(parseEepromSettingsSd, "parseEepromSettingsSd()");
+  TEST_ASSERT_EQUAL_UINT8(56, shimEeprom.bytes[eeprom.sdCsPin]);
+  TEST_ASSERT_EQUAL_UINT8(0, shimEeprom.bytes[eeprom.servo1Pin]);
+  TEST_ASSERT_EQUAL_UINT8(0, shimEeprom.bytes[eeprom.servo8Pin]);
+  TEST_ASSERT_FALSE_MESSAGE(SD.exists("EEPROMsettings.txt"), "the file is removed after use");
+}
+
 void setUp() {}
 void tearDown() {}
 
@@ -259,5 +326,8 @@ int main()
   UNITY_BEGIN();
   RUN_TEST(test_sample_eeprom_settings);
   RUN_TEST(test_sample_settings);
+  RUN_TEST(test_settings_missing_values_stop_at_end_of_file);
+  RUN_TEST(test_settings_last_value_without_line_end);
+  RUN_TEST(test_eeprom_settings_missing_values_stop_at_end_of_file);
   return UNITY_END();
 }

@@ -631,7 +631,9 @@ static void applyBenchTestOverrides()
   maxVelocity = 202 / unitConvert;
   pktInterval.postFlight = 1000000UL;
   thresholdVel = 15.5F;
-  clearRailTime = 20000UL;
+  // clear the rail halfway through the false-liftoff check, as in flight (0.25 s of 0.5 s), so a
+  // bump that ends inside the check is reset
+  clearRailTime = 5000UL; // 0.005s
   settings.magSwitchEnable = false;
 }
 

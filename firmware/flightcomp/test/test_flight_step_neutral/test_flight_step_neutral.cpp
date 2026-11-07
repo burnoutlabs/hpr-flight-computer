@@ -306,8 +306,8 @@ void test_false_liftoff_then_flight()
 void test_false_liftoff_in_test_mode()
 {
   startScenario();
-  // test mode with the flight timings: with the bench overrides (detectLiftoffTime 10 ms, clearRailTime
-  // 20 ms) the false-liftoff check ends before a reset is allowed
+  // test mode with the flight timings; the bench timings' own reset is in test_setup_neutral
+  // (test_bench_mode_resets_a_short_bump)
   settings.testMode = true;
   ProfileSpec spec;
   spec.padBumps = {{5.0F, 0.15F, 30.0F}};

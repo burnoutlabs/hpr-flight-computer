@@ -25,7 +25,9 @@
  * reference stored a copy of the flight settings in EEPROM (164-223), whose fields overlapped and
  * which nothing read, and setup() now stores only the in-flight recovery setting (186) of it
  * (retiredSettingsAddresses() below; test_retired_settings_copy shows the difference). The
- * byte-copy unions it used as scratch are cleared in both runs (clearScratchUnions()).
+ * byte-copy unions it used as scratch are cleared in both runs (clearScratchUnions()). In test
+ * mode the reference's rail-clear time (20 ms) is replaced with setup()'s 5 ms (#44,
+ * takeOutBenchClearRailTime()).
  * The scenarios between them take every branch of setup() that returns; the ones that never do
  * (uninitialized EEPROM, a failed sensor) are not run. Nor is a board with no high-G
  * accelerometer: setup() then divides by a zero sample count, which the Teensy's divide
@@ -35,6 +37,8 @@
 #include <unity.h>
 
 #include "startup_harness.h"
+
+#include "synthetic_flights.h"
 
 #include "../src/InflightRecover.cpp"
 
@@ -394,6 +398,19 @@ static void clearScratchUnions()
   memset((void *)&floatUnion, 0, sizeof(floatUnion));
 }
 
+/**
+ * Test mode's rail-clear time: the reference set 20 ms, after its 10 ms false-liftoff check had
+ * ended, so no false-liftoff reset could fire on the bench; setup() sets 5 ms (#44,
+ * test_bench_mode_resets_a_short_bump). Puts the new value into the reference's result.
+ */
+static void takeOutBenchClearRailTime()
+{
+  if (settings.testMode && clearRailTime == 20000UL)
+  {
+    clearRailTime = 5000UL;
+  }
+}
+
 static void runSideBySide(const SetupScenario &s)
 {
   startScenario(s);
@@ -403,6 +420,7 @@ static void runSideBySide(const SetupScenario &s)
   std::vector<std::string> referenceLog = ioLog;
   const size_t retiredWrites = removeRetiredWrites(referenceLog, eepromBefore);
   clearScratchUnions();
+  takeOutBenchClearRailTime();
   const std::vector<uint8_t> referenceState = saveStartupState();
   const bool reached = s.reached == nullptr || s.reached();
 
@@ -748,6 +766,71 @@ void test_unsupported_gnss_bus_is_reported_and_skipped()
   TEST_ASSERT_TRUE(gnssRestoreDefaults == dummyVoid);
 }
 
+/** What a run of the flight step on a bump made: liftoffs, false-liftoff resets, and the end state. */
+struct BumpRun
+{
+  int liftoffs = 0;
+  int resets = 0;
+  bool inFlightAtEnd = false;
+};
+
+/**
+ * The flight step, with test mode's timings from the real applyBenchTestOverrides(), on the pad
+ * through one 4 g bump of the given length.
+ */
+static BumpRun runBenchBump(float seconds)
+{
+  restoreStartupState(pristine);
+  ioLog.clear();
+  configureSensors();
+  configurePyros('A', 'M', 'N', 'N');
+  settings.mainDeployAlt = 200;
+  settings.altThreshold = 91;
+  settings.maxAngle = 300;
+  settings.testMode = true;
+  settings.txEnable = false;
+  applyBenchTestOverrides();
+  ProfileSpec spec;
+  spec.padBumps = {{1.0F, seconds, 30.0F}};
+  spec.duration = 3.0F;
+  const SyntheticFlight flight(spec);
+  LoopState loopState;
+  BumpRun run;
+  for (uint32_t now = 500; now < flight.durationMicros(); now += 500)
+  {
+    const FlightActions actions = runPass(loopState, now, flight.at(now));
+    for (uint8_t i = 0; i < actions.count; i++)
+    {
+      run.liftoffs += actions.kind[i] == FlightAction::PRINT_SIMULATED_LIFTOFF;
+      run.resets += actions.kind[i] == FlightAction::RADIO_PRELIFTOFF;
+    }
+  }
+  run.inFlightAtEnd = events.liftoff;
+  return run;
+}
+
+/**
+ * #44: in test mode a bump that ends inside the false-liftoff check is reset. The bench
+ * overrides cleared the rail (20 ms) only after the check had ended (10 ms), so no reset could
+ * fire; a bump that outlasts the check is still a liftoff.
+ */
+void test_bench_mode_resets_a_short_bump()
+{
+  const BumpRun shortBump = runBenchBump(0.005F);
+  char message[128];
+  snprintf(message, sizeof(message), "5 ms bump: %d liftoffs, %d resets", shortBump.liftoffs, shortBump.resets);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, shortBump.liftoffs, message);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, shortBump.resets, message);
+  TEST_ASSERT_FALSE_MESSAGE(shortBump.inFlightAtEnd, message);
+  TEST_ASSERT_TRUE(clearRailTime <= fltTime.detectLiftoffTime);
+
+  const BumpRun longBump = runBenchBump(0.015F);
+  snprintf(message, sizeof(message), "15 ms bump: %d liftoffs, %d resets", longBump.liftoffs, longBump.resets);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, longBump.liftoffs, message);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(0, longBump.resets, message);
+  TEST_ASSERT_TRUE_MESSAGE(longBump.inFlightAtEnd, message);
+}
+
 void setUp() {}
 void tearDown() {}
 
@@ -768,6 +851,7 @@ int main()
   RUN_TEST(test_retired_settings_copy);
   RUN_TEST(test_set_poly_morphs_every_id);
   RUN_TEST(test_unsupported_gnss_bus_is_reported_and_skipped);
+  RUN_TEST(test_bench_mode_resets_a_short_bump);
   printf("  setup scenarios compared: %d\n", scenariosRun);
   return UNITY_END();
 }

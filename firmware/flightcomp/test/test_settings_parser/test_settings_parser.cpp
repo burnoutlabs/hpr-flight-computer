@@ -12,6 +12,7 @@
  */
 #include <unity.h>
 
+#include <stddef.h>
 #include <stdio.h>
 
 #include <fstream>
@@ -318,6 +319,51 @@ void test_eeprom_settings_missing_values_stop_at_end_of_file()
   TEST_ASSERT_FALSE_MESSAGE(SD.exists("EEPROMsettings.txt"), "the file is removed after use");
 }
 
+/** A rocket name longer than rocketName holds is cut to fit, and writes nothing past it. */
+void test_long_rocket_name_is_cut_to_fit()
+{
+  resetState();
+  // what readHardwareSettingsEeprom() set before the settings file is read
+  strcpy(settings.hwId, "4.0.1");
+  strcpy(settings.callSign, "KK4ELF");
+  settings.gpsFileEnable = false;
+  // long enough to run through hwId and on to the end of callSign, if nothing stops it
+  const size_t length = offsetof(UserSettings, callSign) + sizeof(settings.callSign) - offsetof(UserSettings, rocketName) - 1;
+  std::string name;
+  for (size_t i = 0; i < length; i++)
+  {
+    name += (char)('A' + i % 26);
+  }
+  std::string text = readSource("Settings.txt");
+  const size_t at = text.find("Rocket Name = ") + strlen("Rocket Name = ");
+  text.replace(at, text.find('\n', at) - at, name);
+  SD.files["Settings.txt"] = text;
+  readFlightSettingsSd();
+
+  char message[96];
+  snprintf(message, sizeof(message), "a %zu-character name: the fields after rocketName", length);
+  TEST_ASSERT_EQUAL_STRING_MESSAGE("4.0.1", settings.hwId, message);
+  TEST_ASSERT_EQUAL_STRING_MESSAGE("KK4ELF", settings.callSign, message);
+  TEST_ASSERT_FALSE_MESSAGE(settings.gpsFileEnable, message);
+  TEST_ASSERT_EQUAL_CHAR_MESSAGE('\0', settings.rocketName[sizeof(settings.rocketName) - 1], "rocketName ends in a terminator");
+  TEST_ASSERT_EQUAL_STRING(name.substr(0, sizeof(settings.rocketName) - 1).c_str(), settings.rocketName);
+  // the rest of the file is read as before
+  TEST_ASSERT_EQUAL_CHAR('S', settings.fltProfile);
+  TEST_ASSERT_EQUAL_UINT8(1, settings.serialDebug);
+}
+
+/** A name of exactly 19 characters, the most rocketName holds, is kept whole. */
+void test_rocket_name_of_19_characters_is_kept()
+{
+  resetState();
+  std::string text = readSource("Settings.txt");
+  const size_t at = text.find("Rocket Name = ") + strlen("Rocket Name = ");
+  text.replace(at, text.find('\n', at) - at, "Nineteen characters");
+  SD.files["Settings.txt"] = text;
+  readFlightSettingsSd();
+  TEST_ASSERT_EQUAL_STRING("Nineteen characters", settings.rocketName);
+}
+
 void setUp() {}
 void tearDown() {}
 
@@ -329,5 +375,7 @@ int main()
   RUN_TEST(test_settings_missing_values_stop_at_end_of_file);
   RUN_TEST(test_settings_last_value_without_line_end);
   RUN_TEST(test_eeprom_settings_missing_values_stop_at_end_of_file);
+  RUN_TEST(test_long_rocket_name_is_cut_to_fit);
+  RUN_TEST(test_rocket_name_of_19_characters_is_kept);
   return UNITY_END();
 }

@@ -91,7 +91,7 @@ column.
 
 | # | Sample key | Field | Conversion | Clamped by `limitSettings()` |
 | - | ---------- | ----- | ---------- | ---------------------------- |
-| 1 | `Rocket Name` | `rocketName[20]` | text, copied up to its end | |
+| 1 | `Rocket Name` | `rocketName[20]` | text, at most 19 characters; a longer name is cut to 19 | |
 | 2 | `flightProfile` | `fltProfile` | char: `S` single stage, `2` two stage, `A` airstart, `B` booster | |
 | 3 | `units` | `units` | char: `M` sets metres for the values below, anything else feet | |
 | 4 | `reportStyle` | `reportStyle` | char: `P` Perfectflite, `M` Marsa | |

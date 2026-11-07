@@ -19,7 +19,7 @@ velocities in m/s: the firmware keeps both in metric and converts only for displ
 | 6 | uint8 | event | flight event code (below) |
 | 7 | uint8 | GNSS fix | 1 after a position or altitude update, 0 when none for 2 s (`flightcomp.cpp`) |
 | 8 | uint8 | continuity code | `cont.reportCode` from `checkPyroContinuity()` (`Startup.cpp`) |
-| 9-28 | char[20] | rocket name | `settings.rocketName`, all 20 bytes |
+| 9-28 | char[20] | rocket name | `settings.rocketName`, all 20 bytes: up to 19 characters and a terminator |
 | 29-30 | int16 | base altitude | `baro.baseAlt`, m |
 | 31-32 | int16 | GPS altitude | GNSS altitude less `baro.baseAlt`, m |
 | 33-36 | float | latitude | degrees |

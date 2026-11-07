@@ -253,7 +253,7 @@ struct UserSettings
   bool testMode = false;
   bool calibrationMode = false;
   //--------flight settings----------------
-  char rocketName[20] = ""; // Maximum of 20 characters
+  char rocketName[20] = ""; // at most 19 characters and the terminator
   char hwId[7] = "";
   char fltProfile = 'S';
   char units = 'S';

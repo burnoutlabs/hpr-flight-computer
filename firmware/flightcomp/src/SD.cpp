@@ -629,8 +629,8 @@ void readFlightSettingsSd()
   // Read in the user defined variables
   parseNextVariable(false);
   fileNum = 0;
-  // Rocket name
-  while (dataString[fileNum] != '\0')
+  // Rocket name: what fits in rocketName with its terminator; the rest of a longer name is dropped
+  while (dataString[fileNum] != '\0' && fileNum < sizeof(settings.rocketName) - 1)
   {
     settings.rocketName[fileNum] = dataString[fileNum];
     fileNum++;

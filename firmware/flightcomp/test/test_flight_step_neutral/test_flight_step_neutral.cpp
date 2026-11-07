@@ -82,6 +82,8 @@ static PyroMap &pyro1 = pyros[0];
 static PyroMap &pyro2 = pyros[1];
 static PyroMap &pyro3 = pyros[2];
 static PyroMap &pyro4 = pyros[3];
+// The reference's name for the telemetry values, radioTelemetry now
+static RadioTelemetry &radio = radioTelemetry;
 
 #define EEPROM legacyEeprom
 #define Serial legacySerial

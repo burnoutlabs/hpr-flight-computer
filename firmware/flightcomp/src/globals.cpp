@@ -48,7 +48,7 @@ alignas(4) PinMap pins;
 //-----------------------------------------
 alignas(4) uint8_t dataPacket[256];
 bool liftoffSync = false;
-unsigned long TXstartTime;
+unsigned long txStartTime;
 bool implicitHdr = false;
 bool syncFreq = false;
 uint8_t pktPosn = 0;
@@ -56,15 +56,15 @@ uint8_t pktSize = 0;
 uint16_t sampNum = 0;
 uint8_t packetSamples = 4;
 bool gpsTransmit = false;
-bool TX = false;
+bool txInProgress = false;
 bool sdRadioTx = false;
 uint8_t radioMode;
-volatile boolean clearTX = false;
+volatile boolean clearTx = false;
 volatile boolean buildPkt = false;
 volatile boolean syncFlag = false;
 bool sendPkt = false;
 PacketIntervals pktInterval;
-RadioTelemetry radio;
+RadioTelemetry radioTelemetry;
 //-----------------------------------------
 // continuity Booleans
 //-----------------------------------------
@@ -223,9 +223,9 @@ uint32_t sampleStart = 0UL;
 uint32_t sampleTimeCheck = 0UL;
 uint32_t debugTimer = 0UL;
 //--------------------------------------------
-// Radio operating modes (RegOpMode)
+// Radio operating modes (REG_OP_MODE)
 //--------------------------------------------
-uint8_t radioFnctn = SleepMode;
+uint8_t radioFunction = SLEEP_MODE;
 //--------------------------------------------
 // Function Pointers
 //--------------------------------------------
@@ -241,7 +241,7 @@ void (*getMag)();
 void (*getHighG)();
 void (*getBaro)();
 bool (*setRadioFreq)(float freq);
-bool (*setRadioPWR)(int8_t pwr);
+bool (*setRadioPwr)(int8_t pwr);
 void (*radioSleep)();
 bool (*radioSendPkt)(uint8_t *data, uint8_t len);
 void (*GNSSrestorDefaults)();

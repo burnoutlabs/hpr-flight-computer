@@ -11,7 +11,7 @@ namespace telemetry
 {
 
 // Pseudo-random sequence of channels for the data packets, which stays within the FCC regulations
-const uint8_t hopSequence[HOP_SEQUENCE_LENGTH] = {
+const uint8_t HOP_SEQUENCE[HOP_SEQUENCE_LENGTH] = {
     76, 117, 14, 63, 68, 7, 22, 114, 82, 55, 10, 3, 59, 83, 47, 40, 105, 49, 103, 45, 126, 95, 41, 51, 67,
     24, 85, 121, 75, 31, 124, 50, 92, 37, 104, 29, 58, 110, 102, 106, 113, 36, 19, 111, 80, 8, 69, 7, 54,
     63, 123, 119, 98, 22, 105, 118, 34, 88, 108, 15, 14, 94, 77, 68, 76, 91, 128, 2, 44, 64, 0, 4, 95, 58,
@@ -94,7 +94,7 @@ const uint8_t hopSequence[HOP_SEQUENCE_LENGTH] = {
     106, 128, 90, 100, 30, 52, 8, 51, 34, 59, 103, 22, 39, 35, 41, 108, 10, 31, 98, 46, 29, 105, 121, 43, 67,
     50, 74, 17, 33, 32, 62, 63, 6};
 
-const float fhssChannelMHz[FHSS_CHANNELS] = {
+const float FHSS_CHANNEL_MHZ[FHSS_CHANNELS] = {
     902.1, 902.3, 902.5, 902.7, 902.9, 903.1, 903.3, 903.5, 903.7, 903.9,
     904.1, 904.3, 904.5, 904.7, 904.9, 905.1, 905.3, 905.5, 905.7, 905.9,
     906.1, 906.3, 906.5, 906.7, 906.9, 907.1, 907.3, 907.5, 907.7, 907.9,
@@ -304,13 +304,13 @@ bool decodeSync(const uint8_t *pkt, uint8_t len, SyncPacket &out)
   return true;
 }
 
-uint8_t hailChannel(float freqMHz)
+uint8_t hailChannel(float freqMhz)
 {
   // the channel in the list nearest the configured frequency (the lower one on a tie)
   uint8_t nearest = 0;
   for (uint8_t i = 1; i < FHSS_CHANNELS; i++)
   {
-    if (fabsf(fhssChannelMHz[i] - freqMHz) < fabsf(fhssChannelMHz[nearest] - freqMHz))
+    if (fabsf(FHSS_CHANNEL_MHZ[i] - freqMhz) < fabsf(FHSS_CHANNEL_MHZ[nearest] - freqMhz))
     {
       nearest = i;
     }
@@ -326,7 +326,7 @@ int16_t nextHopIndex(int16_t hop, uint8_t hailChnl)
     hop = 0;
   }
   // move again if the next channel is the hail channel
-  if (hopSequence[hop] == hailChnl)
+  if (HOP_SEQUENCE[hop] == hailChnl)
   {
     hop++;
     if (hop >= HOP_SEQUENCE_LENGTH)

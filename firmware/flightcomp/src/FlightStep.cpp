@@ -36,7 +36,7 @@ void processBaroSamp()
       baseAltPosn = 0;
     }
     baro.baseAlt = sumBaseAlt / sizeBaseAltBuff;
-    radio.baseAlt = (int16_t)baro.baseAlt;
+    radioTelemetry.baseAlt = (int16_t)baro.baseAlt;
     baro.newSamp = false;
   }
 
@@ -101,8 +101,8 @@ void processBaroSamp()
   {
     baro.maxVel = baro.vel;
   }
-  radio.vel = baro.vel;
-  radio.alt = baro.smoothAlt;
+  radioTelemetry.vel = baro.vel;
+  radioTelemetry.alt = baro.smoothAlt;
   altAvgBuff[altAvgPosn] = baro.smoothAlt;
   baroTimeBuff[altAvgPosn] = baro.timeLastSamp;
   altAvgPosn++;

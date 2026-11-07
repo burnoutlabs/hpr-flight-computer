@@ -6,11 +6,11 @@
 
 #include <Arduino.h>
 
-bool beginSX127X();
-void sleepSX127X();
-bool setPwrSX127X(int8_t pwr);
-bool sendPktSX127X(uint8_t *data, uint8_t len);
-bool config70cmSX127X();
-bool setFreqSX127X(float freq);
-bool setModeSX127X(uint8_t mode);
-void clearFlagsSX127X();
+bool beginSx127x();
+void sleepSx127x();
+bool setPwrSx127x(int8_t pwr);
+bool sendPktSx127x(uint8_t *data, uint8_t len);
+bool config70cmSx127x();
+bool setFreqSx127x(float freq);
+bool setModeSx127x(uint8_t mode);
+void clearFlagsSx127x();

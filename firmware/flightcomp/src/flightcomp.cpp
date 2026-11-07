@@ -412,10 +412,10 @@ void loop(void)
         EEPROM.write(eeprom.totalFlights, flightCount);
       }
       // set the final radio variables
-      radio.maxAlt = (int16_t)baro.maxAlt;
-      radio.maxVel = (int16_t)maxVelocity;
-      radio.maxG = (int16_t)((maxG / 0.980665));
-      radio.maxGPSalt = (int16_t)gnss.maxAlt;
+      radioTelemetry.maxAlt = (int16_t)baro.maxAlt;
+      radioTelemetry.maxVel = (int16_t)maxVelocity;
+      radioTelemetry.maxG = (int16_t)((maxG / 0.980665));
+      radioTelemetry.maxGpsAlt = (int16_t)gnss.maxAlt;
       // write out the SD card timing variables
       if (settings.testMode)
       {
@@ -437,10 +437,10 @@ void loop(void)
   interrupts();
   if (settings.txEnable && pktFlag)
   {
-    buildTelmetryPkt();
+    buildTelemetryPkt();
   }
   // send the packet when its ready and the radio is available
-  if (settings.txEnable && sendPkt && !TX && sensors.statusRadio)
+  if (settings.txEnable && sendPkt && !txInProgress && sensors.statusRadio)
   {
     sendTelemetryPkt();
   }
@@ -454,7 +454,7 @@ void loop(void)
   }
 
   // Send the sych packet if needed
-  if (syncFreq && !TX)
+  if (syncFreq && !txInProgress)
   {
     syncPkt();
   }
@@ -463,11 +463,11 @@ void loop(void)
   if (sensors.radio == 1)
   {
     noInterrupts();
-    bool irqFlag = clearTX;
+    bool irqFlag = clearTx;
     interrupts();
     if (irqFlag)
     {
-      clearFlagsSX127X();
+      clearFlagsSx127x();
     }
   }
 
@@ -640,7 +640,7 @@ void loop(void)
     }
   }
   // update the GNSS values
-  radio.satNum = (uint8_t)GPS.satellites.value();
+  radioTelemetry.satNum = (uint8_t)GPS.satellites.value();
   if (micros() - gnss.timeLastFix > 2000000UL && !events.postFlight)
   {
     gnss.fix = 0;
@@ -653,11 +653,11 @@ void loop(void)
     gnss.fix = 1;
     gnss.sdWrite = true;
     gnss.alt = (GPS.altitude.meters() - baro.baseAlt);
-    radio.GPSalt = (int16_t)gnss.alt;
+    radioTelemetry.gpsAlt = (int16_t)gnss.alt;
     // capture max GPS alt
-    if (radio.GPSalt > gnss.maxAlt)
+    if (radioTelemetry.gpsAlt > gnss.maxAlt)
     {
-      gnss.maxAlt = radio.GPSalt;
+      gnss.maxAlt = radioTelemetry.gpsAlt;
     }
     gnss.latitude = GPS.location.lat();
     gnss.longitude = GPS.location.lng();
@@ -749,7 +749,7 @@ void parseBeep(uint32_t value, uint8_t array[], uint8_t arrayLen)
   }
 } // end void
 
-void clearIRQ() { clearTX = true; }
+void clearIrq() { clearTx = true; }
 
 void timerBuildPkt() { buildPkt = true; }
 

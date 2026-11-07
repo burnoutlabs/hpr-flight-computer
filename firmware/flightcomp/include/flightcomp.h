@@ -21,6 +21,6 @@ extern PWMServo servos[8];
 
 void loop(void);
 void parseBeep(uint32_t value, uint8_t array[], uint8_t arrayLen);
-void clearIRQ();
+void clearIrq();
 void timerBuildPkt();
 void timerSyncPkt();

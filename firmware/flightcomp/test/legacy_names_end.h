@@ -20,7 +20,9 @@
 #undef baroID
 #undef beep_counter
 #undef beep_delay
+#undef beginRFD900
 #undef beginSD
+#undef beginSX127X
 #undef Booster_Apogee
 #undef Booster_Burnout
 #undef Booster_Preflight
@@ -73,6 +75,7 @@
 #undef NoFire_Alt_Limit
 #undef NoFire_Rotn_Limit
 #undef NoFire_RotnAlt_Limit
+#undef packetnum
 #undef parseEEPROMsettingsSD
 #undef Preflight
 #undef pyroPWM
@@ -87,6 +90,8 @@
 #undef rotnOK
 #undef SD_CS
 #undef sdCSpin
+#undef sendPktRFD900
+#undef sendPktSX127X
 #undef sensorsOK
 #undef Separation
 #undef servo1pin
@@ -101,7 +106,11 @@
 #undef servo6pin
 #undef servo7pin
 #undef servo8pin
+#undef setFreqSX127X
+#undef setPwrSX127X
+#undef setRadioPWR
 #undef sizeHighGfilter
+#undef sleepSX127X
 #undef Sustainer_Burnout
 #undef Sustainer_Ignition
 #undef syncSD

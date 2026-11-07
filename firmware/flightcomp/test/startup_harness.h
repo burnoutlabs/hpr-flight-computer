@@ -407,17 +407,17 @@ LOGGED_GET(getLPS25H, feedBaro)
 LOGGED_BEGIN(beginExternalBaro)
 LOGGED_GET(getExternalBaro, feedBaro)
 // radios
-LOGGED_BEGIN(beginSX127X)
-LOGGED_BEGIN(beginRFD900)
+LOGGED_BEGIN(beginSx127x)
+LOGGED_BEGIN(beginRfd900)
 LOGGED_BEGIN(beginExternalRadio)
-bool setFreqSX127X(float freq)
+bool setFreqSx127x(float freq)
 {
-  logIo("setFreqSX127X " + fmtArg(freq));
+  logIo("setFreqSx127x " + fmtArg(freq));
   return true;
 }
-bool setPwrSX127X(int8_t pwr)
+bool setPwrSx127x(int8_t pwr)
 {
-  logIo("setPwrSX127X " + fmtArg(pwr));
+  logIo("setPwrSx127x " + fmtArg(pwr));
   return true;
 }
 bool setExternalRadioFreq(float freq)
@@ -430,16 +430,16 @@ bool setExternalRadioPwr(int8_t pwr)
   logIo("setExternalRadioPwr " + fmtArg(pwr));
   return true;
 }
-LOGGED_VOID(sleepSX127X)
+LOGGED_VOID(sleepSx127x)
 LOGGED_VOID(externalRadioSleep)
-bool sendPktSX127X(uint8_t *, uint8_t)
+bool sendPktSx127x(uint8_t *, uint8_t)
 {
-  logIo("sendPktSX127X");
+  logIo("sendPktSx127x");
   return true;
 }
-bool sendPktRFD900(uint8_t *, uint8_t)
+bool sendPktRfd900(uint8_t *, uint8_t)
 {
-  logIo("sendPktRFD900");
+  logIo("sendPktRfd900");
   return true;
 }
 bool sendExternalRadioDataPkt(uint8_t *, uint8_t)

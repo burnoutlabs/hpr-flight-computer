@@ -7,7 +7,7 @@
 #include <Arduino.h>
 
 void beginTelemetry();
-void buildTelmetryPkt();
+void buildTelemetryPkt();
 void sendTelemetryPkt();
-void hopTXfreq();
+void hopTxFreq();
 void syncPkt();

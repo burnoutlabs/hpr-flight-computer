@@ -24,16 +24,16 @@
 //----------------------------
 // LIST OF FUNCTIONS & ROUTINES
 //----------------------------
-// beginSX127X(): starts the radio
-// setPwrSX127X(): sets the power in dBm
-// sendPktSX127X(): sends the packet
-// setFreqSX127X(): sets the radio frequency
-// setModeSX127X(): sets the radio mode
-// sleepSX127X(): sets radio to sleep as an independent command
-// clearFlagsSX127X(): clears the interrupt flags
-// config70cmSX127X(): configures for 70cm frequency band
+// beginSx127x(): starts the radio
+// setPwrSx127x(): sets the power in dBm
+// sendPktSx127x(): sends the packet
+// setFreqSx127x(): sets the radio frequency
+// setModeSx127x(): sets the radio mode
+// sleepSx127x(): sets radio to sleep as an independent command
+// clearFlagsSx127x(): clears the interrupt flags
+// config70cmSx127x(): configures for 70cm frequency band
 
-bool beginSX127X()
+bool beginSx127x()
 {
 
   radioBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
@@ -48,7 +48,7 @@ bool beginSX127X()
 
   // Set interrupts
   pinMode(pins.radioIrq, INPUT);
-  attachInterrupt(digitalPinToInterrupt(pins.radioIrq), clearIRQ, RISING);
+  attachInterrupt(digitalPinToInterrupt(pins.radioIrq), clearIrq, RISING);
 
   // reset radio
   digitalWrite(pins.radioCs, HIGH);
@@ -59,20 +59,20 @@ bool beginSX127X()
   digitalWrite(pins.radioRst, HIGH);
   delay(10);
 
-#define RegOpMode 0x01
-#define RegPreambleMsb 0x20
-#define RegPreambleLsb 0x21
-#define RegModemConfig1 0x1D
-#define RegModemConfig2 0x1E
-#define RegModemConfig3 0x26
+#define REG_OP_MODE 0x01
+#define REG_PREAMBLE_MSB 0x20
+#define REG_PREAMBLE_LSB 0x21
+#define REG_MODEM_CONFIG1 0x1D
+#define REG_MODEM_CONFIG2 0x1E
+#define REG_MODEM_CONFIG3 0x26
   uint8_t radioSetMode;
 
   // set radio to sleep mode
-  write8(RegOpMode, SleepMode);
+  write8(REG_OP_MODE, SLEEP_MODE);
   radioMode = 0;
   delay(10);
-  debugVal = read8(RegOpMode);
-  if (debugVal != SleepMode)
+  debugVal = read8(REG_OP_MODE);
+  if (debugVal != SLEEP_MODE)
   {
     Serial.print("Set Sleep Mode Failed: ");
     Serial.println(debugVal, BIN);
@@ -80,11 +80,11 @@ bool beginSX127X()
   }
 
   // set radio to Long Range Mode
-  radioSetMode = LoRaMode;
-  write8(RegOpMode, radioSetMode);
+  radioSetMode = LORA_MODE;
+  write8(REG_OP_MODE, radioSetMode);
   radioMode = 1;
   delay(10);
-  debugVal = read8(RegOpMode);
+  debugVal = read8(REG_OP_MODE);
   if (debugVal != radioSetMode)
   {
     Serial.print("Set LoRa Mode Failed: ");
@@ -94,9 +94,9 @@ bool beginSX127X()
 
   // configure the modem to 125kHz bw, 4/5 cr, explicit header
   uint8_t modemConfig = 0b01110010;
-  write8(RegModemConfig1, modemConfig);
+  write8(REG_MODEM_CONFIG1, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig1);
+  debugVal = read8(REG_MODEM_CONFIG1);
   if (debugVal != modemConfig)
   {
     Serial.print("Config1 Failed: ");
@@ -106,9 +106,9 @@ bool beginSX127X()
 
   // configure the modem to sf7, normal TX mode, CRC on, RX MSB 0
   modemConfig = 0b01110100;
-  write8(RegModemConfig2, modemConfig);
+  write8(REG_MODEM_CONFIG2, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig2);
+  debugVal = read8(REG_MODEM_CONFIG2);
   if (debugVal != modemConfig)
   {
     Serial.print("Config2 Failed: ");
@@ -118,9 +118,9 @@ bool beginSX127X()
 
   // Set the Automatic Gain Control (AGC)
   modemConfig = 0x04;
-  write8(RegModemConfig3, modemConfig);
+  write8(REG_MODEM_CONFIG3, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig3);
+  debugVal = read8(REG_MODEM_CONFIG3);
   if (debugVal != modemConfig)
   {
     Serial.print("Config3 Failed: ");
@@ -136,12 +136,12 @@ bool beginSX127X()
     byte bytes[2];
   } intUnion;
   intUnion.val = preambleLength;
-  write8(RegPreambleLsb, intUnion.bytes[0]);
-  write8(RegPreambleMsb, intUnion.bytes[1]);
+  write8(REG_PREAMBLE_LSB, intUnion.bytes[0]);
+  write8(REG_PREAMBLE_MSB, intUnion.bytes[1]);
   delay(10);
-  debugVal = read8(RegPreambleLsb);
+  debugVal = read8(REG_PREAMBLE_LSB);
   intUnion.bytes[0] = debugVal;
-  debugVal = read8(RegPreambleMsb);
+  debugVal = read8(REG_PREAMBLE_MSB);
   intUnion.bytes[1] = debugVal;
   if (intUnion.val != preambleLength)
   {
@@ -151,10 +151,10 @@ bool beginSX127X()
   }
 
 // Set the FIFO buffer to the start
-#define RegFifoTxBase 0x0E
-  write8(RegFifoTxBase, 0x00);
+#define REG_FIFO_TX_BASE 0x0E
+  write8(REG_FIFO_TX_BASE, 0x00);
   delay(10);
-  debugVal = read8(RegFifoTxBase);
+  debugVal = read8(REG_FIFO_TX_BASE);
   if (debugVal != 0x00)
   {
     Serial.print("Set FIFO TX Base Failed: ");
@@ -162,10 +162,10 @@ bool beginSX127X()
   }
 
 // Set the FIFO Rx Buffer base address to the start
-#define RegFifoRxBase 0x0F
-  write8(RegFifoRxBase, 0x00);
+#define REG_FIFO_RX_BASE 0x0F
+  write8(REG_FIFO_RX_BASE, 0x00);
   delay(10);
-  debugVal = read8(RegFifoRxBase);
+  debugVal = read8(REG_FIFO_RX_BASE);
   if (debugVal != 0x00)
   {
     Serial.print("Set FIFO RX Base Failed: ");
@@ -173,11 +173,11 @@ bool beginSX127X()
   }
 
   // Set radio to Standby Mode
-  radioSetMode = StandbyMode;
-  write8(RegOpMode, radioSetMode);
+  radioSetMode = STANDBY_MODE;
+  write8(REG_OP_MODE, radioSetMode);
   delay(10);
-  debugVal = read8(RegOpMode);
-  if (debugVal != (LoRaMode | radioSetMode))
+  debugVal = read8(REG_OP_MODE);
+  if (debugVal != (LORA_MODE | radioSetMode))
   {
     Serial.print("Set Standby Mode Failed: ");
     Serial.println(debugVal, BIN);
@@ -185,10 +185,10 @@ bool beginSX127X()
   }
 
 // Set DIO0 to fire when transmit is complete
-#define RegDioMapping1 0x40
-  write8(RegDioMapping1, 0x40);
+#define REG_DIO_MAPPING1 0x40
+  write8(REG_DIO_MAPPING1, 0x40);
   delay(10);
-  debugVal = read8(RegDioMapping1);
+  debugVal = read8(REG_DIO_MAPPING1);
   if (debugVal != 0x40)
   {
     Serial.print("Set DIO0 Failed: ");
@@ -196,15 +196,15 @@ bool beginSX127X()
   }
 
 // clear interrupts
-#define RegIrqFlags 0x12
-#define RegIrqFlagsMask 0x11
-  write8(RegIrqFlagsMask, 0x00);
-  write8(RegIrqFlags, 0xFF);
+#define REG_IRQ_FLAGS 0x12
+#define REG_IRQ_FLAGS_MASK 0x11
+  write8(REG_IRQ_FLAGS_MASK, 0x00);
+  write8(REG_IRQ_FLAGS, 0xFF);
 
   // if the frequency band is 70cm, then we need to reconfigure the radio
   if (settings.txFreq > 400.000F && settings.txFreq < 500.000F)
   {
-    if (!config70cmSX127X())
+    if (!config70cmSx127x())
     {
       successFlag = false;
     }
@@ -218,9 +218,9 @@ bool beginSX127X()
   return successFlag;
 }
 
-void sleepSX127X() { setModeSX127X(SleepMode); }
+void sleepSx127x() { setModeSx127x(SLEEP_MODE); }
 
-bool setPwrSX127X(int8_t pwr)
+bool setPwrSx127x(int8_t pwr)
 {
 
 #define regPaDac 0x4D
@@ -294,60 +294,60 @@ bool setPwrSX127X(int8_t pwr)
   return successFlag;
 }
 
-bool sendPktSX127X(uint8_t *data, uint8_t len)
+bool sendPktSx127x(uint8_t *data, uint8_t len)
 {
 
-#define RegFIFO 0x00
-#define RegOpMode 0x01
-#define RegFifoAddrPtr 0x0D
-#define RegPayloadLength 0x22
+#define REG_FIFO 0x00
+#define REG_OP_MODE 0x01
+#define REG_FIFO_ADDR_PTR 0x0D
+#define REG_PAYLOAD_LENGTH 0x22
 
   // set bus
   activeBus = &radioBus;
 
   // put radio in standby
-  write8(RegOpMode, StandbyMode);
+  write8(REG_OP_MODE, STANDBY_MODE);
   radioMode = 1;
 
   // clear flags
-  uint8_t myFlags = read8(RegIrqFlags);
+  uint8_t myFlags = read8(REG_IRQ_FLAGS);
   if (myFlags != 0x00)
   {
     Serial.print("Prior TX Error: ");
     Serial.println(myFlags);
   }
-  write8(RegIrqFlags, 0x00);
+  write8(REG_IRQ_FLAGS, 0x00);
 
   // set the FIFO pointer to start of the buffer
-  write8(RegFifoAddrPtr, 0x00);
+  write8(REG_FIFO_ADDR_PTR, 0x00);
 
   // write to FIFO
-  burstWrite(RegFIFO, data, len);
+  burstWrite(REG_FIFO, data, len);
 
   // write the payload length
-  write8(RegPayloadLength, len);
+  write8(REG_PAYLOAD_LENGTH, len);
 
   // send the packet
-  write8(RegOpMode, TXmode);
+  write8(REG_OP_MODE, TX_MODE);
 
   // set flag
-  radioFnctn = TXmode;
+  radioFunction = TX_MODE;
 
   // indicate the radio is transmitting
-  TX = true;
+  txInProgress = true;
 
   return true;
 }
 
-bool config70cmSX127X()
+bool config70cmSx127x()
 {
 
   // NOTE: the maximum allowable bandwidth on 70cm Ham band is 100kHz.  To keep the same data rate
   // we need to halve the bandwidth but increase the bitrate.  SF6 is the only way to do this,
   // but it requires a special configuration
 
-#define RegDectectOptimize 0x31
-#define RegDetectionThreshold 0x37
+#define REG_DETECT_OPTIMIZE 0x31
+#define REG_DETECTION_THRESHOLD 0x37
 
   // set bus
   activeBus = &radioBus;
@@ -355,9 +355,9 @@ bool config70cmSX127X()
 
   // configure the modem to 62.5kHz bw, 4/6 cr, implicit header
   uint8_t modemConfig = 0b01100101;
-  write8(RegModemConfig1, modemConfig);
+  write8(REG_MODEM_CONFIG1, modemConfig);
   delay(10);
-  uint8_t debugVal = read8(RegModemConfig1);
+  uint8_t debugVal = read8(REG_MODEM_CONFIG1);
   if (debugVal != modemConfig)
   {
     Serial.print("Config1 Failed: ");
@@ -367,9 +367,9 @@ bool config70cmSX127X()
 
   // configure the modem to sf6, normal TX mode, CRC on, RX MSB 0
   modemConfig = 0b01100100;
-  write8(RegModemConfig2, modemConfig);
+  write8(REG_MODEM_CONFIG2, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig2);
+  debugVal = read8(REG_MODEM_CONFIG2);
   if (debugVal != modemConfig)
   {
     Serial.print("Config2 Failed: ");
@@ -379,9 +379,9 @@ bool config70cmSX127X()
 
   // Set the bit field DetectionOptimize of register RegLoRaDetectOptimize to value "0b101"
   modemConfig = 0b11100101;
-  write8(RegDectectOptimize, modemConfig);
+  write8(REG_DETECT_OPTIMIZE, modemConfig);
   delay(10);
-  debugVal = read8(RegDectectOptimize);
+  debugVal = read8(REG_DETECT_OPTIMIZE);
   if (debugVal != modemConfig)
   {
     Serial.print("RegDectectOptimize Failed: ");
@@ -389,11 +389,11 @@ bool config70cmSX127X()
     successFlag = false;
   }
 
-  // Write 0x0C in the register RegDetectionThreshold
+  // Write 0x0C in the register REG_DETECTION_THRESHOLD
   modemConfig = 0x0C;
-  write8(RegDetectionThreshold, modemConfig);
+  write8(REG_DETECTION_THRESHOLD, modemConfig);
   delay(10);
-  debugVal = read8(RegDetectionThreshold);
+  debugVal = read8(REG_DETECTION_THRESHOLD);
   if (debugVal != modemConfig)
   {
     Serial.print("RegDetectionThreshold Failed: ");
@@ -407,7 +407,7 @@ bool config70cmSX127X()
   return successFlag;
 }
 
-bool setFreqSX127X(float freq)
+bool setFreqSx127x(float freq)
 {
 
   boolean successFlag = true;
@@ -416,7 +416,7 @@ bool setFreqSX127X(float freq)
   activeBus = &radioBus;
 
   // set mode to standby
-  write8(RegOpMode, StandbyMode);
+  write8(REG_OP_MODE, STANDBY_MODE);
 
   uint32_t frf = ((freq * 1000000.0) / 32000000) * 524288;
   union
@@ -427,20 +427,20 @@ bool setFreqSX127X(float freq)
 
   ulongUnion.val = frf;
 
-#define RegFrfMsb 0x06
-#define RegFrfMid 0x07
-#define RegFrfLsb 0x08
+#define REG_FRF_MSB 0x06
+#define REG_FRF_MID 0x07
+#define REG_FRF_LSB 0x08
 
-  write8(RegFrfMsb, ulongUnion.bytes[2]);
-  write8(RegFrfMid, ulongUnion.bytes[1]);
-  write8(RegFrfLsb, ulongUnion.bytes[0]);
+  write8(REG_FRF_MSB, ulongUnion.bytes[2]);
+  write8(REG_FRF_MID, ulongUnion.bytes[1]);
+  write8(REG_FRF_LSB, ulongUnion.bytes[0]);
 
   // delay(10);
 
   // read back the frequency
-  ulongUnion.bytes[2] = read8(RegFrfMsb);
-  ulongUnion.bytes[1] = read8(RegFrfMid);
-  ulongUnion.bytes[0] = read8(RegFrfLsb);
+  ulongUnion.bytes[2] = read8(REG_FRF_MSB);
+  ulongUnion.bytes[1] = read8(REG_FRF_MID);
+  ulongUnion.bytes[0] = read8(REG_FRF_LSB);
 
   if (ulongUnion.val != frf)
   {
@@ -452,24 +452,24 @@ bool setFreqSX127X(float freq)
   return successFlag;
 }
 
-bool setModeSX127X(uint8_t mode)
+bool setModeSx127x(uint8_t mode)
 {
 
-#define RegOpMode 0x01
-#define RegDioMapping1 0x40
+#define REG_OP_MODE 0x01
+#define REG_DIO_MAPPING1 0x40
 
   // set bus
   activeBus = &radioBus;
 
   // set radio mode
-  write8(RegOpMode, mode);
+  write8(REG_OP_MODE, mode);
   radioMode = mode;
 
   delay(1);
 
   // check mode
-  uint8_t val = read8(RegOpMode);
-  if (val != (LoRaMode | mode))
+  uint8_t val = read8(REG_OP_MODE);
+  if (val != (LORA_MODE | mode))
   {
     Serial.print("Set Mode Failed: ");
     Serial.println(val, HEX);
@@ -477,34 +477,34 @@ bool setModeSX127X(uint8_t mode)
   }
 
   // set the IRQ to fire on TX sent
-  if (mode == TXmode)
+  if (mode == TX_MODE)
   {
-    write8(RegDioMapping1, 0x40);
-    radioFnctn = TXmode;
+    write8(REG_DIO_MAPPING1, 0x40);
+    radioFunction = TX_MODE;
   }
 
   // set the IRQ to fire on RX complete
-  if (mode == RXmode)
+  if (mode == RX_MODE)
   {
-    write8(RegDioMapping1, 0x00);
-    radioFnctn = RXmode;
+    write8(REG_DIO_MAPPING1, 0x00);
+    radioFunction = RX_MODE;
   }
 
   return true;
 }
 
-void clearFlagsSX127X()
+void clearFlagsSx127x()
 {
 
-  uint32_t TXtime;
-  TXtime = micros() - TXstartTime;
-  TX = false;
+  uint32_t txTime;
+  txTime = micros() - txStartTime;
+  txInProgress = false;
 
   // set bus
   activeBus = &radioBus;
 
   // read the IRQ flags
-  uint8_t debugVal = read8(RegIrqFlags);
+  uint8_t debugVal = read8(REG_IRQ_FLAGS);
 
   if (radioDebug && settings.testMode)
   {
@@ -513,7 +513,7 @@ void clearFlagsSX127X()
       Serial.print(", TX Done: ");
       Serial.print(debugVal, HEX);
       Serial.print(", TX Time: ");
-      Serial.println(TXtime);
+      Serial.println(txTime);
     }
     else
     {
@@ -523,12 +523,12 @@ void clearFlagsSX127X()
   }
 
   // clear flag
-  write8(RegIrqFlags, 0xFF);
+  write8(REG_IRQ_FLAGS, 0xFF);
 
   // set the radio code
   radioMode = 1;
 
   noInterrupts();
-  clearTX = false;
+  clearTx = false;
   interrupts();
 }

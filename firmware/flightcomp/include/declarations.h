@@ -476,7 +476,7 @@ alignas(4) extern PinMap pins;
 //-----------------------------------------
 alignas(4) extern uint8_t dataPacket[256];
 extern bool liftoffSync;
-extern unsigned long TXstartTime;
+extern unsigned long txStartTime;
 extern bool implicitHdr;
 extern bool syncFreq;
 extern uint8_t pktPosn;
@@ -484,10 +484,10 @@ extern uint8_t pktSize;
 extern uint16_t sampNum;
 extern uint8_t packetSamples;
 extern bool gpsTransmit;
-extern bool TX;
+extern bool txInProgress;
 extern bool sdRadioTx;
 extern uint8_t radioMode;
-extern volatile boolean clearTX;
+extern volatile boolean clearTx;
 extern volatile boolean buildPkt;
 extern volatile boolean syncFlag;
 extern bool sendPkt;
@@ -501,7 +501,7 @@ struct PacketIntervals
 extern PacketIntervals pktInterval;
 struct RadioTelemetry
 {
-  int16_t packetnum = 0;
+  int16_t packetNum = 0;
   uint8_t event = 0;
   uint16_t fltTime = 0;
   int16_t baseAlt = 0;
@@ -512,14 +512,14 @@ struct RadioTelemetry
   int16_t offVert = 0;
   int16_t maxAlt = 0;
   int16_t maxVel = 0;
-  int16_t maxGPSalt = 0;
+  int16_t maxGpsAlt = 0;
   int16_t maxG = 0;
-  int16_t GPSalt = 0;
+  int16_t gpsAlt = 0;
   uint8_t satNum = 0;
   bool pktCallsign = false;
   uint32_t lastSampTime = 0UL;
 };
-extern RadioTelemetry radio;
+extern RadioTelemetry radioTelemetry;
 //-----------------------------------------
 // continuity Booleans
 //-----------------------------------------
@@ -824,20 +824,20 @@ enum FlightCode
   BOOSTER_POWER_LOSS = 32
 };
 //--------------------------------------------
-// Radio operating modes (RegOpMode)
+// Radio operating modes (REG_OP_MODE)
 //--------------------------------------------
-enum radioCodes
+enum RadioCode
 {
-  SleepMode = 0x00,
-  StandbyMode = 0x01,
-  TXmode = 0x03,
-  RXmode = 0x05,
-  CADmode = 0x07,
-  LoRaMode = 0x80,
-  LowFrqMode = 0x08, // LowFrq mode enables registers below 860MHz
-  writeMask = 0x80
+  SLEEP_MODE = 0x00,
+  STANDBY_MODE = 0x01,
+  TX_MODE = 0x03,
+  RX_MODE = 0x05,
+  CAD_MODE = 0x07,
+  LORA_MODE = 0x80,
+  LOW_FRQ_MODE = 0x08, // LowFrq mode enables registers below 860MHz
+  WRITE_MASK = 0x80
 };
-extern uint8_t radioFnctn;
+extern uint8_t radioFunction;
 //--------------------------------------------
 // Function Pointers
 //--------------------------------------------
@@ -893,7 +893,7 @@ extern void (*getHighG)();
  */
 extern void (*getBaro)();
 extern bool (*setRadioFreq)(float freq);
-extern bool (*setRadioPWR)(int8_t pwr);
+extern bool (*setRadioPwr)(int8_t pwr);
 extern void (*radioSleep)();
 extern bool (*radioSendPkt)(uint8_t *data, uint8_t len);
 extern void (*GNSSrestorDefaults)();

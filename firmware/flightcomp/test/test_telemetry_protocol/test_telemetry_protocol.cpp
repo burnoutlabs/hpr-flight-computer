@@ -29,7 +29,7 @@ static int channelOf(float freq)
 {
   for (int i = 0; i < FHSS_CHANNELS; i++)
   {
-    if (fhssChannelMHz[i] == freq)
+    if (FHSS_CHANNEL_MHZ[i] == freq)
     {
       return i;
     }
@@ -159,9 +159,9 @@ void test_sync_round_trip_names_the_next_hop()
     TEST_ASSERT_TRUE(callsignMatches(sent[i].bytes, sent[i].len, CALLSIGN));
     SyncPacket p;
     TEST_ASSERT_TRUE(decodeSync(sent[i].bytes, sent[i].len, p));
-    TEST_ASSERT_TRUE(sent[i].freq == fhssChannelMHz[hail]);
+    TEST_ASSERT_TRUE(sent[i].freq == FHSS_CHANNEL_MHZ[hail]);
     TEST_ASSERT_EQUAL_INT(channelOf(sent[i - 1].freq), p.currentChannel);
-    TEST_ASSERT_EQUAL_INT(hopSequence[p.nextHop], channelOf(sent[i + 1].freq));
+    TEST_ASSERT_EQUAL_INT(HOP_SEQUENCE[p.nextHop], channelOf(sent[i + 1].freq));
     syncs++;
   }
   TEST_ASSERT_EQUAL_INT(3, syncs); // the last one ends the scenario
@@ -193,7 +193,7 @@ void test_receiver_following_the_hop_sequence_lands_on_every_hop()
     {
       continue; // sync on the hail channel, or another packet on the same hop
     }
-    TEST_ASSERT_EQUAL_INT(hopSequence[hop], channelOf(sent[i].freq));
+    TEST_ASSERT_EQUAL_INT(HOP_SEQUENCE[hop], channelOf(sent[i].freq));
     hop = nextHopIndex(hop, hail);
     lastData = sent[i].freq;
     hops++;
@@ -238,7 +238,7 @@ void test_channel_list_is_902_1_to_927_9_in_200khz_steps()
 {
   for (int i = 0; i < FHSS_CHANNELS; i++)
   {
-    TEST_ASSERT_FLOAT_WITHIN(1e-4, 902.1 + 0.2 * i, fhssChannelMHz[i]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-4, 902.1 + 0.2 * i, FHSS_CHANNEL_MHZ[i]);
   }
 }
 
@@ -246,16 +246,16 @@ void test_hop_sequence_stays_in_the_channel_list()
 {
   for (int i = 0; i < HOP_SEQUENCE_LENGTH; i++)
   {
-    TEST_ASSERT_TRUE(hopSequence[i] < FHSS_CHANNELS);
+    TEST_ASSERT_TRUE(HOP_SEQUENCE[i] < FHSS_CHANNELS);
   }
 }
 
 void test_next_hop_index_wraps_and_skips_the_hail_channel()
 {
   TEST_ASSERT_EQUAL_INT16(2, nextHopIndex(1, 200));                       // no channel 200: no skip
-  TEST_ASSERT_EQUAL_INT16(3, nextHopIndex(1, hopSequence[2]));            // skips one entry
+  TEST_ASSERT_EQUAL_INT16(3, nextHopIndex(1, HOP_SEQUENCE[2]));            // skips one entry
   TEST_ASSERT_EQUAL_INT16(0, nextHopIndex(HOP_SEQUENCE_LENGTH - 1, 200)); // wraps
-  TEST_ASSERT_EQUAL_INT16(1, nextHopIndex(HOP_SEQUENCE_LENGTH - 1, hopSequence[0]));
+  TEST_ASSERT_EQUAL_INT16(1, nextHopIndex(HOP_SEQUENCE_LENGTH - 1, HOP_SEQUENCE[0]));
 }
 
 // #13: the hailing channel is the configured frequency's own channel.
@@ -263,7 +263,7 @@ void test_hail_channel_of_each_channel_frequency_is_that_channel()
 {
   for (int i = 0; i < FHSS_CHANNELS; i++)
   {
-    TEST_ASSERT_EQUAL_UINT8(i, hailChannel(fhssChannelMHz[i]));
+    TEST_ASSERT_EQUAL_UINT8(i, hailChannel(FHSS_CHANNEL_MHZ[i]));
   }
 }
 

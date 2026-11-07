@@ -66,11 +66,11 @@ static bool stubRadioSendPkt(uint8_t *data, uint8_t len)
 static void telemetryTick()
 {
   buildPkt = true;
-  buildTelmetryPkt();
+  buildTelemetryPkt();
   if (sendPkt)
   {
     sendTelemetryPkt();
-    TX = false; // the TX-done interrupt
+    txInProgress = false; // the TX-done interrupt
   }
   if (syncFreq)
   {
@@ -81,16 +81,16 @@ static void telemetryTick()
 // Returns the telemetry module and the globals it reads to their start-up values.
 static void resetTelemetryState()
 {
-  FHSS.hopNow = true;
-  FHSS.hopNum = 0;
-  FHSS.nextHop = 1;
-  FHSS.currentChnl = 0;
-  FHSS.nextChnl = 0;
-  FHSS.pktNum = 0;
-  FHSS.gndPktNum = 0;
-  FHSS.hailChnl = 0;
+  fhssState.hopNow = true;
+  fhssState.hopNum = 0;
+  fhssState.nextHop = 1;
+  fhssState.currentChnl = 0;
+  fhssState.nextChnl = 0;
+  fhssState.pktNum = 0;
+  fhssState.gndPktNum = 0;
+  fhssState.hailChnl = 0;
   memset(dataPacket, 0, sizeof(dataPacket));
-  radio = RadioTelemetry();
+  radioTelemetry = RadioTelemetry();
   events = EventList();
   sampNum = 0;
   packetSamples = 4;
@@ -100,7 +100,7 @@ static void resetTelemetryState()
   syncFlag = false;
   sendPkt = false;
   buildPkt = false;
-  TX = false;
+  txInProgress = false;
   radioDebug = false;
   settings.testMode = false;
   sentCount = 0;
@@ -124,14 +124,14 @@ static void runTelemetryScenario(bool fhss, float txFreq)
 
   // Preflight
   events.preLiftoff = true;
-  radio.event = 0;
+  radioTelemetry.event = 0;
   gnss.fix = 1;
   cont.reportCode = 6;
-  radio.baseAlt = -123;
+  radioTelemetry.baseAlt = -123;
   for (int i = 0; i < 5; i++)
   {
-    radio.GPSalt = (int16_t)(1234 + i);
-    radio.satNum = (uint8_t)(7 + i);
+    radioTelemetry.gpsAlt = (int16_t)(1234 + i);
+    radioTelemetry.satNum = (uint8_t)(7 + i);
     GPS.location.latitude = 34.123456 + i * 0.0001;
     GPS.location.longitude = -117.654321 - i * 0.0001;
     telemetryTick();
@@ -145,13 +145,13 @@ static void runTelemetryScenario(bool fhss, float txFreq)
   sampNum = 0;
   for (int s = 0; s < 13 * 4; s++)
   {
-    radio.event = (uint8_t)(s < 20 ? 1 : (s < 40 ? 2 : 3));
-    radio.vel = (int16_t)(s * 37 - 300);
-    radio.alt = (int16_t)(s * 113 - 50);
+    radioTelemetry.event = (uint8_t)(s < 20 ? 1 : (s < 40 ? 2 : 3));
+    radioTelemetry.vel = (int16_t)(s * 37 - 300);
+    radioTelemetry.alt = (int16_t)(s * 113 - 50);
     rollZ = s * 29 - 700;
     offVert = s * 7;
     accelNow = 9.80665F * (s % 9) - 20.0F;
-    radio.GPSalt = (int16_t)(1300 + s * 11);
+    radioTelemetry.gpsAlt = (int16_t)(1300 + s * 11);
     GPS.location.latitude = 34.123456 + s * 0.00001;
     GPS.location.longitude = -117.654321 + s * 0.00002;
     telemetryTick();
@@ -161,14 +161,14 @@ static void runTelemetryScenario(bool fhss, float txFreq)
   // Postflight; the touchdown timer asks for a sync packet after each one
   events.inFlight = false;
   events.postFlight = true;
-  radio.event = 27;
-  radio.maxAlt = 4321;
-  radio.maxVel = 876;
-  radio.maxG = -1234;
-  radio.maxGPSalt = 4300;
+  radioTelemetry.event = 27;
+  radioTelemetry.maxAlt = 4321;
+  radioTelemetry.maxVel = 876;
+  radioTelemetry.maxG = -1234;
+  radioTelemetry.maxGpsAlt = 4300;
   for (int i = 0; i < 2; i++)
   {
-    radio.GPSalt = (int16_t)(1240 - i);
+    radioTelemetry.gpsAlt = (int16_t)(1240 - i);
     GPS.location.latitude = 34.2 + i * 0.001;
     GPS.location.longitude = -117.7 - i * 0.001;
     telemetryTick();

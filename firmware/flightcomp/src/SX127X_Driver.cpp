@@ -41,7 +41,7 @@ bool beginSx127x()
   radioBus.writeMask = 0x80;
   radioBus.readMask = 0x00;
   radioBus.incMask = 0x00;
-  startSPI(&radioBus, sensors.radioBusNum);
+  startSpi(&radioBus, sensors.radioBusNum);
 
   uint8_t debugVal;
   bool successFlag = true;

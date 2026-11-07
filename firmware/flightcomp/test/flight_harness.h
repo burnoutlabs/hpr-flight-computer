@@ -52,13 +52,13 @@ struct RecordingIo
 //-----------------------------------------
 // Sensor configuration
 //-----------------------------------------
-// LSM6DSOX at 16 g (Device_Drivers.cpp beginLSM6DSOX)
+// LSM6DSOX at 16 g (Device_Drivers.cpp beginLsm6dsox)
 constexpr float ACCEL_G_PER_COUNT = 0.000488F;
 constexpr uint32_t ACCEL_SAMPLE_US = 602;
-// H3LIS331DL at 100 g (beginH3LIS331DL)
+// H3LIS331DL at 100 g (beginH3lis331dl)
 constexpr float HIGHG_G_PER_COUNT = 0.049F;
 constexpr uint32_t HIGHG_SAMPLE_US = 1000;
-// MS5611 (beginMS56XX): one conversion per 9090 us, every 11th of them a temperature
+// MS5611 (beginMs56xx): one conversion per 9090 us, every 11th of them a temperature
 constexpr uint32_t BARO_SAMPLE_US = 9090;
 // Gyro rate on the LSM6DSOX path is read with the accelerometer
 constexpr uint32_t GYRO_SAMPLE_US = 602;
@@ -187,7 +187,7 @@ struct SensorModel
   static int16_t gyroCounts(float degPerSec) { return clampCount(degPerSec / 0.07); }
 };
 
-/** Pressure to altitude, as the MS56XX driver computes baro.rawAlt (ConvertPressMS56XX). */
+/** Pressure to altitude, as the MS56XX driver computes baro.rawAlt (convertPressMs56xx). */
 inline float baroAltitude(float pressurePa)
 {
   float pressure = pressurePa * 0.01F;

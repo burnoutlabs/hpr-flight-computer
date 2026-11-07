@@ -138,7 +138,7 @@ struct IntervalTimer
 
 struct HardwareSerial
 {
-  void begin(uint32_t baud) { logIo("HWSERIAL.begin " + std::to_string(baud)); }
+  void begin(uint32_t baud) { logIo("gnssSerial.begin " + std::to_string(baud)); }
   int available() { return 0; }
   int read() { return -1; }
 };
@@ -236,7 +236,7 @@ struct LogServo
 IntervalTimer radioTimer;
 IntervalTimer syncTimer;
 inline HardwareSerial gnssPort;
-HardwareSerial *HWSERIAL = nullptr;
+HardwareSerial *gnssSerial = nullptr;
 void timerBuildPkt() { buildPkt = true; }
 
 // parseBeep() is defined in flightcomp.cpp beside loop(), which the host does not build. Its
@@ -334,76 +334,76 @@ inline void feedBaro()
   void name() { logIo(#name); }
 
 // accelerometers (the combined ones also fill the gyro, as their drivers do)
-LOGGED_BEGIN(beginLSM303_A)
-LOGGED_GET(getLSM303_A, feedAccelAndGyro)
-LOGGED_BEGIN(beginLSM9DS1_AG)
-LOGGED_GET(getLSM9DS1_AG, feedAccelAndGyro)
-LOGGED_BEGIN(beginLSM6DS33)
-LOGGED_GET(getLSM6DS33, feedAccelAndGyro)
-LOGGED_BEGIN(beginMPU6050)
-LOGGED_GET(getMPU6050, feedAccelAndGyro)
-LOGGED_BEGIN(beginMPU9250_AG)
-LOGGED_GET(getMPU9250_AG, feedAccelAndGyro)
-LOGGED_BEGIN(beginLSM6DSOX)
-LOGGED_GET(getLSM6DSOX, feedAccelAndGyro)
-LOGGED_BEGIN(beginLSM6DS3TR)
-LOGGED_GET(getLSM6DS3TR, feedAccelAndGyro)
+LOGGED_BEGIN(beginLsm303Accel)
+LOGGED_GET(getLsm303Accel, feedAccelAndGyro)
+LOGGED_BEGIN(beginLsm9ds1AccelGyro)
+LOGGED_GET(getLsm9ds1AccelGyro, feedAccelAndGyro)
+LOGGED_BEGIN(beginLsm6ds33)
+LOGGED_GET(getLsm6ds33, feedAccelAndGyro)
+LOGGED_BEGIN(beginMpu6050)
+LOGGED_GET(getMpu6050, feedAccelAndGyro)
+LOGGED_BEGIN(beginMpu9250AccelGyro)
+LOGGED_GET(getMpu9250AccelGyro, feedAccelAndGyro)
+LOGGED_BEGIN(beginLsm6dsox)
+LOGGED_GET(getLsm6dsox, feedAccelAndGyro)
+LOGGED_BEGIN(beginLsm6ds3tr)
+LOGGED_GET(getLsm6ds3tr, feedAccelAndGyro)
 LOGGED_BEGIN(beginExternalAccel)
 LOGGED_GET(getExternalAccel, feedAccelAndGyro)
 // gyroscopes
-LOGGED_BEGIN(beginL3GD20H)
-LOGGED_GET(getL3GD20H, feedGyro)
+LOGGED_BEGIN(beginL3gd20h)
+LOGGED_GET(getL3gd20h, feedGyro)
 LOGGED_BEGIN(beginExternalGyro)
 LOGGED_GET(getExternalGyro, feedGyro)
 // high-G accelerometers
-LOGGED_BEGIN(beginADS1115)
-LOGGED_GET(getADS1115, feedHighG)
-LOGGED_BEGIN(beginH3LIS331DL)
-LOGGED_GET(getH3LIS331DL, feedHighG)
-LOGGED_BEGIN(beginADXL377)
-LOGGED_GET(getADXL377, feedHighG)
+LOGGED_BEGIN(beginAds1115)
+LOGGED_GET(getAds1115, feedHighG)
+LOGGED_BEGIN(beginH3lis331dl)
+LOGGED_GET(getH3lis331dl, feedHighG)
+LOGGED_BEGIN(beginAdxl377)
+LOGGED_GET(getAdxl377, feedHighG)
 LOGGED_BEGIN(beginExternalHighG)
 LOGGED_GET(getExternalHighG, feedHighG)
 // magnetometers
-LOGGED_BEGIN(beginLSM303_M)
-LOGGED_GET(getLSM303_M, feedMag)
-LOGGED_BEGIN(beginLSM9DS1_M)
-LOGGED_GET(getLSM9DS1_M, feedMag)
-LOGGED_BEGIN(beginLIS3MDL)
-LOGGED_GET(getLIS3MDL, feedMag)
-LOGGED_BEGIN(beginMPU9250_M)
-LOGGED_GET(getMPU9250_M, feedMag)
+LOGGED_BEGIN(beginLsm303Mag)
+LOGGED_GET(getLsm303Mag, feedMag)
+LOGGED_BEGIN(beginLsm9ds1Mag)
+LOGGED_GET(getLsm9ds1Mag, feedMag)
+LOGGED_BEGIN(beginLis3mdl)
+LOGGED_GET(getLis3mdl, feedMag)
+LOGGED_BEGIN(beginMpu9250Mag)
+LOGGED_GET(getMpu9250Mag, feedMag)
 LOGGED_BEGIN(beginExternalMag)
 LOGGED_GET(getExternalMag, feedMag)
 // barometers
-boolean beginBMP180()
+boolean beginBmp180()
 {
-  logIo("beginBMP180");
+  logIo("beginBmp180");
   return true;
 }
-LOGGED_GET(getBMP180, feedBaro)
-boolean beginMPL3115A2()
+LOGGED_GET(getBmp180, feedBaro)
+boolean beginMpl3115a2()
 {
-  logIo("beginMPL3115A2");
+  logIo("beginMpl3115a2");
   return true;
 }
-LOGGED_GET(getMPL3115A2, feedBaro)
-boolean beginBMP280()
+LOGGED_GET(getMpl3115a2, feedBaro)
+boolean beginBmp280()
 {
-  logIo("beginBMP280");
+  logIo("beginBmp280");
   return true;
 }
-LOGGED_GET(getBMP280, feedBaro)
-boolean beginBMP388()
+LOGGED_GET(getBmp280, feedBaro)
+boolean beginBmp388()
 {
-  logIo("beginBMP388");
+  logIo("beginBmp388");
   return true;
 }
-LOGGED_GET(getBMP388, feedBaro)
-LOGGED_BEGIN(beginMS56XX)
-LOGGED_GET(getMS56XX, feedBaro)
-LOGGED_BEGIN(beginLPS25H)
-LOGGED_GET(getLPS25H, feedBaro)
+LOGGED_GET(getBmp388, feedBaro)
+LOGGED_BEGIN(beginMs56xx)
+LOGGED_GET(getMs56xx, feedBaro)
+LOGGED_BEGIN(beginLps25h)
+LOGGED_GET(getLps25h, feedBaro)
 LOGGED_BEGIN(beginExternalBaro)
 LOGGED_GET(getExternalBaro, feedBaro)
 // radios
@@ -448,11 +448,11 @@ bool sendExternalRadioDataPkt(uint8_t *, uint8_t)
   return true;
 }
 // GNSS receivers
-LOGGED_VOID(UBLOXrestorDefaults)
-LOGGED_VOID(UBLOXconfig)
-LOGGED_VOID(UBLOXpowerSave)
-LOGGED_VOID(ExternalGNSSconfig)
-LOGGED_VOID(externalGNSS_PSM)
+LOGGED_VOID(ubloxRestoreDefaults)
+LOGGED_VOID(ubloxConfig)
+LOGGED_VOID(ubloxPowerSave)
+LOGGED_VOID(externalGnssConfig)
+LOGGED_VOID(externalGnssPowerSave)
 
 //-----------------------------------------
 // SD card, calibration, orientation, telemetry and bus stand-ins
@@ -531,10 +531,10 @@ void readOrientation()
   }
 }
 
-void setHWSERIAL()
+void setGnssSerial()
 {
-  logIo("setHWSERIAL " + std::to_string(sensors.gnssBusNum));
-  HWSERIAL = &gnssPort;
+  logIo("setGnssSerial " + std::to_string(sensors.gnssBusNum));
+  gnssSerial = &gnssPort;
 }
 
 //-----------------------------------------
@@ -543,7 +543,7 @@ void setHWSERIAL()
 /** What setup() can change beyond the flight globals: EEPROM, the ports, servos, clock, inputs. */
 #define STARTUP_EXTRA_OBJECTS(X) \
   X(shimEeprom.bytes)            \
-  X(HWSERIAL)                    \
+  X(gnssSerial)                    \
   X(servos)                      \
       X(shimMicrosNow) X(sensorFeed) X(boardInputs.testReads) X(boardInputs.serialPosn)
 

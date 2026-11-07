@@ -663,7 +663,7 @@ void setRtb()
   // else estimate the landing point
   // float timeToLand = (gnss.alt - settings.mainDeployAlt) / fabs(gnss.vel);//subtract out the main deployment altitude because we want it back at the launch position when the mains come out
   float distanceToLandPoint = calcGpsDist(gnss.liftoff.longitude, gnss.liftoff.latitude, gnss.longitude, gnss.latitude);
-  float gpsGroundSpeed = GPS.speed.mps();
+  float gpsGroundSpeed = gps.speed.mps();
   float landPointEst = distanceToLandPoint / gpsGroundSpeed;
   float landPointError = distanceToLandPoint - landPointEst;
 

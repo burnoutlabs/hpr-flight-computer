@@ -122,7 +122,7 @@
 #include "Telemetry.h"
 
 // GPS Setup
-TinyGPSPlus GPS;
+TinyGPSPlus gps;
 bool restoreDefaults = false;
 
 // Servo Setup
@@ -603,24 +603,24 @@ void loop(void)
   if (restoreDefaults)
   {
     Serial.println("restoring GNSS Default Settings...");
-    GNSSrestorDefaults();
+    gnssRestoreDefaults();
     restoreDefaults = false;
   }
   // 5 seconds after touchdown put GPS into Power Save Mode (PSM)
   if (!gnss.configPwrSave && (events.touchdown || events.timeOut) && micros() - fltTime.touchdown > 5000000UL)
   {
-    GNSSpowerSave();
+    gnssPowerSave();
     gnss.configPwrSave = true;
   }
   // Read from serial
-  if (HWSERIAL->available() > 0)
+  if (gnssSerial->available() > 0)
   {
-    gnss.msgRX = true;
+    gnss.msgRx = true;
   }
-  while (HWSERIAL->available() > 0)
+  while (gnssSerial->available() > 0)
   {
-    char c = HWSERIAL->read();
-    GPS.encode(c);
+    char c = gnssSerial->read();
+    gps.encode(c);
     if (settings.gpsLog && !fileClose)
     {
       updateGpsLogSd(c);
@@ -630,41 +630,41 @@ void loop(void)
       gnss.serialBuffer[gnss.serialPosn] = c;
       gnss.serialPosn++;
       // print NMEA strings to the serial buffer if needed
-      if (settings.testMode && gpsEcho && !events.liftoff && gnss.msgRX && (gnss.serialPosn >= 55))
+      if (settings.testMode && gpsEcho && !events.liftoff && gnss.msgRx && (gnss.serialPosn >= 55))
       {
         gnss.serialBuffer[gnss.serialPosn] = '\0';
         Serial.print(gnss.serialBuffer);
         gnss.serialPosn = 0;
-        gnss.msgRX = false;
+        gnss.msgRx = false;
       }
     }
   }
   // update the GNSS values
-  radioTelemetry.satNum = (uint8_t)GPS.satellites.value();
+  radioTelemetry.satNum = (uint8_t)gps.satellites.value();
   if (micros() - gnss.timeLastFix > 2000000UL && !events.postFlight)
   {
     gnss.fix = 0;
   }
   // process new GNSS position update
-  if (GPS.location.isUpdated() || GPS.altitude.isUpdated())
+  if (gps.location.isUpdated() || gps.altitude.isUpdated())
   {
     gnss.timeLastFix = micros();
     gnss.fixCount++;
     gnss.fix = 1;
     gnss.sdWrite = true;
-    gnss.alt = (GPS.altitude.meters() - baro.baseAlt);
+    gnss.alt = (gps.altitude.meters() - baro.baseAlt);
     radioTelemetry.gpsAlt = (int16_t)gnss.alt;
     // capture max GPS alt
     if (radioTelemetry.gpsAlt > gnss.maxAlt)
     {
       gnss.maxAlt = radioTelemetry.gpsAlt;
     }
-    gnss.latitude = GPS.location.lat();
-    gnss.longitude = GPS.location.lng();
+    gnss.latitude = gps.location.lat();
+    gnss.longitude = gps.location.lng();
     // configure the GPS if the fix is stable
     if (!gnss.configFlight && gnss.fixCount > 40)
     {
-      GNSSconfig();
+      gnssConfig();
       gnss.fix = 0;
       gnss.configFlight = true;
       gnss.configDefaults = false;
@@ -675,8 +675,8 @@ void loop(void)
     {
       gnss.altPosn = 0;
     }
-    gnss.vel = (GPS.altitude.meters() - gnss.altBuff[gnss.altPosn]) / ((micros() - gnss.timeBuff[gnss.altPosn]) * MILLIONTH);
-    gnss.altBuff[gnss.altPosn] = GPS.altitude.meters();
+    gnss.vel = (gps.altitude.meters() - gnss.altBuff[gnss.altPosn]) / ((micros() - gnss.timeBuff[gnss.altPosn]) * MILLIONTH);
+    gnss.altBuff[gnss.altPosn] = gps.altitude.meters();
     gnss.timeBuff[gnss.altPosn] = micros();
     // update sensor fusion velocity if descending
     if (events.apogeeFire)
@@ -686,7 +686,7 @@ void loop(void)
     // capture the GPS takeoff position and correct base altitude
     if (events.preLiftoff)
     {
-      if (GPS.altitude.meters() != 0)
+      if (gps.altitude.meters() != 0)
       {
         // Correct sea level pressure with running average of 5 samples
         // GPS altitude running average
@@ -696,8 +696,8 @@ void loop(void)
           gnss.bufferPosn = 0;
           gnss.bufferFull = true;
         }
-        gnss.altSum = gnss.altSum + GPS.altitude.meters() - gnss.avgAlt[gnss.bufferPosn];
-        gnss.avgAlt[gnss.bufferPosn] = GPS.altitude.meters();
+        gnss.altSum = gnss.altSum + gps.altitude.meters() - gnss.avgAlt[gnss.bufferPosn];
+        gnss.avgAlt[gnss.bufferPosn] = gps.altitude.meters();
         gnss.baseAlt = gnss.altSum / (float)(sizeof(gnss.avgAlt) / sizeof(gnss.avgAlt[0]));
         // barometric pressure running average
         pressurePosn++;
@@ -714,18 +714,18 @@ void loop(void)
           baro.seaLevelPressure = pressureAvg / powf((44330 - gnss.baseAlt) / 44330, 5.254861);
         }
       }
-      gnss.liftoff.latitude = GPS.location.lat();
-      gnss.liftoff.longitude = GPS.location.lng();
-      gnss.liftoff.year = GPS.date.year();
-      gnss.liftoff.month = GPS.date.month();
-      gnss.liftoff.day = GPS.date.day();
+      gnss.liftoff.latitude = gps.location.lat();
+      gnss.liftoff.longitude = gps.location.lng();
+      gnss.liftoff.year = gps.date.year();
+      gnss.liftoff.month = gps.date.month();
+      gnss.liftoff.day = gps.date.day();
     }
     // capture the last GPS position
     if (events.mainDeploy || !events.touchdown || !events.timeOut)
     {
-      gnss.touchdown.latitude = GPS.location.lat();
-      gnss.touchdown.longitude = GPS.location.lng();
-      gnss.touchdown.alt = GPS.altitude.meters();
+      gnss.touchdown.latitude = gps.location.lat();
+      gnss.touchdown.longitude = gps.location.lng();
+      gnss.touchdown.alt = gps.altitude.meters();
     }
   }
 

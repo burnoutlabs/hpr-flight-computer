@@ -37,7 +37,7 @@
   X(sampleTime) X(sampleStart) X(sampleTimeCheck) X(debugTimer) X(radioFunction) X(beginAccel) \
   X(beginGyro) X(beginMag) X(beginHighG) X(beginBaro) X(beginRadio) X(getAccel) X(getGyro) \
   X(getMag) X(getHighG) X(getBaro) X(setRadioFreq) X(setRadioPwr) X(radioSleep) X(radioSendPkt) \
-  X(GNSSrestorDefaults) X(GNSSconfig) X(GNSSpowerSave) X(quat) X(prevRollZ) X(quatRollZ) \
+  X(gnssRestoreDefaults) X(gnssConfig) X(gnssPowerSave) X(quat) X(prevRollZ) X(quatRollZ) \
   X(fullRollZ) X(rawX) X(rawY) X(rawZ) X(cosZ) X(sinZ) \
   X(rollError) X(pitchError) X(yawError) X(rollPosn)
 

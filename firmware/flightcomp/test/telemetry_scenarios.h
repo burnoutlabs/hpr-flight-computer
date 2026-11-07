@@ -24,7 +24,7 @@
 #include "../src/globals.cpp"
 
 // Objects that flightcomp.cpp defines and the sources under test use.
-TinyGPSPlus GPS;
+TinyGPSPlus gps;
 PWMServo servos[8];
 
 #include "../src/Telemetry.cpp"
@@ -132,8 +132,8 @@ static void runTelemetryScenario(bool fhss, float txFreq)
   {
     radioTelemetry.gpsAlt = (int16_t)(1234 + i);
     radioTelemetry.satNum = (uint8_t)(7 + i);
-    GPS.location.latitude = 34.123456 + i * 0.0001;
-    GPS.location.longitude = -117.654321 - i * 0.0001;
+    gps.location.latitude = 34.123456 + i * 0.0001;
+    gps.location.longitude = -117.654321 - i * 0.0001;
     telemetryTick();
     shimAdvanceMicros(1000000UL);
   }
@@ -152,8 +152,8 @@ static void runTelemetryScenario(bool fhss, float txFreq)
     offVert = s * 7;
     accelNow = 9.80665F * (s % 9) - 20.0F;
     radioTelemetry.gpsAlt = (int16_t)(1300 + s * 11);
-    GPS.location.latitude = 34.123456 + s * 0.00001;
-    GPS.location.longitude = -117.654321 + s * 0.00002;
+    gps.location.latitude = 34.123456 + s * 0.00001;
+    gps.location.longitude = -117.654321 + s * 0.00002;
     telemetryTick();
     shimAdvanceMicros(50000UL);
   }
@@ -169,8 +169,8 @@ static void runTelemetryScenario(bool fhss, float txFreq)
   for (int i = 0; i < 2; i++)
   {
     radioTelemetry.gpsAlt = (int16_t)(1240 - i);
-    GPS.location.latitude = 34.2 + i * 0.001;
-    GPS.location.longitude = -117.7 - i * 0.001;
+    gps.location.latitude = 34.2 + i * 0.001;
+    gps.location.longitude = -117.7 - i * 0.001;
     telemetryTick();
     shimAdvanceMicros(10000000UL);
   }

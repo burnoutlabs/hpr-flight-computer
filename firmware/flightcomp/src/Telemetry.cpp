@@ -142,8 +142,8 @@ void buildTelemetryPkt()
     memcpy(pkt.rocketName, settings.rocketName, sizeof(pkt.rocketName));
     pkt.baseAlt = radioTelemetry.baseAlt;
     pkt.gpsAlt = radioTelemetry.gpsAlt;
-    pkt.latitude = GPS.location.lat();
-    pkt.longitude = GPS.location.lng();
+    pkt.latitude = gps.location.lat();
+    pkt.longitude = gps.location.lng();
     pkt.satNum = radioTelemetry.satNum;
 
     // send the packet
@@ -225,7 +225,7 @@ void buildTelemetryPkt()
       // update packet number
       radioTelemetry.packetNum++;
       // packet number and GPS data
-      pktSize = telemetry::encodeInflightTrailer(dataPacket, radioTelemetry.packetNum, radioTelemetry.gpsAlt, GPS.location.lat(), GPS.location.lng());
+      pktSize = telemetry::encodeInflightTrailer(dataPacket, radioTelemetry.packetNum, radioTelemetry.gpsAlt, gps.location.lat(), gps.location.lng());
 
       // send packet
       sendPkt = true;
@@ -276,8 +276,8 @@ void buildTelemetryPkt()
     pkt.maxGpsAlt = radioTelemetry.maxGpsAlt;
     pkt.gnssFix = gnss.fix;
     pkt.gpsAlt = radioTelemetry.gpsAlt;
-    pkt.latitude = GPS.location.lat();
-    pkt.longitude = GPS.location.lng();
+    pkt.latitude = gps.location.lat();
+    pkt.longitude = gps.location.lng();
 
     // send the packet
     sendPkt = true;

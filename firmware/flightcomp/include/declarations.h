@@ -694,7 +694,7 @@ const char CSV_SEPARATOR = ',';
 //-----------------------------------------
 // GNSS Variables
 //-----------------------------------------
-struct eventData
+struct EventData
 {
   float latitude;
   float longitude;
@@ -705,7 +705,7 @@ struct eventData
   uint8_t hour;
   uint8_t minute;
   uint8_t second;
-  uint8_t mili;
+  uint8_t centisecond;
 };
 struct GnssData
 {
@@ -722,9 +722,9 @@ struct GnssData
   float altSum = 0.0;
   uint8_t bufferPosn = 0;
   uint8_t altPosn = 0;
-  eventData liftoff;
-  eventData apogee;
-  eventData touchdown;
+  EventData liftoff;
+  EventData apogee;
+  EventData touchdown;
   uint8_t fix = 0;
   uint16_t fixCount = 0;
   unsigned long timeLastFix = 0UL;
@@ -735,7 +735,7 @@ struct GnssData
   // GPS Global variables
   uint8_t serialPosn = 0;
   char serialBuffer[60] = "";
-  bool msgRX = false;
+  bool msgRx = false;
 };
 extern GnssData gnss;
 //-----------------------------------------
@@ -896,6 +896,6 @@ extern bool (*setRadioFreq)(float freq);
 extern bool (*setRadioPwr)(int8_t pwr);
 extern void (*radioSleep)();
 extern bool (*radioSendPkt)(uint8_t *data, uint8_t len);
-extern void (*GNSSrestorDefaults)();
-extern void (*GNSSconfig)();
-extern void (*GNSSpowerSave)();
+extern void (*gnssRestoreDefaults)();
+extern void (*gnssConfig)();
+extern void (*gnssPowerSave)();

@@ -171,10 +171,10 @@ static RunSummary runSideBySide(const char *name, const Source &flight, const Se
     now += 300 + (jitter >> 16) % 401;
     samplePass(loopState, now, flight.at(now));
     // a GNSS clock that moves, so a capture at the wrong moment shows
-    GPS.time.hours = (uint8_t)((now / 3600000000UL) % 24);
-    GPS.time.minutes = (uint8_t)((now / 60000000UL) % 60);
-    GPS.time.seconds = (uint8_t)((now / 1000000UL) % 60);
-    GPS.time.centiseconds = (uint8_t)((now / 10000UL) % 100);
+    gps.time.hours = (uint8_t)((now / 3600000000UL) % 24);
+    gps.time.minutes = (uint8_t)((now / 60000000UL) % 60);
+    gps.time.seconds = (uint8_t)((now / 1000000UL) % 60);
+    gps.time.centiseconds = (uint8_t)((now / 10000UL) % 100);
 
     saveFlightState(before);
     ioLog.clear();

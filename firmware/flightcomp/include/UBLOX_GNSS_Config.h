@@ -6,10 +6,10 @@
 
 #include <Arduino.h>
 
-void UBLOXrestorDefaults();
-void UBLOXconfig();
-void UBLOXpowerSave();
+void ubloxRestoreDefaults();
+void ubloxConfig();
+void ubloxPowerSave();
 void calcChecksum(byte *checksumPayload, byte payloadSize);
-void sendUBX(byte *UBXmsg, byte msgLength);
-byte getUBX_ACK(byte *msgID);
+void sendUbx(byte *ubxMsg, byte msgLength);
+byte getUbxAck(byte *msgId);
 void printHex(uint8_t *data, uint8_t length);

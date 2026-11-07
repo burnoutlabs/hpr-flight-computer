@@ -17,10 +17,10 @@
  * \brief Restore the u-Blox GNSS receiver to factory default settings.
  *
  * This function sends a command to the u-Blox GNSS module to restore factory
- * default settings. It is reached through the GNSSrestorDefaults() pointer when a
+ * default settings. It is reached through the gnssRestoreDefaults() pointer when a
  * u-Blox receiver is configured. Debug output goes to the serial console in test mode.
  */
-void UBLOXrestorDefaults()
+void ubloxRestoreDefaults()
 {
 
   uint8_t gpsSetSuccess = 0;
@@ -39,8 +39,8 @@ void UBLOXrestorDefaults()
     {
       Serial.print("Restoring Factory Defaults... ");
     }
-    sendUBX(&setDefaults[0], sizeof(setDefaults)); // Send UBX Packet
-    gpsSetSuccess += getUBX_ACK(&setDefaults[2]);
+    sendUbx(&setDefaults[0], sizeof(setDefaults)); // Send UBX Packet
+    gpsSetSuccess += getUbxAck(&setDefaults[2]);
   }
   if (gpsSetSuccess == 3 && settings.testMode)
   {
@@ -53,18 +53,18 @@ void UBLOXrestorDefaults()
  *
  * This function sends a series of UBX commands to update navigation settings,
  * data rate, GNSS constellations, NMEA sentence configurations, interference
- * thresholds, and baud rates. It is reached through the GNSSconfig() pointer.
+ * thresholds, and baud rates. It is reached through the gnssConfig() pointer.
  *
  * The module version is taken from sensors.GNSS (1, 2, or 3); VTG (course over ground)
  * NMEA messages stay enabled only when settings.flyBack is set; debug output goes to
  * the serial console in test mode.
  */
-void UBLOXconfig()
+void ubloxConfig()
 {
 
   uint8_t gpsVersion = sensors.gnss;
   bool serialOutput = settings.testMode;
-  bool VTGoption = settings.flyBack;
+  bool vtgOption = settings.flyBack;
 
   byte gpsSetSuccess = 0;
 
@@ -108,11 +108,11 @@ void UBLOXconfig()
   byte setBaudRate[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0x96, 0x00, 0x00, 0x23, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAF, 0x70};
 
   // Generate the configuration string for NMEA messages
-  byte setGLL[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x2B};
-  byte setGSA[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x31};
-  byte setGSV[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x39};
-  byte setVTG[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x46};
-  byte set4_1[] = {0xB5, 0x62, 0x06, 0x17, 0x14, 0x00, 0x00, 0x41, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x57};
+  byte setGll[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x2B};
+  byte setGsa[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x31};
+  byte setGsv[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x39};
+  byte setVtg[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x46};
+  byte setNmea41[] = {0xB5, 0x62, 0x06, 0x17, 0x14, 0x00, 0x00, 0x41, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x57};
 
   // Generate the configuration string for interference resistance settings
   byte setJam[] = {0xB5, 0x62, 0x06, 0x39, 0x08, 0x00, 0xF3, 0xAC, 0x62, 0xAD, 0x1E, 0x43, 0x00, 0x00, 0x56, 0x45};
@@ -132,8 +132,8 @@ void UBLOXconfig()
       {
         Serial.print("Deactivating NMEA GSA Messages... ");
       }
-      sendUBX(setGSA, sizeof(setGSA));
-      gpsSetSuccess += getUBX_ACK(&setGSA[2]);
+      sendUbx(setGsa, sizeof(setGsa));
+      gpsSetSuccess += getUbxAck(&setGsa[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -148,8 +148,8 @@ void UBLOXconfig()
       {
         Serial.print("Setting Navigation Mode... ");
       }
-      sendUBX(&setNav[0], sizeof(setNav)); // Send UBX Packet
-      gpsSetSuccess += getUBX_ACK(&setNav[2]);
+      sendUbx(&setNav[0], sizeof(setNav)); // Send UBX Packet
+      gpsSetSuccess += getUbxAck(&setNav[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -164,8 +164,8 @@ void UBLOXconfig()
       {
         Serial.print("Deactivating NMEA GSV Messages... ");
       }
-      sendUBX(setGSV, sizeof(setGSV));
-      gpsSetSuccess += getUBX_ACK(&setGSV[2]);
+      sendUbx(setGsv, sizeof(setGsv));
+      gpsSetSuccess += getUbxAck(&setGsv[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -180,8 +180,8 @@ void UBLOXconfig()
       {
         Serial.print("Setting Data Update Rate... ");
       }
-      sendUBX(&setDataRate[0], sizeof(setDataRate)); // Send UBX Packet
-      gpsSetSuccess += getUBX_ACK(&setDataRate[2]);
+      sendUbx(&setDataRate[0], sizeof(setDataRate)); // Send UBX Packet
+      gpsSetSuccess += getUbxAck(&setDataRate[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -196,8 +196,8 @@ void UBLOXconfig()
       {
         Serial.print("Turning on NMEA 4.1 Messages... ");
       }
-      sendUBX(set4_1, sizeof(set4_1));
-      gpsSetSuccess += getUBX_ACK(&set4_1[2]);
+      sendUbx(setNmea41, sizeof(setNmea41));
+      gpsSetSuccess += getUbxAck(&setNmea41[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -212,8 +212,8 @@ void UBLOXconfig()
       {
         Serial.print("Setting Satellite Constellations... ");
       }
-      sendUBX(setSat, sizeof(setSat));
-      gpsSetSuccess += getUBX_ACK(&setSat[2]);
+      sendUbx(setSat, sizeof(setSat));
+      gpsSetSuccess += getUbxAck(&setSat[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -222,16 +222,16 @@ void UBLOXconfig()
     gpsSetSuccess = 0;
 
     // Turn Off NMEA VTG Messages
-    while (!VTGoption && gpsSetSuccess < 3)
+    while (!vtgOption && gpsSetSuccess < 3)
     {
       if (serialOutput)
       {
         Serial.print("Deactivating NMEA VTG Messages... ");
       }
-      sendUBX(setVTG, sizeof(setVTG));
-      gpsSetSuccess += getUBX_ACK(&setVTG[2]);
+      sendUbx(setVtg, sizeof(setVtg));
+      gpsSetSuccess += getUbxAck(&setVtg[2]);
     }
-    if (!VTGoption && gpsSetSuccess == 3 && serialOutput)
+    if (!vtgOption && gpsSetSuccess == 3 && serialOutput)
     {
       Serial.println("NMEA VTG Message Deactivation Failed!");
     }
@@ -244,8 +244,8 @@ void UBLOXconfig()
       {
         Serial.print("Setting Interferece Thresholds... ");
       }
-      sendUBX(setJam, sizeof(setJam));
-      gpsSetSuccess += getUBX_ACK(&setJam[2]);
+      sendUbx(setJam, sizeof(setJam));
+      gpsSetSuccess += getUbxAck(&setJam[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -260,8 +260,8 @@ void UBLOXconfig()
       {
         Serial.print("Deactivating NMEA GLL Messages... ");
       }
-      sendUBX(setGLL, sizeof(setGLL));
-      gpsSetSuccess += getUBX_ACK(&setGLL[2]);
+      sendUbx(setGll, sizeof(setGll));
+      gpsSetSuccess += getUbxAck(&setGll[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -276,8 +276,8 @@ void UBLOXconfig()
       {
         Serial.print("Setting Ublox Baud Rate 38400... ");
       }
-      sendUBX(setBaudRate, sizeof(setBaudRate));
-      gpsSetSuccess += getUBX_ACK(&setBaudRate[2]);
+      sendUbx(setBaudRate, sizeof(setBaudRate));
+      gpsSetSuccess += getUbxAck(&setBaudRate[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -285,9 +285,9 @@ void UBLOXconfig()
     }
     else if (gpsVersion == 2)
     {
-      HWSERIAL->end();
-      HWSERIAL->flush();
-      HWSERIAL->begin(38400);
+      gnssSerial->end();
+      gnssSerial->flush();
+      gnssSerial->begin(38400);
     }
   }
 
@@ -298,10 +298,10 @@ void UBLOXconfig()
  *
  * This function configures the u-Blox GNSS receiver to enter power save mode, reducing
  * power consumption and updating less frequently. It is reached through the
- * GNSSpowerSave() pointer; the module version is taken from sensors.GNSS, and debug
+ * gnssPowerSave() pointer; the module version is taken from sensors.GNSS, and debug
  * output goes to the serial console in test mode.
  */
-void UBLOXpowerSave()
+void ubloxPowerSave()
 {
 
   bool serialOutput = settings.testMode;
@@ -334,8 +334,8 @@ void UBLOXpowerSave()
       {
         Serial.print("Enabling Power Save Mode... ");
       }
-      sendUBX(enablePwrSv, sizeof(enablePwrSv));
-      gpsSetSuccess += getUBX_ACK(&enablePwrSv[2]);
+      sendUbx(enablePwrSv, sizeof(enablePwrSv));
+      gpsSetSuccess += getUbxAck(&enablePwrSv[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -350,8 +350,8 @@ void UBLOXpowerSave()
       {
         Serial.print("Config Power Save Mode... ");
       }
-      sendUBX(setPwr2, sizeof(setPwr2));
-      gpsSetSuccess += getUBX_ACK(&setPwr2[2]);
+      sendUbx(setPwr2, sizeof(setPwr2));
+      gpsSetSuccess += getUbxAck(&setPwr2[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -366,8 +366,8 @@ void UBLOXpowerSave()
       {
         Serial.print("Setting Data Update Rate... ");
       }
-      sendUBX(setDataRate01Hz, sizeof(setDataRate01Hz)); // Send UBX Packet
-      gpsSetSuccess += getUBX_ACK(&setDataRate01Hz[2]);
+      sendUbx(setDataRate01Hz, sizeof(setDataRate01Hz)); // Send UBX Packet
+      gpsSetSuccess += getUbxAck(&setDataRate01Hz[2]);
     }
     if (gpsSetSuccess == 3 && serialOutput)
     {
@@ -409,19 +409,19 @@ void calcChecksum(byte *checksumPayload, byte payloadSize)
  * 
  * This helper function sends a UBX command through the serial connection.
  * 
- * \param UBXmsg Pointer to the UBX command message.
+ * \param ubxMsg Pointer to the UBX command message.
  * \param msgLength Length of the UBX command message.
  */
-void sendUBX(byte *UBXmsg, byte msgLength)
+void sendUbx(byte *ubxMsg, byte msgLength)
 {
   for (int i = 0; i < msgLength; i++)
   {
-    HWSERIAL->write(UBXmsg[i]);
-    HWSERIAL->flush();
+    gnssSerial->write(ubxMsg[i]);
+    gnssSerial->flush();
   }
 
-  HWSERIAL->println();
-  HWSERIAL->flush();
+  gnssSerial->println();
+  gnssSerial->flush();
 }
 
 /*!
@@ -430,28 +430,28 @@ void sendUBX(byte *UBXmsg, byte msgLength)
  * This function reads the acknowledgment message from the GPS module and checks
  * if it corresponds to the command that was sent.
  * 
- * \param msgID Pointer to the expected acknowledgment ID.
+ * \param msgId Pointer to the expected acknowledgment ID.
  * \return Returns 10 for a successful acknowledgment, 1 for NAK, 5 for timeout.
  */
-byte getUBX_ACK(byte *msgID)
+byte getUbxAck(byte *msgId)
 {
   byte CK_A = 0, CK_B = 0;
-  byte incoming_char;
+  byte incomingChar;
   unsigned long ackWait = millis();
   byte ackPacket[10] = {0xB5, 0x62, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
   int i = 0;
   while (1)
   {
-    if (HWSERIAL->available())
+    if (gnssSerial->available())
     {
-      incoming_char = HWSERIAL->read();
-      if (incoming_char == ackPacket[i])
+      incomingChar = gnssSerial->read();
+      if (incomingChar == ackPacket[i])
       {
         i++;
       }
       else if (i > 2)
       {
-        ackPacket[i] = incoming_char;
+        ackPacket[i] = incomingChar;
         i++;
       }
     }
@@ -475,7 +475,7 @@ byte getUBX_ACK(byte *msgID)
     CK_B = CK_B + CK_A;
   }
 
-  if (msgID[0] == ackPacket[6] && msgID[1] == ackPacket[7] && CK_A == ackPacket[8] && CK_B == ackPacket[9])
+  if (msgId[0] == ackPacket[6] && msgId[1] == ackPacket[7] && CK_A == ackPacket[8] && CK_B == ackPacket[9])
   {
     Serial.println("Success!");
     Serial.print("ACK Received! ");

@@ -144,15 +144,15 @@ void setPinModes()
 void beginGnssSerial()
 {
   // Start Harware Serial communication
-  setHWSERIAL();
+  setGnssSerial();
   if (sensors.gnss == 3)
   {
-    HWSERIAL->begin(38400);
+    gnssSerial->begin(38400);
     Serial.println("Starting HWSerial at 38400 baud");
   }
   else
   {
-    HWSERIAL->begin(9600);
+    gnssSerial->begin(9600);
     Serial.println("Starting HWSerial at 9600 baud");
   }
 }

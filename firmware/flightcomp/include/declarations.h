@@ -147,7 +147,9 @@ struct EepromMap
   int hwUnitNum = 137;
   int callSign = 138; // 138-143: Ham Radio Callsign
   //-------------------------------------------------------------
-  // flight settings stored in EEPROM to facilitate rapid recovery
+  // 144-227: retired copy of the flight settings. Its fields overlapped, and nothing read it;
+  // setup() stopped writing it, except inflightRecover (186), which setup() reads before the SD
+  // card is started. The addresses stay reserved: boards in the field hold old values there.
   //-------------------------------------------------------------
   int rocketName = 144; // Maximum of 20 characters
   int fltProfile = 164;
@@ -253,7 +255,7 @@ struct UserSettings
   bool testMode = false;
   bool calibrationMode = false;
   //--------flight settings----------------
-  char rocketName[20] = ""; // Maximum of 20 characters
+  char rocketName[20] = ""; // at most 19 characters and the terminator
   char hwId[7] = "";
   char fltProfile = 'S';
   char units = 'S';

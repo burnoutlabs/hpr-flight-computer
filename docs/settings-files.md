@@ -34,7 +34,8 @@ Consequences worth knowing:
   characters after the 256th overwrite the start.
 - Numbers are converted with `atof()`, so text after the number is ignored and text with no
   number reads as 0.
-- The parser does not check for the end of the file (issue #25).
+- At the end of the file the parser stops: a value the file does not reach is empty, so a
+  number reads as 0 and a character as the NUL character.
 
 ## EEPROMsettings.txt
 
@@ -90,7 +91,7 @@ column.
 
 | # | Sample key | Field | Conversion | Clamped by `limitSettings()` |
 | - | ---------- | ----- | ---------- | ---------------------------- |
-| 1 | `Rocket Name` | `rocketName[20]` | text, copied up to its end | |
+| 1 | `Rocket Name` | `rocketName[20]` | text, at most 19 characters; a longer name is cut to 19 | |
 | 2 | `flightProfile` | `fltProfile` | char: `S` single stage, `2` two stage, `A` airstart, `B` booster | |
 | 3 | `units` | `units` | char: `M` sets metres for the values below, anything else feet | |
 | 4 | `reportStyle` | `reportStyle` | char: `P` Perfectflite, `M` Marsa | |

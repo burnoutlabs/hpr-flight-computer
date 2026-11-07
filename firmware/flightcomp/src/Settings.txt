@@ -69,7 +69,7 @@ serialDebug = 1
 ---------------------------------------------
          Flight Settings
 ---------------------------------------------
-         Rocket Name: up to 20 characters of text
+         Rocket Name: up to 19 characters of text; a longer name is cut to 19
        flightProfile: S = single stage, 2 = 2-stage, A = Airstart, B = booster stage (single stage but recorded differently)
                units: S = US Standard System, M = Metric System  
          reportStyle: P = Perfectflite, M = Marsa

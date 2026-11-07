@@ -21,6 +21,11 @@
  * saves every global and the I/O log, restores the starting state, runs setup() from
  * Startup.cpp, and requires the same bytes in every global (flight_state.h, plus the EEPROM,
  * ports, servos, clock and input positions) and the same I/O log, call for call.
+ * One difference is expected, and is taken out of the reference before the comparison: the
+ * reference stored a copy of the flight settings in EEPROM (164-223), whose fields overlapped and
+ * which nothing read, and setup() now stores only the in-flight recovery setting (186) of it
+ * (retiredSettingsAddresses() below; test_retired_settings_copy shows the difference). The
+ * byte-copy unions it used as scratch are cleared in both runs (clearScratchUnions()).
  * The scenarios between them take every branch of setup() that returns; the ones that never do
  * (uninitialized EEPROM, a failed sensor) are not run. Nor is a board with no high-G
  * accelerometer: setup() then divides by a zero sample count, which the Teensy's divide
@@ -291,16 +296,119 @@ static void startScenario(const SetupScenario &s)
   baro.timeBtwnSamp = 9090;
 }
 
+/**
+ * The EEPROM addresses of the retired flight settings copy: every byte the reference's copy wrote
+ * (its writeSettingsEeprom() fields and sizes), less inflightRecover (186), which setup() still
+ * writes. 186 is also the top byte of the reference's 4-byte apogeeDelay.
+ */
+static std::vector<int> retiredSettingsAddresses()
+{
+  const std::pair<int, int> fields[] = {
+      {eeprom.fltProfile, 1},     {eeprom.units, 1},          {eeprom.reportStyle, 1},
+      {eeprom.setupTime, 4},      {eeprom.mainDeployAlt, 4},  {eeprom.apogeeDelay, 4},
+      {eeprom.rcdTime, 4},        {eeprom.silentMode, 1},     {eeprom.magSwitchEnable, 1},
+      {eeprom.gpsLogFile, 1},     {eeprom.fireTime, 4},       {eeprom.pyro1Func, 1},
+      {eeprom.pyro2Func, 1},      {eeprom.pyro3Func, 1},      {eeprom.pyro4Func, 1},
+      {eeprom.txEnable, 1},       {eeprom.txPwr, 1},          {eeprom.txFreq, 4},
+      {eeprom.boosterSeparationDelay, 4}, {eeprom.sustainerFireDelay, 4}, {eeprom.airStart1Event, 1},
+      {eeprom.airStart1Delay, 4}, {eeprom.airStart2Event, 1}, {eeprom.airStart2Delay, 4},
+      {eeprom.altThreshold, 2},   {eeprom.maxAngle, 2},       {eeprom.stableRotn, 1},
+      {eeprom.stableVert, 1}};
+  std::vector<int> addresses;
+  for (const auto &field : fields)
+  {
+    for (int i = 0; i < field.second; i++)
+    {
+      addresses.push_back(field.first + i);
+    }
+  }
+  std::sort(addresses.begin(), addresses.end());
+  addresses.erase(std::unique(addresses.begin(), addresses.end()), addresses.end());
+  addresses.erase(std::find(addresses.begin(), addresses.end(), eeprom.inflightRecover));
+  return addresses;
+}
+
+/** The address of an "eeprom <address> <value>" log entry, or -1 for any other entry. */
+static int eepromLogAddress(const std::string &entry)
+{
+  int address = -1;
+  int value = -1;
+  char extra = 0;
+  if (sscanf(entry.c_str(), "eeprom %d %d%c", &address, &value, &extra) != 2)
+  {
+    return -1;
+  }
+  return address;
+}
+
+static bool isRetired(int address)
+{
+  static const std::vector<int> retired = retiredSettingsAddresses();
+  return std::binary_search(retired.begin(), retired.end(), address);
+}
+
+/**
+ * Takes the retired settings copy out of the reference's run: its writes to the retired addresses,
+ * and all but its last write to 186 (the last is inflightRecover; the earlier one apogeeDelay's top
+ * byte), from the log; and the retired addresses' bytes back to what they held before the run.
+ * Returns the number of log entries taken out.
+ */
+static size_t removeRetiredWrites(std::vector<std::string> &log, const uint8_t *eepromBefore)
+{
+  int last186 = -1;
+  for (size_t i = 0; i < log.size(); i++)
+  {
+    if (eepromLogAddress(log[i]) == eeprom.inflightRecover)
+    {
+      last186 = (int)i;
+    }
+  }
+  std::vector<std::string> kept;
+  for (size_t i = 0; i < log.size(); i++)
+  {
+    const int address = eepromLogAddress(log[i]);
+    if (isRetired(address) || (address == eeprom.inflightRecover && (int)i != last186))
+    {
+      continue;
+    }
+    kept.push_back(log[i]);
+  }
+  const size_t removed = log.size() - kept.size();
+  log = kept;
+  for (int address : retiredSettingsAddresses())
+  {
+    shimEeprom.bytes[address] = eepromBefore[address];
+  }
+  return removed;
+}
+
+/**
+ * Clears the byte-copy unions, which the reference's settings copy used as scratch and was the
+ * last to write. What they hold after setup() is never read: ulongUnion and intUnion have no
+ * other user, and every reader of floatUnion writes all its bytes first.
+ */
+static void clearScratchUnions()
+{
+  memset((void *)&ulongUnion, 0, sizeof(ulongUnion));
+  memset((void *)&intUnion, 0, sizeof(intUnion));
+  memset((void *)&floatUnion, 0, sizeof(floatUnion));
+}
+
 static void runSideBySide(const SetupScenario &s)
 {
   startScenario(s);
+  uint8_t eepromBefore[ShimEEPROM::size];
+  memcpy(eepromBefore, shimEeprom.bytes, sizeof(eepromBefore));
   legacy::setup();
+  std::vector<std::string> referenceLog = ioLog;
+  const size_t retiredWrites = removeRetiredWrites(referenceLog, eepromBefore);
+  clearScratchUnions();
   const std::vector<uint8_t> referenceState = saveStartupState();
-  const std::vector<std::string> referenceLog = ioLog;
   const bool reached = s.reached == nullptr || s.reached();
 
   startScenario(s);
   setup();
+  clearScratchUnions();
   const std::vector<uint8_t> state = saveStartupState();
   const std::vector<std::string> &log = ioLog;
 
@@ -324,7 +432,7 @@ static void runSideBySide(const SetupScenario &s)
   const std::string difference = firstStartupDifference(referenceState, state);
   snprintf(message, sizeof(message), "%s: state differs in %s", s.name, difference.c_str());
   TEST_ASSERT_TRUE_MESSAGE(difference.empty(), message);
-  printf("  %-44s %6zu I/O entries, identical\n", s.name, log.size());
+  printf("  %-44s %6zu I/O entries, identical (%zu retired writes taken out of the reference)\n", s.name, log.size(), retiredWrites);
   scenariosRun++;
 }
 
@@ -511,6 +619,56 @@ void test_other_devices()
   }
 }
 
+/**
+ * The retired settings copy: the reference wrote over it, and setup() leaves every retired byte as
+ * it was and still stores inflightRecover at 186.
+ */
+void test_retired_settings_copy()
+{
+  SetupScenario s;
+  s.name = "retired settings copy";
+  s.file = sampleSettings();
+  s.file.inflightRecover = 2;
+  s.inflightRecover = 0;
+  const std::vector<int> retired = retiredSettingsAddresses();
+  // a value at each retired address that setup() would not write by chance
+  auto canary = [](int address) { return (uint8_t)(0xA5 ^ address); };
+
+  startScenario(s);
+  for (int address : retired)
+  {
+    shimEeprom.bytes[address] = canary(address);
+  }
+  legacy::setup();
+  int referenceChanged = 0;
+  for (int address : retired)
+  {
+    referenceChanged += shimEeprom.bytes[address] != canary(address);
+  }
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(2, shimEeprom.bytes[eeprom.inflightRecover], "reference: inflightRecover at 186");
+
+  startScenario(s);
+  for (int address : retired)
+  {
+    shimEeprom.bytes[address] = canary(address);
+  }
+  setup();
+  for (int address : retired)
+  {
+    char message[96];
+    snprintf(message, sizeof(message), "retired EEPROM address %d was written", address);
+    TEST_ASSERT_EQUAL_UINT8_MESSAGE(canary(address), shimEeprom.bytes[address], message);
+  }
+  for (const std::string &entry : ioLog)
+  {
+    TEST_ASSERT_FALSE_MESSAGE(isRetired(eepromLogAddress(entry)), entry.c_str());
+  }
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(2, shimEeprom.bytes[eeprom.inflightRecover], "inflightRecover at 186");
+  // the reference changed most of them (a few held the canary's value by chance, or none)
+  TEST_ASSERT_TRUE_MESSAGE(referenceChanged > (int)retired.size() / 2, "the reference left the retired bytes alone");
+  printf("  %zu retired addresses: the reference changed %d of them, setup() none\n", retired.size(), referenceChanged);
+}
+
 /** setPolyMorphs() alone, every ID 0-255 of every device with the others at the sample's. */
 void test_set_poly_morphs_every_id()
 {
@@ -568,6 +726,7 @@ int main()
   RUN_TEST(test_settings_clamped_low_old_battery_pin);
   RUN_TEST(test_last_event_not_touchdown);
   RUN_TEST(test_other_devices);
+  RUN_TEST(test_retired_settings_copy);
   RUN_TEST(test_set_poly_morphs_every_id);
   printf("  setup scenarios compared: %d\n", scenariosRun);
   return UNITY_END();

@@ -33,9 +33,10 @@
  * setup()'s run does not.
  * The scenarios between them take every branch of setup() that returns; the ones that never do
  * (uninitialized EEPROM, a failed sensor) are not run. Nor is a board with no high-G
- * accelerometer: setup() then divides by a zero sample count, which the Teensy's divide
- * instruction answers with 0 and the host's traps. setPolyMorphs() is compared on its own for
- * every device ID, 0 included.
+ * accelerometer: the reference then divides by a zero sample count, which the Teensy's divide
+ * instruction answers with 0 and the host's traps; setup() no longer does (#46,
+ * test_no_high_g_accelerometer). setPolyMorphs() is compared on its own for every device ID, 0
+ * included.
  */
 #include <unity.h>
 
@@ -627,8 +628,8 @@ void test_other_devices()
   // every device type, a few at a time, through setup()
   const uint8_t accels[] = {1, 2, 3, 4, 5, 7, 8, 0, 9};
   const uint8_t gyros[] = {0, 1, 2, 7, 6, 3, 4, 5, 9};
-  // never high-G ID 0 here: with no high-G accelerometer, setup() divides by a zero sample count
-  // (highG.sumX0 / highGsamps), which gives 0 on the Teensy and traps on the host
+  // never high-G ID 0 here: with no high-G accelerometer, the reference divides by a zero sample
+  // count (highG.sumX0 / highGsamps), which gives 0 on the Teensy and traps on the host
   const uint8_t highGs[] = {1, 2, 3, 4, 1, 2, 3, 4, 2};
   const uint8_t mags[] = {1, 2, 3, 4, 5, 0, 6, 1, 2};
   const uint8_t baros[] = {1, 2, 3, 4, 6, 7, 8, 0, 9};
@@ -825,6 +826,37 @@ static BumpRun runBenchBump(float seconds)
 }
 
 /**
+ * #46: with no high-G accelerometer (ID 0) setup() runs to the end and leaves the high-G values
+ * alone. It divided by the high-G gain (0) for high1G and by the high-G sample count (0) for the
+ * resting values, which the host traps on.
+ */
+void test_no_high_g_accelerometer()
+{
+  SetupScenario s;
+  s.name = "no high-G accelerometer";
+  s.file = sampleSettings();
+  s.highGId = 0;
+  s.testButton = {{2, LOW}, {1, HIGH}}; // test mode, which also prints the high-G values
+  startScenario(s);
+  // no high-G driver ran its begin function
+  highG.gainX = highG.gainY = highG.gainZ = 0.0F;
+  const int high1GBefore = high1G;
+  setup();
+  TEST_ASSERT_TRUE(settings.testMode);
+  TEST_ASSERT_TRUE(logHas("radioTimer.begin"));
+  TEST_ASSERT_EQUAL_INT(high1GBefore, high1G);
+  TEST_ASSERT_EQUAL_FLOAT(0.0F, highG.gainZ);
+  TEST_ASSERT_EQUAL_INT16(0, highG.x0);
+  TEST_ASSERT_EQUAL_INT16(0, highG.y0);
+  TEST_ASSERT_EQUAL_INT16(0, highG.z0);
+  // the high-G biases are the stored ones, not re-calibrated against the accelerometer
+  TEST_ASSERT_EQUAL_INT16(2, highG.biasX);
+  TEST_ASSERT_EQUAL_INT16(-2, highG.biasY);
+  TEST_ASSERT_EQUAL_INT16(5, highG.biasZ);
+  TEST_ASSERT_FALSE(logHas("println s:Re-calibrating high-G accelerometer..."));
+}
+
+/**
  * #45: with the magnetic switch enabled, setup() beeps the continuity code until the magnet is
  * sensed, and then finishes. The drivers fill only the raw magnetometer fields; the wait tested
  * the oriented ones without orienting them, so it never ended.
@@ -898,6 +930,7 @@ int main()
   RUN_TEST(test_unsupported_gnss_bus_is_reported_and_skipped);
   RUN_TEST(test_bench_mode_resets_a_short_bump);
   RUN_TEST(test_magnetic_switch_wait_ends_when_the_magnet_is_sensed);
+  RUN_TEST(test_no_high_g_accelerometer);
   printf("  setup scenarios compared: %d\n", scenariosRun);
   return UNITY_END();
 }

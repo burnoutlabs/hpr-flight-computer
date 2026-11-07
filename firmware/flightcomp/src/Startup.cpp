@@ -216,11 +216,14 @@ void scaleSensorGains()
   // set the accelerometer liftoff detection g-trigger
   gTrigger = 2.5 * accel1G;
 
-  // set high-G accelerometer level
-  high1G = (int16_t)(1.0 / highG.gainX);
-  highG.gainX *= 9.80665;
-  highG.gainY *= 9.80665;
-  highG.gainZ *= 9.80665;
+  // set high-G accelerometer level, if there is one (its gain is 0 without one)
+  if (sensors.highG != 0)
+  {
+    high1G = (int16_t)(1.0 / highG.gainX);
+    highG.gainX *= 9.80665;
+    highG.gainY *= 9.80665;
+    highG.gainZ *= 9.80665;
+  }
 }
 
 /**
@@ -832,9 +835,13 @@ static void calibrateOnPad()
   accel.x0 = (int)round(accel.sumX0 / accelSamps);
   accel.y0 = (int)round(accel.sumY0 / accelSamps);
   accel.z0 = (int)round(accel.sumZ0 / accelSamps);
-  highG.x0 = (int)round(highG.sumX0 / highGsamps);
-  highG.y0 = (int)round(highG.sumY0 / highGsamps);
-  highG.z0 = (int)round(highG.sumZ0 / highGsamps);
+  // no samples without a high-G accelerometer
+  if (highGsamps > 0)
+  {
+    highG.x0 = (int)round(highG.sumX0 / highGsamps);
+    highG.y0 = (int)round(highG.sumY0 / highGsamps);
+    highG.z0 = (int)round(highG.sumZ0 / highGsamps);
+  }
   mag.x0 = (int)round(mag.sumX0 / magSamps);
   mag.y0 = (int)round(mag.sumY0 / magSamps);
   mag.z0 = (int)round(mag.sumZ0 / magSamps);
@@ -868,58 +875,61 @@ static void calibrateOnPad()
     Serial.println(mag.z0);
   }
 
-  // Calibrate the analog accelerometer to the digital one
-  float gainRatio = highG.gainZ / accel.gainZ; //.64599
-  if (settings.testMode)
+  // Calibrate the analog accelerometer to the digital one, if there is a high-G accelerometer
+  if (sensors.highG != 0)
   {
-    Serial.println(F("Re-calibrating high-G accelerometer..."));
-    Serial.print(F("HighG.Z0: "));
-    Serial.println(highG.z0);
-  }
-  // Z0 + correction = correctZ0
-  // correctZ0 = accel.z0/gainRatio
-  // correction = correctZ0 - Z0
-  // corrected bias = original bias - directionX *(highG.z0 - accel.z0/gainRatio)
-  if (highG.orientX == 'Z')
-  {
+    float gainRatio = highG.gainZ / accel.gainZ; //.64599
     if (settings.testMode)
     {
-      Serial.print("Old Bias: ");
-      Serial.println(highG.biasX);
+      Serial.println(F("Re-calibrating high-G accelerometer..."));
+      Serial.print(F("HighG.Z0: "));
+      Serial.println(highG.z0);
     }
-    highG.biasX -= highG.dirX * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
-    if (settings.testMode)
+    // Z0 + correction = correctZ0
+    // correctZ0 = accel.z0/gainRatio
+    // correction = correctZ0 - Z0
+    // corrected bias = original bias - directionX *(highG.z0 - accel.z0/gainRatio)
+    if (highG.orientX == 'Z')
     {
-      Serial.print(F("New Bias: "));
-      Serial.println(highG.biasX);
+      if (settings.testMode)
+      {
+        Serial.print("Old Bias: ");
+        Serial.println(highG.biasX);
+      }
+      highG.biasX -= highG.dirX * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
+      if (settings.testMode)
+      {
+        Serial.print(F("New Bias: "));
+        Serial.println(highG.biasX);
+      }
     }
-  }
-  if (highG.orientY == 'Z')
-  {
-    if (settings.testMode)
+    if (highG.orientY == 'Z')
     {
-      Serial.print("Old Bias: ");
-      Serial.println(highG.biasY);
+      if (settings.testMode)
+      {
+        Serial.print("Old Bias: ");
+        Serial.println(highG.biasY);
+      }
+      highG.biasY -= highG.dirY * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
+      if (settings.testMode)
+      {
+        Serial.print(F("New Bias: "));
+        Serial.println(highG.biasY);
+      }
     }
-    highG.biasY -= highG.dirY * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
-    if (settings.testMode)
+    if (highG.orientZ == 'Z')
     {
-      Serial.print(F("New Bias: "));
-      Serial.println(highG.biasY);
-    }
-  }
-  if (highG.orientZ == 'Z')
-  {
-    if (settings.testMode)
-    {
-      Serial.print("Old Bias: ");
-      Serial.println(highG.biasZ);
-    }
-    highG.biasZ -= highG.dirZ * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
-    if (settings.testMode)
-    {
-      Serial.print(F("New Bias: "));
-      Serial.println(highG.biasZ);
+      if (settings.testMode)
+      {
+        Serial.print("Old Bias: ");
+        Serial.println(highG.biasZ);
+      }
+      highG.biasZ -= highG.dirZ * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
+      if (settings.testMode)
+      {
+        Serial.print(F("New Bias: "));
+        Serial.println(highG.biasZ);
+      }
     }
   }
   // highG.biasX = highGx0 - (int)((float)accel.x0 / (float)gainRatio) - 27;//old formula is kept for reference

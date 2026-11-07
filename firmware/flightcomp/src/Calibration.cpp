@@ -160,9 +160,13 @@ void accelCalibrate()
   accel.biasX = (int16_t)(accel.sumX0 / accelSamps);
   accel.biasY = (int16_t)(accel.sumY0 / accelSamps);
   accel.biasZ = (int16_t)(accel.sumZ0 / accelSamps);
-  highG.biasX = (int16_t)(highG.sumX0 / highGsamps);
-  highG.biasY = (int16_t)(highG.sumY0 / highGsamps);
-  highG.biasZ = (int16_t)(highG.sumZ0 / highGsamps);
+  // no samples without a high-G accelerometer: its bias stays 0
+  if (highGsamps > 0)
+  {
+    highG.biasX = (int16_t)(highG.sumX0 / highGsamps);
+    highG.biasY = (int16_t)(highG.sumY0 / highGsamps);
+    highG.biasZ = (int16_t)(highG.sumZ0 / highGsamps);
+  }
   gyro.biasX = (int16_t)(gyro.sumX0 / gyroSamps);
   gyro.biasY = (int16_t)(gyro.sumY0 / gyroSamps);
   gyro.biasZ = (int16_t)(gyro.sumZ0 / gyroSamps);
@@ -576,18 +580,21 @@ void setOrientation()
     accel.biasZ -= accel.dirZ * accel1G;
   }
 
-  // correct high-G bias for 1G
-  if (highG.orientX == 'Z')
+  // correct high-G bias for 1G, if there is a high-G accelerometer (high1G is set only then)
+  if (sensors.highG != 0)
   {
-    highG.biasX -= highG.dirX * high1G;
-  }
-  if (highG.orientY == 'Z')
-  {
-    highG.biasY -= highG.dirY * high1G;
-  }
-  if (highG.orientZ == 'Z')
-  {
-    highG.biasZ -= highG.dirZ * high1G;
+    if (highG.orientX == 'Z')
+    {
+      highG.biasX -= highG.dirX * high1G;
+    }
+    if (highG.orientY == 'Z')
+    {
+      highG.biasY -= highG.dirY * high1G;
+    }
+    if (highG.orientZ == 'Z')
+    {
+      highG.biasZ -= highG.dirZ * high1G;
+    }
   }
 
   // write to EEPROM

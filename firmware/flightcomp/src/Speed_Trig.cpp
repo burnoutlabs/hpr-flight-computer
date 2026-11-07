@@ -29,11 +29,11 @@
  * The following lookup tables represent the tangent, sine, and cosine functions in 0.1 degree steps.
  * These tables are used to compute trigonometric functions with high precision and are especially
  * useful for off-vertical output variables. The position of a value in the table represents the degrees
- * of rotation. For example, `Tan[0]` corresponds to `tan(0) = 0`, and `Tan[455]` corresponds to `tan(45.5) = 1.0176073929`.
+ * of rotation. For example, `TAN_TABLE[0]` corresponds to `tan(0) = 0`, and `TAN_TABLE[455]` corresponds to `tan(45.5) = 1.0176073929`.
  * This approach allows the use of a binary search algorithm to compute arcTan, arcSin, and arcCos functions.
  * Each evaluation of arcTan, arcSin, and arcCos takes approximately 38 microseconds.
  */
-const float Tan[901] =
+const float TAN_TABLE[901] =
     {0.0, 0.0017453310241888, 0.00349067268159625, 0.00523603560570013, 0.00698143043049648, 0.00872686779075879, 0.0104723583222972, 0.0122179126622177,
      0.0139635414491817, 0.0157092553236649, 0.0174550649282176, 0.0192009809077235, 0.02094701390966, 0.0226931745843578, 0.0244394735852609,
      0.0261859215691869, 0.0279325291965875, 0.0296793071318085, 0.0314262660433512, 0.0331734166041327, 0.0349207694917477, 0.0366683353887297,
@@ -155,7 +155,7 @@ const float Tan[901] =
      57.2899616307599, 63.6567411628717, 71.6150701195219, 81.8470411146703, 95.4894751711147, 114.58865012931, 143.237121669474, 190.984186377826,
      286.477734011608, 572.957213354303, 573.0};
 
-const float Sin[901] = {
+const float SIN_TABLE[901] = {
     0.0, 0.00174532836589831, 0.00349065141522373, 0.00523596383141958, 0.00698126029796155, 0.00872653549837393, 0.0104717841162458,
     0.0122170008352472, 0.0139621803391453, 0.0157073173118207, 0.0174524064372835, 0.0191974423996897, 0.020942419883357, 0.0226873335727814, 0.0244321781526532,
     0.0261769483078731, 0.0279216387235689, 0.0296662440851108, 0.0314107590781283, 0.0331551783885263, 0.034899496702501, 0.0366437087065563, 0.0383878090875199,
@@ -270,7 +270,7 @@ const float Sin[901] = {
     0.999742609322698, 0.999780683474845, 0.999815712121644, 0.999847695156391, 0.999876632481661, 0.999902524009304, 0.999925369660452, 0.999945169365512,
     0.999961923064171, 0.999975630705395, 0.999986292247427, 0.99999390765779, 0.999998476913288, 1.0};
 
-const float Cos[901] = {
+const float COS_TABLE[901] = {
     1, 0.999998476913288, 0.99999390765779, 0.999986292247427, 0.999975630705395, 0.999961923064171,
     0.999945169365512, 0.999925369660452, 0.999902524009304, 0.999876632481661, 0.999847695156391, 0.999815712121644, 0.999780683474845,
     0.999742609322698, 0.999701489781183, 0.999657324975557, 0.999610115040354, 0.999559860119384, 0.999506560365732, 0.999450215941757,
@@ -415,7 +415,7 @@ float speedTan(int rotn)
   {
     rotn = 1800 - rotn;
   }
-  return Tan[rotn];
+  return TAN_TABLE[rotn];
 }
 
 //------------------------------------------------------------------------------
@@ -448,7 +448,7 @@ int speedArcTan(float myValue)
   while (!exitFlag && cycle < 900)
   {
 
-    if (myValue > Tan[posnC])
+    if (myValue > TAN_TABLE[posnC])
     {
       posnA = posnC;
     }
@@ -491,19 +491,19 @@ float speedSin(int degree)
 
   if (degree <= 900)
   {
-    myValue = sign * Sin[degree];
+    myValue = sign * SIN_TABLE[degree];
   }
   else if (degree <= 1800)
   {
-    myValue = sign * Sin[1800 - degree];
+    myValue = sign * SIN_TABLE[1800 - degree];
   }
   else if (degree <= 2700)
   {
-    myValue = -1 * sign * Sin[degree - 1800];
+    myValue = -1 * sign * SIN_TABLE[degree - 1800];
   }
   else
   {
-    myValue = -1 * sign * Sin[3600 - degree];
+    myValue = -1 * sign * SIN_TABLE[3600 - degree];
   }
 
   return myValue;
@@ -550,7 +550,7 @@ int speedArcSin(float myValue)
   while (!exitFlag && cycle < 900)
   {
 
-    if (myValue > Sin[posnC])
+    if (myValue > SIN_TABLE[posnC])
     {
       posnA = posnC;
     }
@@ -587,19 +587,19 @@ float speedCos(int degree)
 
   if (degree <= 900)
   {
-    myValue = Cos[degree];
+    myValue = COS_TABLE[degree];
   }
   else if (degree <= 1800)
   {
-    myValue = -1 * Cos[1800 - degree];
+    myValue = -1 * COS_TABLE[1800 - degree];
   }
   else if (degree <= 2700)
   {
-    myValue = -1 * Cos[degree - 1800];
+    myValue = -1 * COS_TABLE[degree - 1800];
   }
   else
   {
-    myValue = Cos[3600 - degree];
+    myValue = COS_TABLE[3600 - degree];
   }
 
   return myValue;
@@ -646,7 +646,7 @@ int speedArcCos(float myValue)
   while (!exitFlag && cycle < 900)
   {
 
-    if (myValue > Cos[posnC])
+    if (myValue > COS_TABLE[posnC])
     {
       posnA = posnC;
     }
@@ -712,7 +712,7 @@ float cosSmallAngle(float rad)
 
   // small angle approximation of cosine
   // accurate to 10 sig figs at angles less than 0.7
-  if (fabs(rad) < Cos[7])
+  if (fabs(rad) < COS_TABLE[7])
   {
     cosine = 1 - rad * rad * 0.5;
     return cosine;
@@ -758,7 +758,7 @@ float sinSmallAngle(float rad)
 
   // small angle approximation
   // accurate to 10 sig figs at angles less than 0.1 degrees
-  if (fabs(rad) < Sin[1])
+  if (fabs(rad) < SIN_TABLE[1])
   {
     sine = rad;
     return sine;

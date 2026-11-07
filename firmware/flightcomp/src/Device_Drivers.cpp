@@ -1349,7 +1349,7 @@ bool beginADXL377()
   float mV_per_G = 0.0065; // this is the mV per G from the data sheet
   highG.gainX = highG.gainY = highG.gainZ = Vmax / (mV_per_G)*adcConvert;
 
-  sizeHighGfilter = 10;
+  sizeHighGFilter = 10;
   highG.timeBtwnSamp = 1000UL;
 
   if (analogRead(A2) > 500 && analogRead(A3) > 500 && analogRead(A4) > 500)
@@ -1443,7 +1443,7 @@ bool beginH3LIS331DL()
   write8(H3LIS331_REGISTER_CTRL_REG1, 0b00111111);
 
   highG.gainX = highG.gainY = highG.gainZ = 0.049;
-  sizeHighGfilter = 15;
+  sizeHighGFilter = 15;
   highG.timeBtwnSamp = 1000UL;
 
   return true;
@@ -1526,7 +1526,7 @@ bool beginADS1115()
   write16(ADS1115_REG_CONFIG, ADS1115settings);
 
   highG.gainX = highG.gainY = highG.gainZ = 0.0183;
-  sizeHighGfilter = 10;
+  sizeHighGFilter = 10;
   highG.timeBtwnSamp = 1163UL;
 
   return true;

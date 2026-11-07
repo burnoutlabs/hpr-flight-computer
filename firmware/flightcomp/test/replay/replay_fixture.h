@@ -178,7 +178,7 @@ inline ReplayResult replayFlight(const ReplayFixture &fixture, const SensorModel
     // the apogee gate and the three detectors, as checkEvents() evaluates them
     const bool gate = events.boosterBurnout && !events.boosterBurnoutCheck && !events.falseLiftoffCheck;
     const bool accelDet = accelVel < REMOVED_ACCEL_APOGEE_VEL_MPS;
-    const bool baroDet = baro.Vel < BARO_APOGEE_VEL_MPS && accelVel < BARO_APOGEE_MACH_LOCK_MPS && (baro.Alt + baro.baseAlt) < BARO_APOGEE_CEILING_M;
+    const bool baroDet = baro.vel < BARO_APOGEE_VEL_MPS && accelVel < BARO_APOGEE_MACH_LOCK_MPS && (baro.alt + baro.baseAlt) < BARO_APOGEE_CEILING_M;
     const bool fusionDet = fusionVel < 0;
     if (gate && accelDet && isnan(r.accelApogee) && !events.apogeeFire)
     {
@@ -202,7 +202,7 @@ inline ReplayResult replayFlight(const ReplayFixture &fixture, const SensorModel
     {
       r.accelVelAtPeak = accelVel;
       r.fusionVelAtPeak = fusionVel;
-      r.baroVelAtPeak = baro.Vel;
+      r.baroVelAtPeak = baro.vel;
     }
     if (isnan(r.maxAccelVel) || accelVel > r.maxAccelVel)
     {

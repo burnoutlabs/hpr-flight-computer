@@ -145,7 +145,7 @@ static UserSettings flightSettingsFile(uint8_t inflightRecover, uint32_t apogeeD
 struct RecoveryRun
 {
   bool recovered = false;          // setup() resumed the flight
-  eventList eventsAtResume;        // events right after setup()
+  EventList eventsAtResume;        // events right after setup()
   uint8_t accelBusNum = 255;       // as setup() left it
   bool beginAccelSet = false;      // beginAccel pointed at the LSM6DSOX driver
   bool telemetryBegun = false;     // beginTelemetry() was called
@@ -155,7 +155,7 @@ struct RecoveryRun
   float apogeeFireAt = -1.0F;      // s, pin 21 high after the reset (-1: never)
   float mainFireAt = -1.0F;        // s, pin 22 high after the reset (-1: never)
   float mainFireHeight = -1.0F;    // m above the pad, true height when the main fired
-  eventList finalEvents;
+  EventList finalEvents;
 };
 
 static float trueHeight(const SyntheticFlight &flight, uint32_t now)
@@ -313,7 +313,7 @@ void test_reset_under_drogue_fires_only_the_main()
   TEST_ASSERT_TRUE_MESSAGE(run.mainFireAt > 0.0F, "the main did not fire");
   TEST_ASSERT_FLOAT_WITHIN_MESSAGE(25.0F, 175.0F, run.mainFireHeight, "the main did not fire just below 200 m");
   TEST_ASSERT_TRUE(run.finalEvents.touchdown);
-  TEST_ASSERT_EQUAL_UINT8(Power_Loss_Restart, run.radioEvent);
+  TEST_ASSERT_EQUAL_UINT8(POWER_LOSS_RESTART, run.radioEvent);
 }
 
 /** The hardware comes up as in setup(): drivers, telemetry, and the accelerometer bus number. */
@@ -325,7 +325,7 @@ void test_reset_brings_the_hardware_up_as_setup_does()
   TEST_ASSERT_TRUE_MESSAGE(run.telemetryBegun, "telemetry was not started (beginTelemetry)");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(0, run.accelBusNum, "accelerometer bus number not read from eeprom.accelBusNum");
   // the record of the flight stays, for a second reset
-  TEST_ASSERT_EQUAL_UINT8(Fire_Apogee, run.lastEventAfterSetup);
+  TEST_ASSERT_EQUAL_UINT8(FIRE_APOGEE, run.lastEventAfterSetup);
 }
 
 /** After apogee, before the apogee charge: the charge fires the apogee delay after the restart. */
@@ -376,9 +376,9 @@ void test_reset_on_the_pad_starts_normally()
     const SyntheticFlight flight(profile());
     truthSource = &flight;
     loadBoardEeprom(2);
-    shimEeprom.bytes[eeprom.lastEvent] = Fire_Apogee;
+    shimEeprom.bytes[eeprom.lastEvent] = FIRE_APOGEE;
     floatUnion.val = 1400.0F;
-    memcpy(&shimEeprom.bytes[eeprom.baseAlt], floatUnion.Byte, 4);
+    memcpy(&shimEeprom.bytes[eeprom.baseAlt], floatUnion.bytes, 4);
     const std::vector<uint8_t> keptEeprom(shimEeprom.bytes, shimEeprom.bytes + ShimEEPROM::size);
     restoreStartupState(pristine);
     memcpy(shimEeprom.bytes, keptEeprom.data(), keptEeprom.size());

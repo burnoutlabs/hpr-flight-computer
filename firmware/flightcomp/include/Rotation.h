@@ -14,8 +14,8 @@ void getQuatRotn(double dx, double dy, double dz, double gyroGain);
 void getQuatRotn(float dx, float dy, float dz, float gyroGain);
 #endif
 
-void getDCM2DRotn(long dx, long dy, long dz, float gyroGain);
+void getDcm2dRotn(long dx, long dy, long dz, float gyroGain);
 void setCanards();
-void setRTB();
-float calcGPSdist(float Alon, float Alat, float Blon, float Blat);
+void setRtb();
+float calcGpsDist(float aLon, float aLat, float bLon, float bLat);
 void magRotn();

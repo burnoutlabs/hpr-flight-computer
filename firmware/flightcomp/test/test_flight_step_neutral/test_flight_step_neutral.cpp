@@ -78,10 +78,10 @@ static LegacyTimer radioTimer;
 // The reference: V4.7.2's code, verbatim
 //-----------------------------------------
 // The reference names the pyro channels pyro1 to pyro4, which are pyros[0] to pyros[3] now
-static pyroMap &pyro1 = pyros[0];
-static pyroMap &pyro2 = pyros[1];
-static pyroMap &pyro3 = pyros[2];
-static pyroMap &pyro4 = pyros[3];
+static PyroMap &pyro1 = pyros[0];
+static PyroMap &pyro2 = pyros[1];
+static PyroMap &pyro3 = pyros[2];
+static PyroMap &pyro4 = pyros[3];
 
 #define EEPROM legacyEeprom
 #define Serial legacySerial
@@ -124,7 +124,7 @@ struct RunSummary
   uint32_t inFlightPasses = 0;
   uint32_t actions = 0;
   std::vector<std::string> io; // every I/O entry of the run, in order
-  eventList finalEvents;
+  EventList finalEvents;
   bool sawFalseReset = false;
 };
 
@@ -211,7 +211,7 @@ static RunSummary runSideBySide(const char *name, const Source &flight, const Se
     run.io.insert(run.io.end(), ioLog.begin(), ioLog.end());
     for (uint8_t i = 0; i < actions.count; i++)
     {
-      run.sawFalseReset |= actions.kind[i] == FlightAction::RadioPreliftoff;
+      run.sawFalseReset |= actions.kind[i] == FlightAction::RADIO_PRELIFTOFF;
     }
     finishPass(actions.inFlight);
   }

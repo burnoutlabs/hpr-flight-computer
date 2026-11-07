@@ -43,11 +43,11 @@ void processBaroSamp()
   //--------------------------
   // Update in-flight variables
   //--------------------------
-  baro.Alt = baro.rawAlt - baro.baseAlt;
+  baro.alt = baro.rawAlt - baro.baseAlt;
   // update the maximum altitude reporting variable
-  if (baro.Alt > baro.maxAlt && !events.apogee)
+  if (baro.alt > baro.maxAlt && !events.apogee)
   {
-    baro.maxAlt = baro.Alt;
+    baro.maxAlt = baro.alt;
   }
 
   //----------------------------
@@ -58,7 +58,7 @@ void processBaroSamp()
   static byte rawAltPosn = 0;
   // Update the rolling sum
   rawAltSum -= rawAltBuff[rawAltPosn];
-  rawAltBuff[rawAltPosn] = baro.Alt;
+  rawAltBuff[rawAltPosn] = baro.alt;
   rawAltSum += rawAltBuff[rawAltPosn];
   // update the position counter
   rawAltPosn++;
@@ -95,13 +95,13 @@ void processBaroSamp()
     }
   }
   // calculate the barometric derived velocity from the moving averages
-  baro.Vel = (baro.smoothAlt - altAvgBuff[baroVelPosn]) / ((float)(baro.timeLastSamp - baroTimeBuff[baroVelPosn]) * mlnth);
+  baro.vel = (baro.smoothAlt - altAvgBuff[baroVelPosn]) / ((float)(baro.timeLastSamp - baroTimeBuff[baroVelPosn]) * MILLIONTH);
   // update variables
-  if (baro.Vel > baro.maxVel)
+  if (baro.vel > baro.maxVel)
   {
-    baro.maxVel = baro.Vel;
+    baro.maxVel = baro.vel;
   }
-  radio.vel = baro.Vel;
+  radio.vel = baro.vel;
   radio.alt = baro.smoothAlt;
   altAvgBuff[altAvgPosn] = baro.smoothAlt;
   baroTimeBuff[altAvgPosn] = baro.timeLastSamp;
@@ -112,14 +112,14 @@ void processBaroSamp()
   }
   if (events.apogeeFire || settings.testMode)
   {
-    fusionVel = baro.Vel;
+    fusionVel = baro.vel;
     fusionAlt = baro.smoothAlt;
   }
 
   //----------------------------
   // Barometric touchdown trigger
   //----------------------------
-  (events.mainDeploy && fabs(baro.Vel) < 1.0F) ? baroTouchdown++ : baroTouchdown = 0;
+  (events.mainDeploy && fabs(baro.vel) < 1.0F) ? baroTouchdown++ : baroTouchdown = 0;
 }
 
 void pushFlightAction(FlightActions &actions, FlightAction kind, uint8_t arg)
@@ -140,7 +140,7 @@ void firePyros(char event, FlightActions &actions)
     if (pyros[i].func == event)
     {
       pins.firePin = pyros[i].firePin;
-      pushFlightAction(actions, FlightAction::PinHigh, pyros[i].firePin);
+      pushFlightAction(actions, FlightAction::PIN_HIGH, pyros[i].firePin);
       pyros[i].fireStatus = true;
       pyros[i].fireStart = fltTime.timeCurrent;
     }
@@ -158,12 +158,12 @@ void pulsePyro(FlightActions &actions)
     {
       if (pinHigh[i])
       {
-        pushFlightAction(actions, FlightAction::PinLow, pyros[i].firePin);
+        pushFlightAction(actions, FlightAction::PIN_LOW, pyros[i].firePin);
         pinHigh[i] = false;
       }
       else
       {
-        pushFlightAction(actions, FlightAction::PinHigh, pyros[i].firePin);
+        pushFlightAction(actions, FlightAction::PIN_HIGH, pyros[i].firePin);
         pinHigh[i] = true;
       }
     }

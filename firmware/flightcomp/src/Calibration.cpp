@@ -565,15 +565,15 @@ void setOrientation()
   // correct IMU bias for 1G
   if (accel.orientX == 'Z')
   {
-    accel.biasX -= accel.dirX * g;
+    accel.biasX -= accel.dirX * accel1G;
   }
   if (accel.orientY == 'Z')
   {
-    accel.biasY -= accel.dirY * g;
+    accel.biasY -= accel.dirY * accel1G;
   }
   if (accel.orientZ == 'Z')
   {
-    accel.biasZ -= accel.dirZ * g;
+    accel.biasZ -= accel.dirZ * accel1G;
   }
 
   // correct high-G bias for 1G
@@ -1090,7 +1090,7 @@ void baroCalibrate()
 
   // exit the beeping
   digitalWrite(pins.beep, LOW);
-  beep_counter = 8;
+  beepCounter = 8;
 
   // Send user message
   Serial.println(F("Barometer Calibration mode initiated"));
@@ -1215,12 +1215,12 @@ void baroCalibrate()
   floatUnion.val = baro.tempOffset;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.baroTempOffset + i, floatUnion.Byte[i]);
+    EEPROM.update(eeprom.baroTempOffset + i, floatUnion.bytes[i]);
   }
   floatUnion.val = baro.pressOffset;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.baroPressOffset + i, floatUnion.Byte[i]);
+    EEPROM.update(eeprom.baroPressOffset + i, floatUnion.bytes[i]);
   }
 
   delay(2000);

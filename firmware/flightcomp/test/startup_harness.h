@@ -16,7 +16,7 @@
  * - the SD card, calibration, orientation and telemetry routines (SD.cpp, Calibration.cpp,
  *   Telemetry.cpp, Bus_Mgmt.cpp): logged by name. readFlightSettingsSD() copies the scenario's
  *   settings into the fields the real parser sets.
- * What setup() itself decides, and the real setPolyMorphs(), getQuatRotn() and getDCM2DRotn(),
+ * What setup() itself decides, and the real setPolyMorphs(), getQuatRotn() and getDcm2dRotn(),
  * run as they are.
  *
  * Reading the clock advances it (shimMicrosPerCall), so setup()'s polling loops end.

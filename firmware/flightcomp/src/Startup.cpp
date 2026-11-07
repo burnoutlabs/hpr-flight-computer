@@ -198,13 +198,13 @@ void beginSensors()
 void scaleSensorGains()
 {
   // set Accelerometer G level
-  g = (int16_t)(1.0 / accel.gainX);
+  accel1G = (int16_t)(1.0 / accel.gainX);
   accel.gainX *= 9.80665;
   accel.gainY *= 9.80665;
   accel.gainZ *= 9.80665;
 
   // set the accelerometer liftoff detection g-trigger
-  gTrigger = 2.5 * g;
+  gTrigger = 2.5 * accel1G;
 
   // set high-G accelerometer level
   high1G = (int16_t)(1.0 / highG.gainX);
@@ -349,22 +349,22 @@ static void writeSettingsEeprom()
   ulongUnion.val = settings.setupTime;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.setupTime + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.setupTime + i, ulongUnion.bytes[i]);
   }
   floatUnion.val = settings.mainDeployAlt;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.mainDeployAlt + i, floatUnion.Byte[i]);
+    EEPROM.update(eeprom.mainDeployAlt + i, floatUnion.bytes[i]);
   }
   ulongUnion.val = settings.apogeeDelay;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.apogeeDelay + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.apogeeDelay + i, ulongUnion.bytes[i]);
   }
   ulongUnion.val = settings.rcdTime;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.rcdTime + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.rcdTime + i, ulongUnion.bytes[i]);
   }
   EEPROM.update(eeprom.silentMode, settings.silentMode);
   EEPROM.update(eeprom.magSwitchEnable, settings.magSwitchEnable);
@@ -373,7 +373,7 @@ static void writeSettingsEeprom()
   ulongUnion.val = settings.fireTime;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.fireTime + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.fireTime + i, ulongUnion.bytes[i]);
   }
   EEPROM.update(eeprom.pyro1Func, settings.pyro1Func);
   EEPROM.update(eeprom.pyro2Func, settings.pyro2Func);
@@ -384,39 +384,39 @@ static void writeSettingsEeprom()
   floatUnion.val = settings.txFreq;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.txFreq + i, floatUnion.Byte[i]);
+    EEPROM.update(eeprom.txFreq + i, floatUnion.bytes[i]);
   }
   ulongUnion.val = settings.boosterSeparationDelay;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.boosterSeparationDelay + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.boosterSeparationDelay + i, ulongUnion.bytes[i]);
   }
   ulongUnion.val = settings.sustainerFireDelay;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.sustainerFireDelay + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.sustainerFireDelay + i, ulongUnion.bytes[i]);
   }
   EEPROM.update(eeprom.airStart1Event, settings.airStart1Event);
   ulongUnion.val = settings.airStart1Delay;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.airStart1Delay + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.airStart1Delay + i, ulongUnion.bytes[i]);
   }
   EEPROM.update(eeprom.airStart2Event, settings.airStart2Event);
   ulongUnion.val = settings.airStart2Delay;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.airStart2Delay + i, ulongUnion.Byte[i]);
+    EEPROM.update(eeprom.airStart2Delay + i, ulongUnion.bytes[i]);
   }
   intUnion.val = settings.altThreshold;
   for (byte i = 0; i < 2; i++)
   {
-    EEPROM.update(eeprom.altThreshold + i, intUnion.Byte[i]);
+    EEPROM.update(eeprom.altThreshold + i, intUnion.bytes[i]);
   }
   intUnion.val = settings.maxAngle;
   for (byte i = 0; i < 2; i++)
   {
-    EEPROM.update(eeprom.maxAngle + i, intUnion.Byte[i]);
+    EEPROM.update(eeprom.maxAngle + i, intUnion.bytes[i]);
   }
   EEPROM.update(eeprom.stableRotn, settings.stableRotn);
   EEPROM.update(eeprom.stableVert, settings.stableVert);
@@ -581,12 +581,12 @@ void readCalibrationEeprom()
   mag.biasZ = calUnion.calValue;
   for (byte i = 0; i < 4; i++)
   {
-    floatUnion.Byte[i] = (byte)EEPROM.read(eeprom.baroPressOffset + i);
+    floatUnion.bytes[i] = (byte)EEPROM.read(eeprom.baroPressOffset + i);
   }
   baro.pressOffset = floatUnion.val;
   for (byte i = 0; i < 4; i++)
   {
-    floatUnion.Byte[i] = (byte)EEPROM.read(eeprom.baroTempOffset + i);
+    floatUnion.bytes[i] = (byte)EEPROM.read(eeprom.baroTempOffset + i);
   }
   baro.tempOffset = floatUnion.val;
 
@@ -692,7 +692,7 @@ static void applyBenchTestOverrides()
   {
     settings.rcdTime = 30000000UL;
   } // 30s of record time for serial plotting
-  gTrigger = (int)(1.5 * g); // 1.5G trigger
+  gTrigger = (int)(1.5 * accel1G); // 1.5G trigger
   baro.maxAlt = 11101 / unitConvert;
   maxVelocity = 202 / unitConvert;
   pktInterval.postFlight = 1000000UL;
@@ -987,20 +987,20 @@ static void calibrateOnPad()
   // Compute the acceleromter based rotation angle
   if (accel.y0 >= 0)
   {
-    yawY0 = asinf(min(1, (float)accel.y0 / (float)g)) * RAD_TO_DEG;
+    yawY0 = asinf(min(1, (float)accel.y0 / (float)accel1G)) * RAD_TO_DEG;
   }
   else
   {
-    yawY0 = asinf(max(-1, (float)accel.y0 / (float)g)) * RAD_TO_DEG;
+    yawY0 = asinf(max(-1, (float)accel.y0 / (float)accel1G)) * RAD_TO_DEG;
   }
 
   if (accel.x0 >= 0)
   {
-    pitchX0 = asinf(min(1, (float)accel.x0 / (float)g)) * RAD_TO_DEG;
+    pitchX0 = asinf(min(1, (float)accel.x0 / (float)accel1G)) * RAD_TO_DEG;
   }
   else
   {
-    pitchX0 = asinf(max(-1, (float)accel.x0 / (float)g)) * RAD_TO_DEG;
+    pitchX0 = asinf(max(-1, (float)accel.x0 / (float)accel1G)) * RAD_TO_DEG;
   }
 
   // update quaternion rotation
@@ -1008,7 +1008,7 @@ static void calibrateOnPad()
   // use DCM2D if we are deploying control surfaces
   if (settings.stableRotn || settings.stableVert)
   {
-    getDCM2DRotn(pitchX0 * 1000000 / gyro.gainZ, yawY0 * 1000000 / gyro.gainZ, 0, gyro.gainZ);
+    getDcm2dRotn(pitchX0 * 1000000 / gyro.gainZ, yawY0 * 1000000 / gyro.gainZ, 0, gyro.gainZ);
   }
   // Output the initial rotation conditions reltative to the Earth
   if (settings.testMode)
@@ -1396,11 +1396,11 @@ void setup(void)
   {
 
     Serial.println(F("Signaling Test Mode"));
-    beep_counter = 0;
-    beep_delay = long_beep_delay;
+    beepCounter = 0;
+    beepDelay = LONG_BEEP_DELAY;
 
     // initiate the 7 beeps to signal test mode
-    while (beep_counter < 8)
+    while (beepCounter < 8)
     {
 
       fltTime.tmClock = micros();
@@ -1420,7 +1420,7 @@ void setup(void)
         {
           settings.calibrationMode = true;
           settings.testMode = true;
-          beep_counter = 8;
+          beepCounter = 8;
           digitalWrite(pins.beep, LOW);
           beep = false;
         }
@@ -1445,12 +1445,12 @@ void setup(void)
       }
 
       // starts the beep
-      if (!beep && fltTime.tmClock - timeLastBeepEnd > beep_delay)
+      if (!beep && fltTime.tmClock - timeLastBeepEnd > beepDelay)
       {
         digitalWrite(pins.beep, HIGH);
         timeBeepStart = fltTime.tmClock;
         beep = true;
-        beep_counter++;
+        beepCounter++;
       }
 
       // stops the beep
@@ -1464,7 +1464,7 @@ void setup(void)
     } // end while
 
     // Reset variables
-    beep_counter = 0;
+    beepCounter = 0;
     timeBeepStart = 0UL;
     timeLastBeepEnd = 0UL;
     fltTime.tmClock = 0UL;
@@ -1596,7 +1596,7 @@ void setup(void)
   }
 
   // set the beep delay and preflight beep code
-  beep_delay = long_beep_delay;
+  beepDelay = LONG_BEEP_DELAY;
   beepCode = cont.beepCode;
 
   // if the magnetic switch is enabled, beep the continuity code until the magnet is sensed
@@ -1633,7 +1633,7 @@ void setup(void)
   radioTimer.begin(timerBuildPkt, pktInterval.preLiftoff);
   if (settings.fltProfile == 'B')
   {
-    radio.event = Booster_Preflight;
+    radio.event = BOOSTER_PREFLIGHT;
   }
   Serial.println("End Setup");
 } // end setup

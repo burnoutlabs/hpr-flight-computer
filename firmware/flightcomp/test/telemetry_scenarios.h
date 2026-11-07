@@ -91,7 +91,7 @@ static void resetTelemetryState()
   FHSS.hailChnl = 0;
   memset(dataPacket, 0, sizeof(dataPacket));
   radio = RadioTelemetry();
-  events = eventList();
+  events = EventList();
   sampNum = 0;
   packetSamples = 4;
   pktPosn = 0;

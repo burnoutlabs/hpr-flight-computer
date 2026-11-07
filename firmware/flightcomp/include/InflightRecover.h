@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-/** Whether a flight whose last recorded event (a flightCodes value) is lastEvent can be resumed. */
+/** Whether a flight whose last recorded event (a FlightCode value) is lastEvent can be resumed. */
 bool isRecoverableEvent(uint8_t lastEvent);
 
 /**

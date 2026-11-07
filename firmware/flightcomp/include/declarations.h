@@ -355,13 +355,13 @@ typedef struct
   unsigned long fireStart;
   uint8_t contPin;
   uint8_t firePin;
-} pyroMap;
+} PyroMap;
 // the four pyro channels: pyros[0] is pyro 1
-extern pyroMap pyros[4];
+extern PyroMap pyros[4];
 //-----------------------------------------
 // flight events
 //-----------------------------------------
-struct eventList
+struct EventList
 {
   bool preLiftoff = true;
   bool inFlight = false;
@@ -392,12 +392,12 @@ struct eventList
   bool touchdown = false;
   bool timeOut = false;
 };
-alignas(4) extern struct eventList events;
-alignas(4) extern struct eventList resetEvents;
+alignas(4) extern struct EventList events;
+alignas(4) extern struct EventList resetEvents;
 //-----------------------------------------
 // Master timing variables
 //-----------------------------------------
-struct timerList
+struct TimerList
 {
   unsigned long liftoff = 0UL;
   unsigned long detectLiftoffTime = 500000UL; // 0.5s
@@ -428,8 +428,8 @@ struct timerList
   unsigned long timeCurrent = 0UL;
   unsigned long dt = 0UL;
 };
-extern struct timerList fltTime;
-extern struct timerList resetFltTime;
+extern struct TimerList fltTime;
+extern struct TimerList resetFltTime;
 //-----------------------------------------
 // GPIO pin mapping
 //-----------------------------------------
@@ -540,8 +540,8 @@ alignas(4) extern ContinuityStatus cont;
 //-----------------------------------------
 // Non-Event Booleans
 //-----------------------------------------
-extern bool rotnOK;
-extern bool altOK;
+extern bool rotnOk;
+extern bool altOk;
 extern bool beep;
 extern bool pyroFire;
 extern bool fileClose;
@@ -550,7 +550,7 @@ extern float unitConvert;
 //-----------------------------------------
 // digital accelerometer variables
 //-----------------------------------------
-extern int g;
+extern int accel1G;
 extern float accelNow;
 extern float maxG;
 extern int gTrigger; // 2.5G trigger
@@ -559,11 +559,11 @@ extern int gTrigger; // 2.5G trigger
 //-----------------------------------------
 extern int high1G;
 extern bool filterFull;
-extern long highGsum;
-extern int highGfilter[30];
-extern uint8_t sizeHighGfilter;
+extern long highGSum;
+extern int highGFilter[30];
+extern uint8_t sizeHighGFilter;
 extern uint8_t filterPosn;
-extern float highGsmooth;
+extern float highGSmooth;
 extern float adcConvert;
 extern uint16_t adcMidValue;
 union CalUnion
@@ -578,11 +578,11 @@ alignas(4) extern CalUnion calUnion;
 struct BaroData
 {
   float rawAlt = 0.0F;
-  float Alt = 0.0F;
+  float alt = 0.0F;
   float baseAlt = 10.0F;
   float maxAlt = 0.0F;
   float smoothAlt = 0.0F;
-  float Vel = 0.0F;
+  float vel = 0.0F;
   float maxVel = 0.0F;
   float pressure;
   float temperature;
@@ -616,15 +616,15 @@ extern int magYaw;
 //-----------------------------------------
 // gyro & rotation variables
 //-----------------------------------------
-extern long dx;
-extern long dy;
-extern long dz;
+extern long gyroDeltaX;
+extern long gyroDeltaY;
+extern long gyroDeltaZ;
 extern float yawY0;
 extern float pitchX0;
 extern int pitchX;
 extern int yawY;
 extern long rollZ;
-const float mlnth = 0.000001;
+const float MILLIONTH = 0.000001;
 extern int offVert;
 extern bool rotationFault;
 //-----------------------------------------
@@ -646,11 +646,11 @@ extern uint32_t clearRailTime;
 //-----------------------------------------
 // beeper variables
 //-----------------------------------------
-extern uint8_t beep_counter;
+extern uint8_t beepCounter;
 extern uint8_t beepPosn;
-extern uint32_t beep_delay;
+extern uint32_t beepDelay;
 extern uint8_t beepCode;
-extern uint32_t beep_len;
+extern uint32_t beepLen;
 extern uint32_t timeBeepStart;
 extern uint32_t timeLastBeepEnd;
 extern bool beepAlt;
@@ -658,12 +658,12 @@ extern bool beepVel;
 extern bool beepCont;
 extern bool beepAlarm;
 extern bool livePyroAlarm;
-const uint32_t short_beep_delay = 100000UL;
-const uint32_t long_beep_delay = 800000UL;
-const uint32_t alarmBeepDelay = 10000UL;
-const uint32_t alarmBeepLen = 10000UL;
-const uint32_t medBeepLen = 100000UL;
-const uint32_t shortBeepLen = 10000UL;
+const uint32_t SHORT_BEEP_DELAY = 100000UL;
+const uint32_t LONG_BEEP_DELAY = 800000UL;
+const uint32_t ALARM_BEEP_DELAY = 10000UL;
+const uint32_t ALARM_BEEP_LEN = 10000UL;
+const uint32_t MED_BEEP_LEN = 100000UL;
+const uint32_t SHORT_BEEP_LEN = 10000UL;
 //-----------------------------------------
 // SD card writing variables
 //-----------------------------------------
@@ -688,7 +688,7 @@ extern bool writeVolt;
 extern unsigned long voltRate;
 extern uint16_t voltReading;
 extern unsigned long lastVolt;
-extern bool reportCode; // true = report max altitude, false = report max velocity
+extern bool reportMaxAlt; // true = report max altitude, false = report max velocity
 extern uint8_t postFlightCode;
 const char cs = ',';
 //-----------------------------------------
@@ -744,19 +744,19 @@ extern GnssData gnss;
 union UlongUnion
 {
   unsigned long val;
-  byte Byte[4];
+  byte bytes[4];
 };
 extern UlongUnion ulongUnion;
 union IntUnion
 {
   int val;
-  byte Byte[2];
+  byte bytes[2];
 };
 extern IntUnion intUnion;
 union FloatUnion
 {
   float val;
-  byte Byte[4];
+  byte bytes[4];
 };
 extern FloatUnion floatUnion;
 //-----------------------------------------
@@ -765,7 +765,7 @@ extern FloatUnion floatUnion;
 extern char userInput;
 // servo trims in degrees, by servo: servoTrim[0] is servo 1
 extern int8_t servoTrim[8];
-const uint32_t controlInterval = 50000UL;
+const uint32_t CONTROL_INTERVAL = 50000UL;
 extern uint32_t timeLastControl;
 extern float kp;
 extern float ki;
@@ -787,41 +787,41 @@ extern uint32_t debugTimer;
 //--------------------------------------------
 // Radio event codes to eliminate magic numbers
 //--------------------------------------------
-enum flightCodes
+enum FlightCode
 {
-  Preflight = 0,
-  Liftoff = 1,
-  Booster_Burnout = 2,
-  Apogee = 3,
-  Fire_Apogee = 4,
-  Separation = 5,
-  Fire_Mains = 6,
-  Under_Chute = 7,
-  Eject_Booster = 8,
-  Fire_Sustainer = 9,
-  Sustainer_Ignition = 10,
-  Sustainer_Burnout = 11,
-  Fire_Airstart1 = 12,
-  Airstart1_Ignition = 13,
-  Airstart1_Burnout = 14,
-  Fire_Airstart2 = 15,
-  Airstart2_Ignition = 16,
-  Airstart2_Burnout = 17,
-  NoFire_Rotn_Limit = 18,
-  NoFire_Alt_Limit = 19,
-  NoFire_RotnAlt_Limit = 20,
-  Booster_Apogee = 21,
-  Fire_Booster_Apogee = 22,
-  Booster_Separation = 23,
-  Fire_Booster_Mains = 24,
-  Booster_Under_Chute = 25,
-  Time_Limit = 26,
-  Touchdown = 27,
-  Power_Loss_Restart = 28,
-  Booster_Touchdown = 29,
-  Booster_Preflight = 30,
-  Booster_Time_Limit = 31,
-  Booster_Power_Loss = 32
+  PREFLIGHT = 0,
+  LIFTOFF = 1,
+  BOOSTER_BURNOUT = 2,
+  APOGEE = 3,
+  FIRE_APOGEE = 4,
+  SEPARATION = 5,
+  FIRE_MAINS = 6,
+  UNDER_CHUTE = 7,
+  EJECT_BOOSTER = 8,
+  FIRE_SUSTAINER = 9,
+  SUSTAINER_IGNITION = 10,
+  SUSTAINER_BURNOUT = 11,
+  FIRE_AIRSTART1 = 12,
+  AIRSTART1_IGNITION = 13,
+  AIRSTART1_BURNOUT = 14,
+  FIRE_AIRSTART2 = 15,
+  AIRSTART2_IGNITION = 16,
+  AIRSTART2_BURNOUT = 17,
+  NO_FIRE_ROTN_LIMIT = 18,
+  NO_FIRE_ALT_LIMIT = 19,
+  NO_FIRE_ROTN_ALT_LIMIT = 20,
+  BOOSTER_APOGEE = 21,
+  FIRE_BOOSTER_APOGEE = 22,
+  BOOSTER_SEPARATION = 23,
+  FIRE_BOOSTER_MAINS = 24,
+  BOOSTER_UNDER_CHUTE = 25,
+  TIME_LIMIT = 26,
+  TOUCHDOWN = 27,
+  POWER_LOSS_RESTART = 28,
+  BOOSTER_TOUCHDOWN = 29,
+  BOOSTER_PREFLIGHT = 30,
+  BOOSTER_TIME_LIMIT = 31,
+  BOOSTER_POWER_LOSS = 32
 };
 //--------------------------------------------
 // Radio operating modes (RegOpMode)

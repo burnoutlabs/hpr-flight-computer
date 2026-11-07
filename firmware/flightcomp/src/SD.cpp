@@ -829,11 +829,11 @@ void writeSDfooterClose()
   outputFile.print(settings.pyro1Func);
   outputFile.print(cs);
   strPosn = 0;
-  writeFloatData(((float)settings.apogeeDelay) * mlnth, 1);
+  writeFloatData(((float)settings.apogeeDelay) * MILLIONTH, 1);
   writeFloatData(((float)settings.mainDeployAlt) * unitConvert, 0);
   writeFloatData(((float)settings.setupTime) / 1000, 0); // issue
-  writeFloatData(settings.rcdTime * mlnth, 0);
-  writeFloatData(settings.fireTime * mlnth, 1);
+  writeFloatData(settings.rcdTime * MILLIONTH, 0);
+  writeFloatData(settings.fireTime * MILLIONTH, 1);
   writeBoolData(settings.txEnable);
   dataString[strPosn] = cs;
   strPosn++;
@@ -845,8 +845,8 @@ void writeSDfooterClose()
   writeFloatData(baro.seaLevelPressure, 2);
   if (settings.fltProfile == '2')
   {
-    writeFloatData(settings.sustainerFireDelay * mlnth, 1);
-    writeFloatData(settings.boosterSeparationDelay * mlnth, 1);
+    writeFloatData(settings.sustainerFireDelay * MILLIONTH, 1);
+    writeFloatData(settings.boosterSeparationDelay * MILLIONTH, 1);
     writeIntData((int)(10 * int(settings.altThreshold * (unitConvert / 10))));
     writeIntData(settings.maxAngle / 10);
   }
@@ -854,10 +854,10 @@ void writeSDfooterClose()
   {
     dataString[strPosn] = settings.airStart1Event;
     strPosn++;
-    writeFloatData(settings.airStart1Delay * mlnth, 1);
+    writeFloatData(settings.airStart1Delay * MILLIONTH, 1);
     dataString[strPosn] = settings.airStart2Event;
     strPosn++;
-    writeFloatData(settings.airStart2Delay * mlnth, 1);
+    writeFloatData(settings.airStart2Delay * MILLIONTH, 1);
     writeIntData((int)(10 * int(settings.altThreshold * (unitConvert / 10))));
     writeIntData(settings.maxAngle / 10);
   }

@@ -16,6 +16,6 @@
 #include "rotation_cases.h"
 
 // Guard against testing the other path by mistake
-static_assert(sizeof(Quat[0]) == 4, "expected the float getQuatRotn() path");
+static_assert(sizeof(quat[0]) == 4, "expected the float getQuatRotn() path");
 
 int main() { return runRotationTests(); }

@@ -8,7 +8,7 @@
  * - `magRotn()`: Computes roll and heading from the magnetometer.
  * - `getRotnDCM2D()`: Uses an optimized DCM code to calculate the 2D rotation for active stabilization.
  * - `setCanards()`: Controls active stabilization using canards.
- * - `setRTB()`: Implements control logic for a rocket's return-to-base feature.
+ * - `setRtb()`: Implements control logic for a rocket's return-to-base feature.
  *
  * Change Log:
  * - 17 JUL 21: Initial file breakout created.
@@ -25,15 +25,15 @@
 #include "Speed_Trig.h"
 
 // getQuatRotn() state, at file scope rather than as function-local statics so that
-// the host tests can reset it between cases. Rotation (Quat) and roll-unwrapping
+// the host tests can reset it between cases. Rotation (quat) and roll-unwrapping
 // holders; the types differ between the double and float paths as before.
 #if defined(__IMXRT1062__)
-static double Quat[5] = {0.0, 1.0, 0.0, 0.0, 0.0};
+static double quat[5] = {0.0, 1.0, 0.0, 0.0, 0.0};
 static double prevRollZ = 0;
 static double quatRollZ = 0;
 static double fullRollZ = 0;
 #else
-static float Quat[5] = {0.0, 1.0, 0.0, 0.0, 0.0};
+static float quat[5] = {0.0, 1.0, 0.0, 0.0, 0.0};
 static long prevRollZ = 0;
 static long quatRollZ = 0;
 static long fullRollZ = 0;
@@ -55,10 +55,10 @@ void getQuatRotn(double dx, double dy, double dz, double gyroGain)
 {
 
   // Local Vectors
-  double QuatDiff[5];
-  double Rotn1[4];
-  double Rotn2[4];
-  double Rotn3[4];
+  double quatDiff[5];
+  double rotn1[4];
+  double rotn2[4];
+  double rotn3[4];
   double quatLen;
   double a, b, c, d, a2, b2, c2, d2, ab, ac, ad, bc, bd, cd;
 
@@ -69,10 +69,10 @@ void getQuatRotn(double dx, double dy, double dz, double gyroGain)
 void getQuatRotn(float dx, float dy, float dz, float gyroGain)
 {
   // Local Vectors
-  float QuatDiff[5];
-  float Rotn1[4];
-  float Rotn2[4];
-  float Rotn3[4];
+  float quatDiff[5];
+  float rotn1[4];
+  float rotn2[4];
+  float rotn3[4];
   float quatLen;
   float a, b, c, d, a2, b2, c2, d2, ab, ac, ad, bc, bd, cd;
 
@@ -86,29 +86,29 @@ void getQuatRotn(float dx, float dy, float dz, float gyroGain)
   dz *= rotn2rad;
 
   // Compute quaternion derivative
-  QuatDiff[1] = 0.5 * (-1 * dx * Quat[2] - dy * Quat[3] - dz * Quat[4]);
-  QuatDiff[2] = 0.5 * (dx * Quat[1] - dy * Quat[4] + dz * Quat[3]);
-  QuatDiff[3] = 0.5 * (dx * Quat[4] + dy * Quat[1] - dz * Quat[2]);
-  QuatDiff[4] = 0.5 * (-1 * dx * Quat[3] + dy * Quat[2] + dz * Quat[1]);
+  quatDiff[1] = 0.5 * (-1 * dx * quat[2] - dy * quat[3] - dz * quat[4]);
+  quatDiff[2] = 0.5 * (dx * quat[1] - dy * quat[4] + dz * quat[3]);
+  quatDiff[3] = 0.5 * (dx * quat[4] + dy * quat[1] - dz * quat[2]);
+  quatDiff[4] = 0.5 * (-1 * dx * quat[3] + dy * quat[2] + dz * quat[1]);
 
   // Update the quaternion
-  Quat[1] += QuatDiff[1];
-  Quat[2] += QuatDiff[2];
-  Quat[3] += QuatDiff[3];
-  Quat[4] += QuatDiff[4];
+  quat[1] += quatDiff[1];
+  quat[2] += quatDiff[2];
+  quat[3] += quatDiff[3];
+  quat[4] += quatDiff[4];
 
   // re-normalize
-  quatLen = powf(Quat[1] * Quat[1] + Quat[2] * Quat[2] + Quat[3] * Quat[3] + Quat[4] * Quat[4], -0.5);
-  Quat[1] *= quatLen;
-  Quat[2] *= quatLen;
-  Quat[3] *= quatLen;
-  Quat[4] *= quatLen;
+  quatLen = powf(quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3] + quat[4] * quat[4], -0.5);
+  quat[1] *= quatLen;
+  quat[2] *= quatLen;
+  quat[3] *= quatLen;
+  quat[4] *= quatLen;
 
   // compute the components of the rotation matrix
-  a = Quat[1];
-  b = Quat[2];
-  c = Quat[3];
-  d = Quat[4];
+  a = quat[1];
+  b = quat[2];
+  c = quat[3];
+  d = quat[4];
   a2 = a * a;
   b2 = b * b;
   c2 = c * c;
@@ -121,22 +121,22 @@ void getQuatRotn(float dx, float dy, float dz, float gyroGain)
   cd = c * d;
 
   // Compute rotation matrix
-  Rotn1[1] = a2 + b2 - c2 - d2;
-  // Rotn1[2] = 2 * (bc - ad);
-  // Rotn1[3] = 2 * (bd + ac);
-  Rotn2[1] = 2 * (bc + ad);
-  // Rotn2[2] = a2 - b2 + c2 - d2;
-  // Rotn2[3] = 2 * (cd - ab);
-  Rotn3[1] = 2 * (bd - ac);
-  Rotn3[2] = 2 * (cd + ab);
-  Rotn3[3] = a2 - b2 - c2 + d2;
+  rotn1[1] = a2 + b2 - c2 - d2;
+  // rotn1[2] = 2 * (bc - ad);
+  // rotn1[3] = 2 * (bd + ac);
+  rotn2[1] = 2 * (bc + ad);
+  // rotn2[2] = a2 - b2 + c2 - d2;
+  // rotn2[3] = 2 * (cd - ab);
+  rotn3[1] = 2 * (bd - ac);
+  rotn3[2] = 2 * (cd + ab);
+  rotn3[3] = a2 - b2 - c2 + d2;
 
   // compute 3D orientation
-  pitchX = speedAtan2(Rotn3[2], Rotn3[3]); // this returns tenths of a degree, not whole degrees
-  yawY = speedArcSin(-1 * Rotn3[1]);       // this returns tenths of a degree, not whole degrees
+  pitchX = speedAtan2(rotn3[2], rotn3[3]); // this returns tenths of a degree, not whole degrees
+  yawY = speedArcSin(-1 * rotn3[1]);       // this returns tenths of a degree, not whole degrees
 
   prevRollZ = quatRollZ;
-  quatRollZ = speedAtan2(Rotn2[1], Rotn1[1]);
+  quatRollZ = speedAtan2(rotn2[1], rotn1[1]);
   if (quatRollZ - prevRollZ > 1800)
   {
     fullRollZ--;
@@ -154,14 +154,14 @@ void getQuatRotn(float dx, float dy, float dz, float gyroGain)
   float hyp2 = powf(hyp1, 0.5);
   offVert = speedArcTan(hyp2); // this returns tenths of a degree, not whole degrees
 
-  // as long as the rocket never exceeded 45 degrees, set the rotnOK variable to whether or not the current off-vertical rotation is within the allowable cone
-  rotnOK = (!rotationFault && offVert < settings.maxAngle) ? true : false;
+  // as long as the rocket never exceeded 45 degrees, set the rotnOk variable to whether or not the current off-vertical rotation is within the allowable cone
+  rotnOk = (!rotationFault && offVert < settings.maxAngle) ? true : false;
 
   // if the rocket goes outside a 45 degree cone, then permanently shut-down all airstart events.  The rocket is probably skywriting or experienced a failure
   if (!rotationFault && offVert > 450)
   {
     rotationFault = true;
-    rotnOK = false;
+    rotnOk = false;
   }
 
 } // end getQuatRotn
@@ -170,7 +170,7 @@ void getQuatRotn(float dx, float dy, float dz, float gyroGain)
 float cosZ = 1.0F;
 float sinZ = 0.0F;
 
-// getDCM2DRotn() state, at file scope so that the host tests can reset it
+// getDcm2dRotn() state, at file scope so that the host tests can reset it
 static float rawX = 0.0F;
 static float rawY = 0.0F;
 static float rawZ = 0.0F;
@@ -182,7 +182,7 @@ static float rawZ = 0.0F;
  * @param dz Gyroscope data along the Z-axis.
  * @param gyroGain Gain factor for the gyroscope.
  */
-void getDCM2DRotn(long dx, long dy, long dz, float gyroGain)
+void getDcm2dRotn(long dx, long dy, long dz, float gyroGain)
 {
   // this is a simplified Euler method that ONLY works for the simple rotations experienced by rockets (i.e. approximately a 2D arc to apogee)
   // this method will NOT give accurate results for complex rotations (i.e. significant coning or tumbling), use quaternions instead for maximum accuracy
@@ -192,7 +192,7 @@ void getDCM2DRotn(long dx, long dy, long dz, float gyroGain)
 
   // Calculate new Z angle from gyro data
   rawZ += dz;
-  float radNewRoll = dz * gyroGain * DEG_TO_RAD * mlnth; // convert to radians
+  float radNewRoll = dz * gyroGain * DEG_TO_RAD * MILLIONTH; // convert to radians
 
   // compute sin(roll) and cos(roll)
   float sinNewRoll = sinSmallAngle(radNewRoll);
@@ -207,9 +207,9 @@ void getDCM2DRotn(long dx, long dy, long dz, float gyroGain)
   rawY += (cosZ * dy + sinZ * dx);
 
   // Compute Pitch, Roll, Yaw
-  rollZ = (long)((rawZ * gyroGain) * mlnth);
-  pitchX = (int)((rawX * gyroGain) * mlnth * 10); // we report the value in tenths of a degree, not whole degrees
-  yawY = (int)((rawY * gyroGain) * mlnth * 10);
+  rollZ = (long)((rawZ * gyroGain) * MILLIONTH);
+  pitchX = (int)((rawX * gyroGain) * MILLIONTH * 10); // we report the value in tenths of a degree, not whole degrees
+  yawY = (int)((rawY * gyroGain) * MILLIONTH * 10);
 
   // Compute off-vertical
   float tanYaw = speedTan(yawY);
@@ -225,12 +225,12 @@ void getDCM2DRotn(long dx, long dy, long dz, float gyroGain)
     // check to see if the maximum angle has been exceeded
     if (!rotationFault && offVert > settings.maxAngle)
     {
-      rotnOK = false;
+      rotnOk = false;
     }
     if (!rotationFault && offVert > 450)
     {
       rotationFault = true;
-      rotnOK = false;
+      rotnOk = false;
     }
   }
 } // end void
@@ -246,12 +246,12 @@ float rollPosn;
 void setCanards()
 {
 
-  const float KpYawPitch = 0.03;
-  const float KiYawPitch = 0.0;
-  const float KdYawPitch = 0.0;
-  const float KpRoll = 0.0015;
-  const float KiRoll = 0.0;
-  const float KdRoll = 0.0005;
+  const float kpYawPitch = 0.03;
+  const float kiYawPitch = 0.0;
+  const float kdYawPitch = 0.0;
+  const float kpRoll = 0.0015;
+  const float kiRoll = 0.0;
+  const float kdRoll = 0.0005;
   const float rollSetPoint = 0.0F;
   const float pitchSetPoint = 0.0F;
   const float yawSetPoint = 0.0F;
@@ -317,7 +317,7 @@ void setCanards()
   {
 
     // Update Integral Terms
-    rollErrorInt += rollError * cdt * mlnth;
+    rollErrorInt += rollError * cdt * MILLIONTH;
 
     // Prevent Integral Wind-Up in bench-test mode
     if (settings.testMode)
@@ -326,7 +326,7 @@ void setCanards()
     }
 
     // Update roll position correction
-    rollTorqueInput = KpRoll * rollError + KiRoll * rollErrorInt + KdRoll * gyro.z * gyro.gainZ;
+    rollTorqueInput = kpRoll * rollError + kiRoll * rollErrorInt + kdRoll * gyro.z * gyro.gainZ;
     if (fabs(rollTorqueInput) > maxTorqueInput)
     {
       rollTorqueInput = ((rollTorqueInput > 0) ? 1 : -1) * maxTorqueInput;
@@ -364,8 +364,8 @@ void setCanards()
   {
 
     // Update integral terms
-    pitchErrorInt += pitchError * cdt * mlnth;
-    yawErrorInt += yawError * cdt * mlnth;
+    pitchErrorInt += pitchError * cdt * MILLIONTH;
+    yawErrorInt += yawError * cdt * MILLIONTH;
 
     // Prevent Integral Wind-Up in bench-test mode
     if (settings.testMode)
@@ -374,8 +374,8 @@ void setCanards()
     }
 
     // Update pitch & yaw correction positions, sinZ & cosZ are the sine and cosine of the roll angle
-    pitchTorqueInput = KpYawPitch * pitchError + KiYawPitch * pitchErrorInt + KdYawPitch * (cosZ * gyro.gainX * gyro.x + sinZ * gyro.gainY * gyro.y);
-    yawTorqueInput = KpYawPitch * yawError + KiYawPitch * yawErrorInt + KdYawPitch * (cosZ * gyro.gainY * gyro.y - sinZ * gyro.gainX * gyro.x);
+    pitchTorqueInput = kpYawPitch * pitchError + kiYawPitch * pitchErrorInt + kdYawPitch * (cosZ * gyro.gainX * gyro.x + sinZ * gyro.gainY * gyro.y);
+    yawTorqueInput = kpYawPitch * yawError + kiYawPitch * yawErrorInt + kdYawPitch * (cosZ * gyro.gainY * gyro.y - sinZ * gyro.gainX * gyro.x);
     if (fabs(pitchTorqueInput) > maxTorqueInput)
     {
       pitchTorqueInput = ((rollTorqueInput > 0) ? 1 : -1) * maxTorqueInput;
@@ -463,7 +463,7 @@ void setCanards()
   if (settings.testMode && !serialPlotter)
   {
     Serial.print("***Time: ");
-    Serial.println(fltTime.timeCurrent * mlnth, 2);
+    Serial.println(fltTime.timeCurrent * MILLIONTH, 2);
     Serial.print("Roll, Pitch, Yaw: ");
     Serial.print(rollZ);
     Serial.print(", ");
@@ -520,18 +520,18 @@ void setCanards()
  * rate of descent, current altitude, and distance from the landing point. The function sets servo throws to correct for
  * roll and bearing.
  */
-void setRTB()
+void setRtb()
 {
 
   const float rollTorqueArm = 0.046482; // 1.83in = 0.0464m
   // const float bearingTorqueArm =  0.46482;//18in = 0.464m
   float maxTorqueInput = 4.0;
-  const float KpLandPoint = 0.03;
-  const float KiLandPoint = 0.0;
-  const float KdLandPoint = 0.0;
-  const float KpRoll = 0.0015;
-  const float KiRoll = 0.0;
-  const float KdRoll = 0.0005;
+  const float kpLandPoint = 0.03;
+  const float kiLandPoint = 0.0;
+  const float kdLandPoint = 0.0;
+  const float kpRoll = 0.0015;
+  const float kiRoll = 0.0;
+  const float kdRoll = 0.0005;
   uint32_t cdt;
   static uint32_t lastUpdate = 0UL;
   static float bearingErrorInt = 0.0F;
@@ -576,7 +576,7 @@ void setRTB()
   float bearingError = bearingSetpoint - magBearing;
 
   // Update Integral Terms
-  bearingErrorInt += bearingError * cdt * mlnth;
+  bearingErrorInt += bearingError * cdt * MILLIONTH;
 
   // Prevent Integral Wind-Up in bench-test mode
   if (settings.testMode)
@@ -587,7 +587,7 @@ void setRTB()
   // set the roll to the bearing with fins 3 & 4
   // use torque generation model from above
   // Update roll position correction
-  float bearingTorqueInput = KpRoll * bearingError + KiRoll * bearingErrorInt + KdRoll * gyro.z * gyro.gainZ;
+  float bearingTorqueInput = kpRoll * bearingError + kiRoll * bearingErrorInt + kdRoll * gyro.z * gyro.gainZ;
   if (fabs(bearingTorqueInput) > maxTorqueInput)
   {
     bearingTorqueInput = ((bearingTorqueInput > 0) ? 1 : -1) * maxTorqueInput;
@@ -662,16 +662,16 @@ void setRTB()
 
   // else estimate the landing point
   // float timeToLand = (gnss.alt - settings.mainDeployAlt) / fabs(gnss.vel);//subtract out the main deployment altitude because we want it back at the launch position when the mains come out
-  float distanceToLandPoint = calcGPSdist(gnss.liftoff.longitude, gnss.liftoff.latitude, gnss.longitude, gnss.latitude);
+  float distanceToLandPoint = calcGpsDist(gnss.liftoff.longitude, gnss.liftoff.latitude, gnss.longitude, gnss.latitude);
   float gpsGroundSpeed = GPS.speed.mps();
   float landPointEst = distanceToLandPoint / gpsGroundSpeed;
   float landPointError = distanceToLandPoint - landPointEst;
 
   // Update Integral Terms
-  landPointErrorInt += landPointError * cdt * mlnth;
+  landPointErrorInt += landPointError * cdt * MILLIONTH;
 
   // calculate the controlThrow
-  throwServo1 = KpLandPoint * landPointError + KiLandPoint * landPointErrorInt + KdLandPoint * (landPointError - prevLandPointError);
+  throwServo1 = kpLandPoint * landPointError + kiLandPoint * landPointErrorInt + kdLandPoint * (landPointError - prevLandPointError);
   throwServo2 = -1 * throwServo1;
   prevLandPointError = landPointError;
 
@@ -687,15 +687,15 @@ void setRTB()
   // fin pointed in the negative-y rocket-frame
   servos[1].write(throwServo2 - servoTrim[1]);
 
-} // end setRTB
+} // end setRtb
 
 /**
  * @brief Calculate the distance between two GPS points.
  *
- * @param Alon Longitude of the first point.
- * @param Alat Latitude of the first point.
- * @param Blon Longitude of the second point.
- * @param Blat Latitude of the second point.
+ * @param aLon Longitude of the first point.
+ * @param aLat Latitude of the first point.
+ * @param bLon Longitude of the second point.
+ * @param bLat Latitude of the second point.
  * @return The distance between the two points in meters.
  *
  * @details
@@ -703,23 +703,23 @@ void setRTB()
  * It uses a simple interpolation table to convert longitude degrees to meters, considering different interpolation rates
  * depending on the range of the longitude difference.
  */
-float calcGPSdist(float Alon, float Alat, float Blon, float Blat)
+float calcGpsDist(float aLon, float aLat, float bLon, float bLat)
 {
 
   // calculate the difference between the points
-  float diffLat = Alat - Blat;
-  float diffLon = Alon - Blon;
+  float diffLat = aLat - bLat;
+  float diffLon = aLon - bLon;
   // determine the maximum latitude for interpolation below
-  float absAlat = fabs(Alat);
-  float absBlat = fabs(Blat);
-  float maxLat = fabs(Alat) > fabs(Blat) ? absAlat : absBlat;
+  float absAlat = fabs(aLat);
+  float absBlat = fabs(bLat);
+  float maxLat = fabs(aLat) > fabs(bLat) ? absAlat : absBlat;
 
   // convert latitude degrees to meters
   diffLat *= 111111.1;
   diffLon *= (111111.1 * speedCos((int)(maxLat * 10)));
 
   return sqrtf(diffLat * diffLat + diffLon * diffLon);
-} // end calcGPSdist
+} // end calcGpsDist
 
 /**
  * @brief Compute rotation based on the magnetometer readings.

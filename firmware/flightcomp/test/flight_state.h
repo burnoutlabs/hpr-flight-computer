@@ -19,25 +19,25 @@
   X(events) X(resetEvents) X(fltTime) X(resetFltTime) X(pins) X(dataPacket) X(liftoffSync) \
   X(TXstartTime) X(implicitHdr) X(syncFreq) X(pktPosn) X(pktSize) X(sampNum) X(packetSamples) \
   X(gpsTransmit) X(TX) X(SDradioTX) X(radioMode) X(clearTX) X(buildPkt) X(syncFlag) X(sendPkt) \
-  X(pktInterval) X(radio) X(cont) X(rotnOK) X(altOK) X(beep) X(pyroFire) X(fileClose) \
-  X(boosterBurpTime) X(unitConvert) X(g) X(accelNow) X(maxG) X(gTrigger) X(high1G) X(filterFull) \
-  X(highGsum) X(highGfilter) X(sizeHighGfilter) X(filterPosn) X(highGsmooth) X(adcConvert) \
+  X(pktInterval) X(radio) X(cont) X(rotnOk) X(altOk) X(beep) X(pyroFire) X(fileClose) \
+  X(boosterBurpTime) X(unitConvert) X(accel1G) X(accelNow) X(maxG) X(gTrigger) X(high1G) X(filterFull) \
+  X(highGSum) X(highGFilter) X(sizeHighGFilter) X(filterPosn) X(highGSmooth) X(adcConvert) \
   X(adcMidValue) X(calUnion) X(baro) X(baroTouchdown) X(touchdownTrigger) X(pressureAvg) \
   X(pressureAvg5) X(pressureSum) X(pressurePosn) X(magTrigger) X(magCalibrateMode) X(magRoll) \
-  X(magOffVert) X(magPitch) X(magYaw) X(dx) X(dy) X(dz) X(yawY0) X(pitchX0) X(pitchX) X(yawY) \
+  X(magOffVert) X(magPitch) X(magYaw) X(gyroDeltaX) X(gyroDeltaY) X(gyroDeltaZ) X(yawY0) X(pitchX0) X(pitchX) X(yawY) \
   X(rollZ) X(offVert) X(rotationFault) X(lastRotn) X(rotnRate) X(accelVel) X(accelAlt) \
   X(maxVelocity) X(fusionVel) X(fusionAlt) X(thresholdVel) X(thresholdAlt) X(clearRailTime) \
-  X(beep_counter) X(beepPosn) X(beep_delay) X(beepCode) X(beep_len) X(timeBeepStart) \
+  X(beepCounter) X(beepPosn) X(beepDelay) X(beepCode) X(beepLen) X(timeBeepStart) \
   X(timeLastBeepEnd) X(beepAlt) X(beepVel) X(beepCont) X(beepAlarm) X(livePyroAlarm) \
   X(writeStart) X(writeTime) X(maxWriteTime) X(writeThreshold) X(writeThreshCount) X(syncApogee) \
   X(syncMains) X(maxAltDigits) X(maxVelDigits) X(voltageDigits) X(altDigits) X(velDigits) X(n) \
-  X(voltage) X(writeVolt) X(voltRate) X(voltReading) X(lastVolt) X(reportCode) X(postFlightCode) \
+  X(voltage) X(writeVolt) X(voltRate) X(voltReading) X(lastVolt) X(reportMaxAlt) X(postFlightCode) \
   X(gnss) X(ulongUnion) X(intUnion) X(floatUnion) X(userInput) X(servoTrim) \
   X(timeLastControl) X(kp) X(ki) X(kd) X(gpsEcho) X(radioDebug) X(txDataFile) X(cyclesBtwn) \
   X(sampleTime) X(sampleStart) X(sampleTimeCheck) X(debugTimer) X(radioFnctn) X(beginAccel) \
   X(beginGyro) X(beginMag) X(beginHighG) X(beginBaro) X(beginRadio) X(getAccel) X(getGyro) \
   X(getMag) X(getHighG) X(getBaro) X(setRadioFreq) X(setRadioPWR) X(radioSleep) X(radioSendPkt) \
-  X(GNSSrestorDefaults) X(GNSSconfig) X(GNSSpowerSave) X(Quat) X(prevRollZ) X(quatRollZ) \
+  X(GNSSrestorDefaults) X(GNSSconfig) X(GNSSpowerSave) X(quat) X(prevRollZ) X(quatRollZ) \
   X(fullRollZ) X(rawX) X(rawY) X(rawZ) X(cosZ) X(sinZ) \
   X(rollError) X(pitchError) X(yawError) X(rollPosn)
 

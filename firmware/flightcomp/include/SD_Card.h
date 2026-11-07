@@ -105,7 +105,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   // reset write flags
   accel.newSamp = gyro.newSamp = highG.newSamp = false;
   // Smoothed high-G data
-  writeIntData((int16_t)highGsmooth);
+  writeIntData((int16_t)highGSmooth);
   // Integrated Rotation Values
   writeLongData(rollZ);
   writeIntData(yawY);
@@ -170,9 +170,9 @@ inline __attribute__((always_inline)) void writeSDflightData()
   // Barometer
   if (baro.newSamp)
   {
-    writeFloatData2(baro.Alt, 2);
+    writeFloatData2(baro.alt, 2);
     writeFloatData2(baro.smoothAlt, 2);
-    writeFloatData(baro.Vel, 2);
+    writeFloatData(baro.vel, 2);
     writeFloatData(baro.pressure, 2);
     baro.newSamp = false;
   }

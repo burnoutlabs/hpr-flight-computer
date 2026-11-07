@@ -85,19 +85,19 @@ void processBaroSamp();
 /** I/O the flight step asks for. performFlightActions() says what each one does. */
 enum class FlightAction : uint8_t
 {
-  PinHigh,               // set pin arg high
-  PinLow,                // set pin arg low
-  EepromLastEvent,       // write arg (a flightCodes value) to eeprom.lastEvent
-  EepromBaseAlt,         // write the 4 bytes of floatUnion (baro.baseAlt) to eeprom.baseAlt
-  RadioInflight,         // restart the radio timer at the inflight sample rate, build a packet now
-  RadioPostflight,       // start the radio timer at the postflight packet rate
-  RadioPreliftoff,       // start the radio timer at the preflight packet rate
-  SyncSd,                // sync the SD card
-  GnssLiftoffTime,       // copy the GNSS time into gnss.liftoff
-  GnssTouchdownTime,     // copy the GNSS time into gnss.touchdown
-  PrintSimulatedLiftoff, // test mode: report the liftoff
-  PrintLivePyroAlarm,    // report that the live-pyro alarm is on
-  PrintFalseTrigger,     // test mode: report a false-liftoff reset
+  PIN_HIGH,                // set pin arg high
+  PIN_LOW,                 // set pin arg low
+  EEPROM_LAST_EVENT,       // write arg (a FlightCode value) to eeprom.lastEvent
+  EEPROM_BASE_ALT,         // write the 4 bytes of floatUnion (baro.baseAlt) to eeprom.baseAlt
+  RADIO_INFLIGHT,          // restart the radio timer at the inflight sample rate, build a packet now
+  RADIO_POSTFLIGHT,        // start the radio timer at the postflight packet rate
+  RADIO_PRELIFTOFF,        // start the radio timer at the preflight packet rate
+  SYNC_SD,                 // sync the SD card
+  GNSS_LIFTOFF_TIME,       // copy the GNSS time into gnss.liftoff
+  GNSS_TOUCHDOWN_TIME,     // copy the GNSS time into gnss.touchdown
+  PRINT_SIMULATED_LIFTOFF, // test mode: report the liftoff
+  PRINT_LIVE_PYRO_ALARM,   // report that the live-pyro alarm is on
+  PRINT_FALSE_TRIGGER,     // test mode: report a false-liftoff reset
 };
 
 // The number of pushFlightAction() calls a flight step can reach: 6 in flightStep(), 44 in
@@ -146,18 +146,18 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     events.timeOut = true;
     events.postFlight = true;
     events.inFlight = false;
-    radio.event = Time_Limit;
+    radio.event = TIME_LIMIT;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Booster_Time_Limit;
+      radio.event = BOOSTER_TIME_LIMIT;
     }
     if (settings.inflightRecover != 0)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
-    pushFlightAction(actions, FlightAction::RadioPostflight);
+    pushFlightAction(actions, FlightAction::RADIO_POSTFLIGHT);
     fltTime.touchdown = fltTime.timeCurrent;
-    pushFlightAction(actions, FlightAction::GnssTouchdownTime);
+    pushFlightAction(actions, FlightAction::GNSS_TOUCHDOWN_TIME);
   }
 
   // Check false trigger until:
@@ -182,34 +182,34 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       if (settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::PrintFalseTrigger);
+        pushFlightAction(actions, FlightAction::PRINT_FALSE_TRIGGER);
       }
       // reset the key triggers
       events = resetEvents;
       fltTime.timeCurrent = 0UL;
       radio.fltTime = 0;
-      radio.event = Preflight;
+      radio.event = PREFLIGHT;
       if (settings.fltProfile == 'B')
       {
-        radio.event = Booster_Preflight;
+        radio.event = BOOSTER_PREFLIGHT;
       }
       pktPosn = 0;
       radio.packetnum = 0;
       sampNum = 0;
-      pushFlightAction(actions, FlightAction::RadioPreliftoff);
+      pushFlightAction(actions, FlightAction::RADIO_PRELIFTOFF);
       // reset the high-g filter
       filterPosn = 0;
-      highGsum = 0;
-      for (byte i = 0; i < (sizeof(highGfilter) / sizeof(highGfilter[0])); i++)
+      highGSum = 0;
+      for (byte i = 0; i < (sizeof(highGFilter) / sizeof(highGFilter[0])); i++)
       {
-        highGfilter[i] = 0;
+        highGFilter[i] = 0;
       }
       filterFull = false;
       // reset the acceleration based altitude and velocity
       accelVel = 0;
       accelAlt = 0;
       // sync the SD card
-      pushFlightAction(actions, FlightAction::SyncSd);
+      pushFlightAction(actions, FlightAction::SYNC_SD);
     }
   } // end falseLiftoffCheck
 
@@ -217,10 +217,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   if (!events.boosterBurnout && events.liftoff && accel.z <= 0)
   {
     events.boosterBurnout = true;
-    radio.event = Booster_Burnout;
+    radio.event = BOOSTER_BURNOUT;
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
     events.boosterBurnoutCheck = true;
     fltTime.boosterBurnout = fltTime.timeCurrent;
@@ -237,7 +237,7 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       events.boosterBurnout = false;
       events.boosterBurnoutCheck = false;
-      radio.event = Liftoff;
+      radio.event = LIFTOFF;
     }
   }
 
@@ -251,10 +251,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       events.boosterSeparation = true;
       fltTime.boosterSeparation = fltTime.timeCurrent;
       firePyros('B', actions);
-      radio.event = Eject_Booster;
+      radio.event = EJECT_BOOSTER;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
       }
     }
 
@@ -265,40 +265,40 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       postFlightCode = 1;
       fltTime.sustainerFireCheck = fltTime.timeCurrent;
       // Check for staging inhibit and fire if OK
-      if (altOK && rotnOK)
+      if (altOk && rotnOk)
       {
         events.sustainerFire = true;
         firePyros('I', actions);
-        radio.event = Fire_Sustainer;
+        radio.event = FIRE_SUSTAINER;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK && !altOK)
+      else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NoFire_RotnAlt_Limit;
+        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
       }
-      else if (!rotnOK)
+      else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NoFire_Rotn_Limit;
+        radio.event = NO_FIRE_ROTN_LIMIT;
       }
-      else if (!altOK)
+      else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NoFire_Alt_Limit;
+        radio.event = NO_FIRE_ALT_LIMIT;
       }
     }
 
     // Check for sustainer ignition
     if (!events.apogee && !events.sustainerIgnition && events.sustainerFire && accelNow > IGNITION_ACCEL_MPS2)
     {
-      radio.event = Sustainer_Ignition;
+      radio.event = SUSTAINER_IGNITION;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
       }
       events.sustainerIgnition = true;
       fltTime.sustainerIgnition = fltTime.timeCurrent;
@@ -307,10 +307,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     // Check for sustainer burnout
     if (!events.apogee && !events.sustainerBurnout && events.sustainerIgnition && accelNow < 0.0 && fltTime.timeCurrent - fltTime.sustainerIgnition > SUSTAINER_BURN_MIN_US)
     {
-      radio.event = Sustainer_Burnout;
+      radio.event = SUSTAINER_BURNOUT;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
       }
       events.sustainerBurnout = true;
       fltTime.sustainerBurnout = fltTime.timeCurrent;
@@ -329,42 +329,42 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       fltTime.airStart1Check = fltTime.timeCurrent;
       postFlightCode = 1;
       // Check for inflight ignition inhibit and fire if OK
-      if (altOK && rotnOK)
+      if (altOk && rotnOk)
       {
         events.airStart1Fire = true;
         fltTime.airStart1Fire = fltTime.timeCurrent;
         firePyros('1', actions);
-        radio.event = Fire_Airstart1;
+        radio.event = FIRE_AIRSTART1;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK && !altOK)
+      else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NoFire_RotnAlt_Limit;
+        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK)
+      else if (!rotnOk)
       {
-        postFlightCode = NoFire_Rotn_Limit;
+        postFlightCode = NO_FIRE_ROTN_LIMIT;
         radio.event = 18;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!altOK)
+      else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NoFire_Alt_Limit;
+        radio.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
     }
@@ -376,42 +376,42 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       fltTime.airStart1Check = fltTime.timeCurrent;
       postFlightCode = 1;
       // Check for inflight ignition inhibit and fire if OK
-      if (altOK && rotnOK)
+      if (altOk && rotnOk)
       {
         events.airStart1Fire = true;
         fltTime.airStart1Fire = fltTime.timeCurrent;
         firePyros('1', actions);
-        radio.event = Fire_Airstart1;
+        radio.event = FIRE_AIRSTART1;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK && !altOK)
+      else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NoFire_RotnAlt_Limit;
+        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK)
+      else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NoFire_Rotn_Limit;
+        radio.event = NO_FIRE_ROTN_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!altOK)
+      else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NoFire_Alt_Limit;
+        radio.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
     }
@@ -421,10 +421,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       events.airStart1Ignition = true;
       fltTime.airStart1Ignition = fltTime.timeCurrent;
-      radio.event = Airstart1_Ignition;
+      radio.event = AIRSTART1_IGNITION;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
       }
     }
 
@@ -444,10 +444,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       {
         events.airStart1BurnoutCheck = false;
         events.airStart1Burnout = true;
-        radio.event = Airstart1_Burnout;
+        radio.event = AIRSTART1_BURNOUT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
     }
@@ -459,42 +459,42 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       fltTime.airStart2Check = fltTime.timeCurrent;
       postFlightCode = 1;
       // Check for inflight ignition inhibit and fire if OK
-      if (altOK && rotnOK)
+      if (altOk && rotnOk)
       {
         events.airStart2Fire = true;
         fltTime.airStart2Fire = fltTime.timeCurrent;
         firePyros('2', actions);
-        radio.event = Fire_Airstart2;
+        radio.event = FIRE_AIRSTART2;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK && !altOK)
+      else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NoFire_RotnAlt_Limit;
+        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK)
+      else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NoFire_Rotn_Limit;
+        radio.event = NO_FIRE_ROTN_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!altOK)
+      else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NoFire_Alt_Limit;
+        radio.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
     }
@@ -506,42 +506,42 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       fltTime.airStart2Check = fltTime.timeCurrent;
       postFlightCode = 1;
       // Check for inflight ignition inhibit and fire if OK
-      if (altOK && rotnOK)
+      if (altOk && rotnOk)
       {
         events.airStart2Fire = true;
         fltTime.airStart2Fire = fltTime.timeCurrent;
         firePyros('2', actions);
-        radio.event = Fire_Airstart2;
+        radio.event = FIRE_AIRSTART2;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK && !altOK)
+      else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NoFire_RotnAlt_Limit;
+        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!rotnOK)
+      else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NoFire_Rotn_Limit;
+        radio.event = NO_FIRE_ROTN_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
-      else if (!altOK)
+      else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NoFire_Alt_Limit;
+        radio.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
     }
@@ -551,10 +551,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       events.airStart2Ignition = true;
       fltTime.airStart2Ignition = fltTime.timeCurrent;
-      radio.event = Airstart2_Ignition;
+      radio.event = AIRSTART2_IGNITION;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
       }
     }
 
@@ -574,17 +574,17 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       {
         events.airStart2BurnoutCheck = false;
         events.airStart2Burnout = true;
-        radio.event = Airstart2_Burnout;
+        radio.event = AIRSTART2_BURNOUT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
         }
       }
     }
   } // End Airstart Flight Mode
 
   // Barometric based apogee detection: rocket must be below 9000m and barometric velocity < 0 and motor burnout is detected and accelometer velocity < 70 (needed for Mach proofing)
-  bool baroApogee = (baro.Vel < BARO_APOGEE_VEL_MPS && accelVel < BARO_APOGEE_MACH_LOCK_MPS && (baro.Alt + baro.baseAlt) < BARO_APOGEE_CEILING_M) ? true : false;
+  bool baroApogee = (baro.vel < BARO_APOGEE_VEL_MPS && accelVel < BARO_APOGEE_MACH_LOCK_MPS && (baro.alt + baro.baseAlt) < BARO_APOGEE_CEILING_M) ? true : false;
   // Sensor fusion based apogee detection
   bool fusionApogee = (fusionVel < 0) ? true : false;
   // Check for apogee event
@@ -592,14 +592,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   {
     events.apogee = true;
     fltTime.apogee = fltTime.timeCurrent;
-    radio.event = Apogee;
+    radio.event = APOGEE;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Booster_Apogee;
+      radio.event = BOOSTER_APOGEE;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
   }
 
@@ -609,75 +609,75 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     events.apogeeFire = true;
     fltTime.apogeeFire = fltTime.timeCurrent;
     firePyros('A', actions);
-    radio.event = Fire_Apogee;
+    radio.event = FIRE_APOGEE;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Fire_Booster_Apogee;
+      radio.event = FIRE_BOOSTER_APOGEE;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
   }
 
   // Write the data to the card 3s after apogeeFire in case of crash or powerloss
   if (events.apogeeFire && !syncApogee && !settings.testMode && fltTime.timeCurrent - fltTime.apogeeFire >= SYNC_AFTER_APOGEE_US)
   {
-    pushFlightAction(actions, FlightAction::SyncSd);
+    pushFlightAction(actions, FlightAction::SYNC_SD);
     syncApogee = true;
   }
 
   // Detect separation after apogee
-  if (events.apogeeFire && !events.mainDeploy && accel.z > APOGEE_SEPARATION_G * g && fltTime.timeCurrent - fltTime.apogeeFire <= APOGEE_SEPARATION_WINDOW_US)
+  if (events.apogeeFire && !events.mainDeploy && accel.z > APOGEE_SEPARATION_G * accel1G && fltTime.timeCurrent - fltTime.apogeeFire <= APOGEE_SEPARATION_WINDOW_US)
   {
     events.apogeeSeparation = true;
     fltTime.apogeeSeparation = fltTime.timeCurrent;
-    radio.event = Separation;
+    radio.event = SEPARATION;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Booster_Separation;
+      radio.event = BOOSTER_SEPARATION;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
   }
 
   // Fire main chute charge if the baro altitude is lower than the threshold and at least 1s has passed since apogee
-  if (!events.mainDeploy && events.apogeeFire && baro.Alt < settings.mainDeployAlt && fltTime.timeCurrent - fltTime.apogeeFire >= MAIN_AFTER_APOGEE_MIN_US)
+  if (!events.mainDeploy && events.apogeeFire && baro.alt < settings.mainDeployAlt && fltTime.timeCurrent - fltTime.apogeeFire >= MAIN_AFTER_APOGEE_MIN_US)
   {
     events.mainDeploy = true;
     fltTime.mainDeploy = fltTime.timeCurrent;
     firePyros('M', actions);
-    radio.event = Fire_Mains;
+    radio.event = FIRE_MAINS;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Fire_Booster_Mains;
+      radio.event = FIRE_BOOSTER_MAINS;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
   }
 
   // Detect deployment of the mains
   if (events.mainDeploy && fltTime.timeCurrent - fltTime.mainDeploy > CHUTE_CHECK_START_US && fltTime.timeCurrent - fltTime.mainDeploy < CHUTE_CHECK_END_US && accelNow > CHUTE_OPEN_ACCEL_MPS2)
   {
-    radio.event = Under_Chute;
+    radio.event = UNDER_CHUTE;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Booster_Under_Chute;
+      radio.event = BOOSTER_UNDER_CHUTE;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
   }
 
   // Write the data to the card 3s after mainDeploy in case of crash or powerloss
   if (events.mainDeploy && !syncMains && !settings.testMode && fltTime.timeCurrent - fltTime.mainDeploy >= SYNC_AFTER_MAIN_US)
   {
-    pushFlightAction(actions, FlightAction::SyncSd);
+    pushFlightAction(actions, FlightAction::SYNC_SD);
     syncMains = true;
   }
 
@@ -695,7 +695,7 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       if (pyros[i].fireStatus && fltTime.timeCurrent - pyros[i].fireStart > settings.fireTime)
       {
-        pushFlightAction(actions, FlightAction::PinLow, pyros[i].firePin);
+        pushFlightAction(actions, FlightAction::PIN_LOW, pyros[i].firePin);
         pyros[i].fireStatus = false;
       }
       anyFiring = anyFiring || pyros[i].fireStatus;
@@ -707,22 +707,22 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   }
 
   // Check for touchdown
-  if (!events.touchdown && events.mainDeploy && !pyroFire && !settings.testMode && baroTouchdown > touchdownTrigger && baro.Alt < TOUCHDOWN_MAX_ALT_M)
+  if (!events.touchdown && events.mainDeploy && !pyroFire && !settings.testMode && baroTouchdown > touchdownTrigger && baro.alt < TOUCHDOWN_MAX_ALT_M)
   {
     events.touchdown = true;
     events.inFlight = false;
     events.postFlight = true;
     fltTime.touchdown = fltTime.timeCurrent;
-    radio.event = Touchdown;
+    radio.event = TOUCHDOWN;
     if (settings.fltProfile == 'B')
     {
-      radio.event = Booster_Touchdown;
+      radio.event = BOOSTER_TOUCHDOWN;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
-    pushFlightAction(actions, FlightAction::GnssTouchdownTime);
+    pushFlightAction(actions, FlightAction::GNSS_TOUCHDOWN_TIME);
   }
 
 } // end check events
@@ -744,7 +744,7 @@ inline __attribute__((always_inline)) FlightActions flightStep()
   {
     if (settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::PrintSimulatedLiftoff);
+      pushFlightAction(actions, FlightAction::PRINT_SIMULATED_LIFTOFF);
     }
     // set liftoff clock times
     fltTime.padTime = fltTime.tmClockPrev = fltTime.tmClock;
@@ -754,24 +754,24 @@ inline __attribute__((always_inline)) FlightActions flightStep()
     events.liftoff = true;
     events.inFlight = true;
     // set radio variables
-    radio.event = Liftoff;
+    radio.event = LIFTOFF;
     radio.alt = 0;
-    pushFlightAction(actions, FlightAction::RadioInflight);
+    pushFlightAction(actions, FlightAction::RADIO_INFLIGHT);
     // set GNSS liftoff values
-    pushFlightAction(actions, FlightAction::GnssLiftoffTime);
+    pushFlightAction(actions, FlightAction::GNSS_LIFTOFF_TIME);
     gnss.maxAlt = 0.0F;
     // if live pyros are detected, turn on the alarm to alert the user that the system is active and may fire pyros
     if (pyros[0].contStatus || pyros[1].contStatus || pyros[2].contStatus || pyros[3].contStatus || settings.testMode)
     {
       livePyroAlarm = true;
-      pushFlightAction(actions, FlightAction::PrintLivePyroAlarm);
+      pushFlightAction(actions, FlightAction::PRINT_LIVE_PYRO_ALARM);
     }
     // store base alt in EEPROM for inflight recovery
     floatUnion.val = baro.baseAlt;
     if (settings.inflightRecover != 0)
     {
-      pushFlightAction(actions, FlightAction::EepromBaseAlt);
-      pushFlightAction(actions, FlightAction::EepromLastEvent, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_BASE_ALT);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
     }
   }
 
@@ -793,11 +793,11 @@ inline __attribute__((always_inline)) FlightActions flightStep()
     // Update the moving average which greatly improves accuracy with minimal latency
     if (highG.newSamp)
     {
-      highGsum -= highGfilter[filterPosn];
-      highGfilter[filterPosn] = highG.z;
-      highGsum += highGfilter[filterPosn];
+      highGSum -= highGFilter[filterPosn];
+      highGFilter[filterPosn] = highG.z;
+      highGSum += highGFilter[filterPosn];
       filterPosn++;
-      if (filterPosn >= sizeHighGfilter)
+      if (filterPosn >= sizeHighGFilter)
       {
         filterPosn = 0;
         if (!filterFull)
@@ -807,18 +807,18 @@ inline __attribute__((always_inline)) FlightActions flightStep()
       }
       if (!filterFull)
       {
-        highGsmooth = highGsum / filterPosn;
+        highGSmooth = highGSum / filterPosn;
       }
       else
       {
-        highGsmooth = highGsum / sizeHighGfilter;
+        highGSmooth = highGSum / sizeHighGFilter;
       }
     }
 
     // Compute the current g-load. Use the high-G accelerometer if the IMU is pegged and a high-G accelerometer is present
     if (abs(accel.z) < accel.adcMax)
     {
-      accelNow = (float)(accel.z - g) * accel.gainZ;
+      accelNow = (float)(accel.z - accel1G) * accel.gainZ;
     }
     else if (sensors.highG != 0)
     {
@@ -826,7 +826,7 @@ inline __attribute__((always_inline)) FlightActions flightStep()
     }
     else
     {
-      accelNow = (float)(accel.z - g) * accel.gainZ;
+      accelNow = (float)(accel.z - accel1G) * accel.gainZ;
     }
 
     // Integrate velocity and altitude data prior to apogee
@@ -841,17 +841,17 @@ inline __attribute__((always_inline)) FlightActions flightStep()
 
       // calculate the new acceleration based velocity
       // this makes the apogee event mach immune
-      accelVel += accelNow * (float)fltTime.dt * mlnth;
+      accelVel += accelNow * (float)fltTime.dt * MILLIONTH;
 
       // calculate the new acceleration based altitude
-      accelAlt += accelVel * (float)fltTime.dt * mlnth;
+      accelAlt += accelVel * (float)fltTime.dt * MILLIONTH;
 
       // calculate the new sensor fusion based velocity
-      fusionVel += accelNow * (float)fltTime.dt * mlnth;
-      if (baro.newSamp && baro.Vel < FUSION_BARO_VEL_MAX_MPS && baro.Vel < baro.maxVel && accelNow < FUSION_ACCEL_MAX_MPS2 && fusionVel < FUSION_VEL_MAX_MPS && baro.Alt < FUSION_VEL_BARO_CEILING_M)
+      fusionVel += accelNow * (float)fltTime.dt * MILLIONTH;
+      if (baro.newSamp && baro.vel < FUSION_BARO_VEL_MAX_MPS && baro.vel < baro.maxVel && accelNow < FUSION_ACCEL_MAX_MPS2 && fusionVel < FUSION_VEL_MAX_MPS && baro.alt < FUSION_VEL_BARO_CEILING_M)
       {
         fusionVel *= FUSION_VEL_KEEP;
-        fusionVel += FUSION_VEL_BARO_WEIGHT * baro.Vel;
+        fusionVel += FUSION_VEL_BARO_WEIGHT * baro.vel;
       }
       radio.vel = (int16_t)fusionVel;
 
@@ -862,37 +862,37 @@ inline __attribute__((always_inline)) FlightActions flightStep()
       }
 
       // calculate the new sensor fusion based altitude
-      fusionAlt += fusionVel * (float)fltTime.dt * mlnth;
-      if (baro.newSamp && baro.Alt < FUSION_ALT_BARO_CEILING_M)
+      fusionAlt += fusionVel * (float)fltTime.dt * MILLIONTH;
+      if (baro.newSamp && baro.alt < FUSION_ALT_BARO_CEILING_M)
       {
         fusionAlt *= FUSION_ALT_KEEP;
-        fusionAlt += FUSION_ALT_BARO_WEIGHT * baro.Alt;
+        fusionAlt += FUSION_ALT_BARO_WEIGHT * baro.alt;
       }
-      if (!altOK && (fusionAlt > settings.altThreshold || settings.testMode))
+      if (!altOk && (fusionAlt > settings.altThreshold || settings.testMode))
       {
-        altOK = true;
+        altOk = true;
       }
       radio.alt = (int16_t)fusionAlt;
 
     } // end if !apogee
 
     // caluclate the partial rotation in millionths of a degree, maintaining integer math for speed and retaining all possible precision
-    dx += gyro.x * fltTime.dt;
-    dy += gyro.y * fltTime.dt;
-    dz += gyro.z * fltTime.dt;
+    gyroDeltaX += gyro.x * fltTime.dt;
+    gyroDeltaY += gyro.y * fltTime.dt;
+    gyroDeltaZ += gyro.z * fltTime.dt;
 
     // if active stablization is on, then use the more stable rotation algorithm (Rotation.cpp)
     if (settings.stableRotn || settings.stableVert)
     {
-      getDCM2DRotn(dx, dy, dz, gyro.gainZ);
-      dx = dy = dz = 0L;
+      getDcm2dRotn(gyroDeltaX, gyroDeltaY, gyroDeltaZ, gyro.gainZ);
+      gyroDeltaX = gyroDeltaY = gyroDeltaZ = 0L;
     }
 
     // else update the quaternion rotation if we are not using active stabilization(Rotation.cpp)
     else if (fltTime.timeCurrent - lastRotn > rotnRate)
     {
-      getQuatRotn(dx, dy, dz, gyro.gainZ);
-      dx = dy = dz = 0L;
+      getQuatRotn(gyroDeltaX, gyroDeltaY, gyroDeltaZ, gyro.gainZ);
+      gyroDeltaX = gyroDeltaY = gyroDeltaZ = 0L;
       lastRotn = fltTime.timeCurrent;
     }
 
@@ -918,57 +918,57 @@ inline __attribute__((always_inline)) void performFlightActions(const FlightActi
     const uint8_t arg = actions.arg[i];
     switch (actions.kind[i])
     {
-    case FlightAction::PinHigh:
+    case FlightAction::PIN_HIGH:
       Io::pinWrite(arg, HIGH);
       break;
-    case FlightAction::PinLow:
+    case FlightAction::PIN_LOW:
       Io::pinWrite(arg, LOW);
       break;
-    case FlightAction::EepromLastEvent:
+    case FlightAction::EEPROM_LAST_EVENT:
       Io::eepromUpdate(eeprom.lastEvent, arg);
       break;
-    case FlightAction::EepromBaseAlt:
+    case FlightAction::EEPROM_BASE_ALT:
       for (byte j = 0; j < 4; j++)
       {
-        Io::eepromUpdate(eeprom.baseAlt + j, floatUnion.Byte[j]);
+        Io::eepromUpdate(eeprom.baseAlt + j, floatUnion.bytes[j]);
       }
       break;
-    case FlightAction::RadioInflight:
+    case FlightAction::RADIO_INFLIGHT:
       Io::radioTimerEnd();
       Io::radioTimerBegin(pktInterval.inflight / pktInterval.samplesPerPkt);
       noInterrupts();
       buildPkt = true;
       interrupts();
       break;
-    case FlightAction::RadioPostflight:
+    case FlightAction::RADIO_POSTFLIGHT:
       Io::radioTimerBegin(pktInterval.postFlight);
       break;
-    case FlightAction::RadioPreliftoff:
+    case FlightAction::RADIO_PRELIFTOFF:
       Io::radioTimerBegin(pktInterval.preLiftoff);
       break;
-    case FlightAction::SyncSd:
+    case FlightAction::SYNC_SD:
       Io::syncSd();
       break;
-    case FlightAction::GnssLiftoffTime:
+    case FlightAction::GNSS_LIFTOFF_TIME:
       gnss.liftoff.hour = GPS.time.hour();
       gnss.liftoff.minute = GPS.time.minute();
       gnss.liftoff.second = GPS.time.second();
       gnss.liftoff.mili = GPS.time.centisecond();
       break;
-    case FlightAction::GnssTouchdownTime:
+    case FlightAction::GNSS_TOUCHDOWN_TIME:
       gnss.touchdown.hour = GPS.time.hour();
       gnss.touchdown.minute = GPS.time.minute();
       gnss.touchdown.second = GPS.time.second();
       gnss.touchdown.mili = GPS.time.centisecond();
       break;
-    case FlightAction::PrintSimulatedLiftoff:
+    case FlightAction::PRINT_SIMULATED_LIFTOFF:
       Io::println(" ");
       Io::println("Simulated Liftoff Detected!");
       break;
-    case FlightAction::PrintLivePyroAlarm:
+    case FlightAction::PRINT_LIVE_PYRO_ALARM:
       Io::println("Live-pyro alarm activated");
       break;
-    case FlightAction::PrintFalseTrigger:
+    case FlightAction::PRINT_FALSE_TRIGGER:
       Io::println("False Trigger Reset");
       break;
     }

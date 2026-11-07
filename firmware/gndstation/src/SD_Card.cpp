@@ -266,12 +266,14 @@ void writePostflightData()
   {
     boosterFile.println(F("Rocket Name,lastEvent,maxAlt,maxVel,maxG,maxGPSalt,GPSlock,GPSalt,gpsLatitude,gpsLongitude"));
   }
+  strPosn = 0;
   for (byte i = 0; i < sizeof(rocketName) - 1; i++)
   {
-    dataString[i] = rocketName[i];
-    strPosn = i;
+    dataString[strPosn] = rocketName[i];
+    strPosn++;
   }
-  while (dataString[strPosn - 1] == ' ' || dataString[strPosn - 1] == '\0')
+  // trim trailing spaces and NULs; an empty name leaves an empty field
+  while (strPosn > 0 && (dataString[strPosn - 1] == ' ' || dataString[strPosn - 1] == '\0'))
   {
     strPosn--;
   }

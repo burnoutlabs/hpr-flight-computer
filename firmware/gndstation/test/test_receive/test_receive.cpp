@@ -137,8 +137,7 @@ void test_inflight_packet_is_decoded_and_logged()
 void test_postflight_packet_is_decoded()
 {
   resetGroundStation(false, 433.250F, "KK4ELF");
-  // a preflight packet first: writePostflightData() reads past the start of dataString
-  // when the rocket name is empty
+  // a preflight packet first, which sets the rocket name
   TEST_ASSERT_TRUE(receive(GOLDEN_FHSS_OFF[0]));
   const GoldenPacket &post = GOLDEN_FHSS_OFF[GOLDEN_OFF_COUNT - 2];
   TEST_ASSERT_EQUAL_UINT8(telemetry::POSTFLIGHT_PACKET_SIZE, post.len);
@@ -151,6 +150,37 @@ void test_postflight_packet_is_decoded()
   TEST_ASSERT_EQUAL_UINT8(1, gpsLock);
   TEST_ASSERT_EQUAL_INT(1240, gpsAlt);
   TEST_ASSERT_TRUE((float)34.2 == gpsLatitude);
+}
+
+// The postflight row of a file: the line after its "Rocket Name,..." header.
+static std::string postflightRow(const std::string &text)
+{
+  const std::string header = "Rocket Name,lastEvent,maxAlt,maxVel,maxG,maxGPSalt,GPSlock,GPSalt,gpsLatitude,gpsLongitude\r\n";
+  const size_t at = text.find(header);
+  return at == std::string::npos ? std::string("(no postflight header)") : text.substr(at + header.size());
+}
+
+// #37: with no rocket name (no preflight packet heard, a blank EEPROM) the postflight row has
+// an empty name field. Trimming the name read before the start of dataString.
+void test_postflight_row_with_an_empty_rocket_name()
+{
+  resetGroundStation(false, 433.250F, "KK4ELF");
+  TEST_ASSERT_TRUE(receive(GOLDEN_FHSS_OFF[GOLDEN_OFF_COUNT - 2]));
+  const std::vector<std::string> row = csvLine(postflightRow(sustainerFile.text), 0);
+  TEST_ASSERT_EQUAL_STRING("", row[0].c_str());
+  TEST_ASSERT_EQUAL_STRING("27", row[1].c_str());
+  TEST_ASSERT_EQUAL_STRING("4321", row[2].c_str());
+}
+
+// The postflight row keeps every character of a name of the longest length (19).
+void test_postflight_row_with_a_full_length_rocket_name()
+{
+  resetGroundStation(false, 433.250F, "KK4ELF");
+  strcpy(rocketName, "Nineteen Characters");
+  TEST_ASSERT_TRUE(receive(GOLDEN_FHSS_OFF[GOLDEN_OFF_COUNT - 2]));
+  const std::vector<std::string> row = csvLine(postflightRow(sustainerFile.text), 0);
+  TEST_ASSERT_EQUAL_STRING("Nineteen Characters", row[0].c_str());
+  TEST_ASSERT_EQUAL_STRING("27", row[1].c_str());
 }
 
 void test_packet_with_another_callsign_is_ignored()
@@ -240,6 +270,8 @@ int main(int, char **)
   RUN_TEST(test_preflight_packet_is_decoded);
   RUN_TEST(test_inflight_packet_is_decoded_and_logged);
   RUN_TEST(test_postflight_packet_is_decoded);
+  RUN_TEST(test_postflight_row_with_an_empty_rocket_name);
+  RUN_TEST(test_postflight_row_with_a_full_length_rocket_name);
   RUN_TEST(test_packet_with_another_callsign_is_ignored);
   RUN_TEST(test_ground_station_hails_where_the_flight_computer_syncs);
   RUN_TEST(test_hail_frequency_is_the_configured_frequency);

@@ -5,7 +5,7 @@
  *
  * @details
  * setup() runs the steps below in order. The ones declared in Startup.h bring up hardware that
- * the in-flight recovery, rapidReset() (Infilght_Recover.cpp), brings up too; the static ones are
+ * the in-flight recovery, rapidReset() (InflightRecover.cpp), brings up too; the static ones are
  * setup()'s alone (bench test mode, the preflight reports, the pad calibration).
  *
  * setup() was in flightcomp.cpp beside loop(). It is in its own file so that the host tests can
@@ -22,7 +22,7 @@
 #include "Bus_Mgmt.h"
 #include "Calibration.h"
 #include "Device_Mgmt.h"
-#include "Infilght_Recover.h"
+#include "InflightRecover.h"
 #include "Rotation.h"
 #include "SD_Card.h"
 #include "Startup.h"
@@ -32,16 +32,16 @@
  * @brief Read the hardware settings from EEPROM: the pins, the device IDs, bus types and bus numbers,
  * the call sign and the hardware ID.
  */
-void readHardwareSettingsEEPROM()
+void readHardwareSettingsEeprom()
 {
   // Read pin settings from EEPROM
   Serial.print(F("Reading EEPROM..."));
-  pins.accelCS = EEPROM.read(eeprom.accelCSpin);
-  pins.gyroCS = EEPROM.read(eeprom.gyroCSpin);
-  pins.magCS = EEPROM.read(eeprom.magCSpin);
-  pins.highG_CS = EEPROM.read(eeprom.highGcsPin);
-  pins.SD_CS = EEPROM.read(eeprom.sdCSpin);
-  pins.baroCS = EEPROM.read(eeprom.baroCSpin);
+  pins.accelCs = EEPROM.read(eeprom.accelCsPin);
+  pins.gyroCs = EEPROM.read(eeprom.gyroCsPin);
+  pins.magCs = EEPROM.read(eeprom.magCsPin);
+  pins.highGCs = EEPROM.read(eeprom.highGCsPin);
+  pins.sdCs = EEPROM.read(eeprom.sdCsPin);
+  pins.baroCs = EEPROM.read(eeprom.baroCsPin);
   pins.pyro1Cont = EEPROM.read(eeprom.pyro1ContPin);
   pins.pyro1Fire = EEPROM.read(eeprom.pyro1FirePin);
   pins.pyro2Cont = EEPROM.read(eeprom.pyro2ContPin);
@@ -55,27 +55,27 @@ void readHardwareSettingsEEPROM()
   pins.beep = EEPROM.read(eeprom.beepPin);
   pins.batt = EEPROM.read(eeprom.battReadPin);
   pins.testGnd = EEPROM.read(eeprom.testModeGndPin);
-  pins.testRead = EEPROM.read(eeprom.testModeRdPin);
-  pins.radioCS = EEPROM.read(eeprom.radioCSpin);
-  pins.radioIRQ = EEPROM.read(eeprom.radioIRQpin);
-  pins.radioRST = EEPROM.read(eeprom.radioRstPin);
-  pins.radioEN = EEPROM.read(eeprom.radioEnPin);
-  pins.servo1 = EEPROM.read(eeprom.servo1pin);
-  pins.servo2 = EEPROM.read(eeprom.servo2pin);
-  pins.servo3 = EEPROM.read(eeprom.servo3pin);
-  pins.servo4 = EEPROM.read(eeprom.servo4pin);
-  pins.servo5 = EEPROM.read(eeprom.servo5pin);
-  pins.servo6 = EEPROM.read(eeprom.servo6pin);
-  pins.servo7 = EEPROM.read(eeprom.servo7pin);
-  pins.servo8 = EEPROM.read(eeprom.servo8pin);
+  pins.testRead = EEPROM.read(eeprom.testModeReadPin);
+  pins.radioCs = EEPROM.read(eeprom.radioCsPin);
+  pins.radioIrq = EEPROM.read(eeprom.radioIrqPin);
+  pins.radioRst = EEPROM.read(eeprom.radioRstPin);
+  pins.radioEn = EEPROM.read(eeprom.radioEnPin);
+  pins.servo1 = EEPROM.read(eeprom.servo1Pin);
+  pins.servo2 = EEPROM.read(eeprom.servo2Pin);
+  pins.servo3 = EEPROM.read(eeprom.servo3Pin);
+  pins.servo4 = EEPROM.read(eeprom.servo4Pin);
+  pins.servo5 = EEPROM.read(eeprom.servo5Pin);
+  pins.servo6 = EEPROM.read(eeprom.servo6Pin);
+  pins.servo7 = EEPROM.read(eeprom.servo7Pin);
+  pins.servo8 = EEPROM.read(eeprom.servo8Pin);
   // read sensor settings from EEPROM
-  sensors.accel = EEPROM.read(eeprom.accelID);
-  sensors.mag = EEPROM.read(eeprom.magID);
-  sensors.gyro = EEPROM.read(eeprom.gyroID);
-  sensors.highG = EEPROM.read(eeprom.highGID);
-  sensors.baro = EEPROM.read(eeprom.baroID);
-  sensors.radio = EEPROM.read(eeprom.radioID);
-  sensors.GNSS = EEPROM.read(eeprom.GPSID);
+  sensors.accel = EEPROM.read(eeprom.accelId);
+  sensors.mag = EEPROM.read(eeprom.magId);
+  sensors.gyro = EEPROM.read(eeprom.gyroId);
+  sensors.highG = EEPROM.read(eeprom.highGId);
+  sensors.baro = EEPROM.read(eeprom.baroId);
+  sensors.radio = EEPROM.read(eeprom.radioId);
+  sensors.gnss = EEPROM.read(eeprom.gpsId);
   sensors.accelBusType = (char)EEPROM.read(eeprom.accelBusType);
   sensors.gyroBusType = (char)EEPROM.read(eeprom.gyroBusType);
   sensors.magBusType = (char)EEPROM.read(eeprom.magBusType);
@@ -97,12 +97,12 @@ void readHardwareSettingsEEPROM()
     settings.callSign[i] = EEPROM.read(eeprom.callSign + i);
   }
   settings.callSign[sizeof(settings.callSign) - 1] = '\0';
-  settings.HWid[0] = (char)EEPROM.read(eeprom.HWversion);
-  settings.HWid[1] = '.';
-  settings.HWid[2] = (char)EEPROM.read(eeprom.HWsubVersion);
-  settings.HWid[3] = '.';
-  settings.HWid[4] = (char)EEPROM.read(eeprom.HWunitNum);
-  settings.HWid[5] = '\0';
+  settings.hwId[0] = (char)EEPROM.read(eeprom.hwVersion);
+  settings.hwId[1] = '.';
+  settings.hwId[2] = (char)EEPROM.read(eeprom.hwSubVersion);
+  settings.hwId[3] = '.';
+  settings.hwId[4] = (char)EEPROM.read(eeprom.hwUnitNum);
+  settings.hwId[5] = '\0';
   Serial.println(F("complete!"));
 }
 
@@ -126,11 +126,11 @@ void setPinModes()
   pinMode(pins.beep, OUTPUT);
   pinMode(pins.testRead, INPUT_PULLUP);
   pinMode(pins.testGnd, OUTPUT);
-  pinMode(pins.radioCS, OUTPUT);
-  pinMode(pins.highG_CS, OUTPUT);
+  pinMode(pins.radioCs, OUTPUT);
+  pinMode(pins.highGCs, OUTPUT);
   // Set the CS pins to HIGH
-  digitalWrite(pins.radioCS, HIGH);
-  digitalWrite(pins.highG_CS, HIGH);
+  digitalWrite(pins.radioCs, HIGH);
+  digitalWrite(pins.highGCs, HIGH);
   // Set the pyro firing pins to LOW for safety
   digitalWrite(pins.pyro1Fire, LOW);
   digitalWrite(pins.pyro2Fire, LOW);
@@ -145,7 +145,7 @@ void beginGnssSerial()
 {
   // Start Harware Serial communication
   setHWSERIAL();
-  if (sensors.GNSS == 3)
+  if (sensors.gnss == 3)
   {
     HWSERIAL->begin(38400);
     Serial.println("Starting HWSerial at 38400 baud");
@@ -170,7 +170,7 @@ void setAnalogResolution()
   // 12 bit resolution for Teensy 4.0 & 4.1
   analogReadResolution(12);
   adcConvert = 1.0F / 4096.0F;
-  ADCmidValue = 2048;
+  adcMidValue = 2048;
 #endif
 }
 
@@ -220,14 +220,14 @@ void beginRadioLink()
 {
   // Initialize the radio
   // if the Adafruit RFM9XW board is used, make sure its on
-  if (pins.radioEN != pins.nullCont)
+  if (pins.radioEn != pins.nullCont)
   {
-    pinMode(pins.radioEN, OUTPUT);
-    digitalWrite(pins.radioEN, HIGH);
+    pinMode(pins.radioEn, OUTPUT);
+    digitalWrite(pins.radioEn, HIGH);
   }
   // start the radio
   sensors.statusRadio = beginRadio();
-  if (settings.TXenable)
+  if (settings.txEnable)
   {
     beginTelemetry();
     if (!sensors.statusRadio)
@@ -307,40 +307,40 @@ void limitSettings()
   {
     settings.setupTime = 3000UL;
   } // min 3 seconds of setup time
-  if (settings.TXpwr > 14)
+  if (settings.txPwr > 14)
   {
-    settings.TXpwr = 14;
+    settings.txPwr = 14;
   } // power cant exceed 14dbm on these units wher the RX/TX antenna pins are shared
-  if (settings.TXpwr < 2)
+  if (settings.txPwr < 2)
   {
-    settings.TXpwr = 2;
+    settings.txPwr = 2;
   } // power setting can't go below 2
-  if (settings.FHSS && settings.TXfreq < 900.000F)
+  if (settings.fhss && settings.txFreq < 900.000F)
   {
-    settings.FHSS = false;
+    settings.fhss = false;
   } // FHSS not used on 70cm band
   if (settings.fltProfile == '2' or settings.fltProfile == 'A')
   {
     boosterBurpTime = min(1000000UL, settings.boosterSeparationDelay - 10000UL);
   }
-  if (settings.TXfreq < 420.000F)
+  if (settings.txFreq < 420.000F)
   {
-    settings.TXfreq = 421.000F;
+    settings.txFreq = 421.000F;
   } // cannot be below the 70cm band, reset to 421MHz band
-  if (settings.TXfreq > 450.000F && settings.TXfreq < 902.300F)
+  if (settings.txFreq > 450.000F && settings.txFreq < 902.300F)
   {
-    settings.TXfreq = 902.200F;
+    settings.txFreq = 902.200F;
   } // cannot be above the 70cm ham band and below 915MHz ISM band
-  if (settings.TXfreq > 928.000F)
+  if (settings.txFreq > 928.000F)
   {
-    settings.TXfreq = 914.900F;
+    settings.txFreq = 914.900F;
   } // cannot be above 915MHz ISM band
 }
 
 /**
  * @brief Store the user settings in EEPROM.
  */
-static void writeSettingsEEPROM()
+static void writeSettingsEeprom()
 {
   // Update the EEPROM with the new settings
   EEPROM.update(eeprom.fltProfile, settings.fltProfile);
@@ -369,7 +369,7 @@ static void writeSettingsEEPROM()
   EEPROM.update(eeprom.silentMode, settings.silentMode);
   EEPROM.update(eeprom.magSwitchEnable, settings.magSwitchEnable);
   EEPROM.update(eeprom.inflightRecover, settings.inflightRecover);
-  EEPROM.update(eeprom.gpsLogFile, settings.GPSlog);
+  EEPROM.update(eeprom.gpsLogFile, settings.gpsLog);
   ulongUnion.val = settings.fireTime;
   for (byte i = 0; i < 4; i++)
   {
@@ -379,12 +379,12 @@ static void writeSettingsEEPROM()
   EEPROM.update(eeprom.pyro2Func, settings.pyro2Func);
   EEPROM.update(eeprom.pyro3Func, settings.pyro3Func);
   EEPROM.update(eeprom.pyro4Func, settings.pyro4Func);
-  EEPROM.update(eeprom.TXenable, settings.TXenable);
-  EEPROM.update(eeprom.TXpwr, settings.TXpwr);
-  floatUnion.val = settings.TXfreq;
+  EEPROM.update(eeprom.txEnable, settings.txEnable);
+  EEPROM.update(eeprom.txPwr, settings.txPwr);
+  floatUnion.val = settings.txFreq;
   for (byte i = 0; i < 4; i++)
   {
-    EEPROM.update(eeprom.TXfreq + i, floatUnion.Byte[i]);
+    EEPROM.update(eeprom.txFreq + i, floatUnion.Byte[i]);
   }
   ulongUnion.val = settings.boosterSeparationDelay;
   for (byte i = 0; i < 4; i++)
@@ -447,10 +447,10 @@ void configurePyroChannels()
 void configureRadio()
 {
   // setup the radio, default 70cm band
-  if (settings.TXenable)
+  if (settings.txEnable)
   {
     // 915MHz FHSS
-    if (settings.FHSS)
+    if (settings.fhss)
     {
       if (settings.testMode)
       {
@@ -458,37 +458,37 @@ void configureRadio()
       }
     }
     // 915MHz dedicated frequency (no FHSS)
-    if (settings.TXfreq > 900.000F && !settings.FHSS)
+    if (settings.txFreq > 900.000F && !settings.fhss)
     {
-      settings.TXpwr = 2; // minimum power due to FCC regulations
+      settings.txPwr = 2; // minimum power due to FCC regulations
       if (settings.testMode)
       {
         Serial.println(F("Dedicated ISM band frequency. Power limit 2mW"));
       }
     }
     // Set the radio output power & frequency
-    setRadioFreq(settings.TXfreq);
-    setRadioPWR(settings.TXpwr); // 23 max setting; 20mW=13dBm, 30mW=15dBm, 50mW=17dBm, 100mW=20dBm
+    setRadioFreq(settings.txFreq);
+    setRadioPWR(settings.txPwr); // 23 max setting; 20mW=13dBm, 30mW=15dBm, 50mW=17dBm, 100mW=20dBm
     if (settings.testMode)
     {
       Serial.print("Radio Freq: ");
-      Serial.println(settings.TXfreq, 3);
+      Serial.println(settings.txFreq, 3);
       Serial.print("Radio Power: ");
-      Serial.println(settings.TXpwr);
+      Serial.println(settings.txPwr);
     }
   }
   // if present, disconnect power or send the radio to sleep mode
   else
   {
-    if (pins.radioEN != pins.nullCont)
+    if (pins.radioEn != pins.nullCont)
     {
-      pinMode(pins.radioEN, OUTPUT);
-      digitalWrite(pins.radioEN, LOW);
+      pinMode(pins.radioEn, OUTPUT);
+      digitalWrite(pins.radioEn, LOW);
     }
     if (sensors.radio != 0)
     {
       radioSleep();
-      digitalWrite(pins.radioCS, HIGH);
+      digitalWrite(pins.radioCs, HIGH);
     }
     if (settings.testMode)
     {
@@ -507,10 +507,10 @@ void attachServos()
   {
     servos[i].attach(servoPins[i]);
   }
-  // read the trim settings from EEPROM (servo 1's at eeprom.servo1trim, the rest after it)
+  // read the trim settings from EEPROM (servo 1's at eeprom.servo1Trim, the rest after it)
   for (uint8_t i = 0; i < 4; i++)
   {
-    servoTrim[i] = (int8_t)EEPROM.read(eeprom.servo1trim + i);
+    servoTrim[i] = (int8_t)EEPROM.read(eeprom.servo1Trim + i);
   }
 }
 
@@ -540,7 +540,7 @@ static void disableServos()
  * @brief Read the sensor biases and barometer offsets from EEPROM, zeroing any that were never
  * written.
  */
-void readCalibrationEEPROM()
+void readCalibrationEeprom()
 {
   // read the bias from EEPROM
   calUnion.calByte[0] = EEPROM.read(eeprom.accelBiasX);
@@ -561,14 +561,14 @@ void readCalibrationEEPROM()
   calUnion.calByte[0] = EEPROM.read(eeprom.gyroBiasZ);
   calUnion.calByte[1] = EEPROM.read(eeprom.gyroBiasZ + 1);
   gyro.biasZ = calUnion.calValue;
-  calUnion.calByte[0] = EEPROM.read(eeprom.highGbiasX);
-  calUnion.calByte[1] = EEPROM.read(eeprom.highGbiasX + 1);
+  calUnion.calByte[0] = EEPROM.read(eeprom.highGBiasX);
+  calUnion.calByte[1] = EEPROM.read(eeprom.highGBiasX + 1);
   highG.biasX = calUnion.calValue;
-  calUnion.calByte[0] = EEPROM.read(eeprom.highGbiasY);
-  calUnion.calByte[1] = EEPROM.read(eeprom.highGbiasY + 1);
+  calUnion.calByte[0] = EEPROM.read(eeprom.highGBiasY);
+  calUnion.calByte[1] = EEPROM.read(eeprom.highGBiasY + 1);
   highG.biasY = calUnion.calValue;
-  calUnion.calByte[0] = EEPROM.read(eeprom.highGbiasZ);
-  calUnion.calByte[1] = EEPROM.read(eeprom.highGbiasZ + 1);
+  calUnion.calByte[0] = EEPROM.read(eeprom.highGBiasZ);
+  calUnion.calByte[1] = EEPROM.read(eeprom.highGBiasZ + 1);
   highG.biasZ = calUnion.calValue;
   calUnion.calByte[0] = EEPROM.read(eeprom.magBiasX);
   calUnion.calByte[1] = EEPROM.read(eeprom.magBiasX + 1);
@@ -677,12 +677,12 @@ void readCalibrationEEPROM()
 static void applyBenchTestOverrides()
 {
   // Overrides for bench test mode
-  if (settings.TXenable)
+  if (settings.txEnable)
   {
-    settings.TXpwr = 2;
-    setRadioPWR(settings.TXpwr); // lowest power setting
+    settings.txPwr = 2;
+    setRadioPWR(settings.txPwr); // lowest power setting
     Serial.print(F("Radio Power Reduced for Bench Test Mode: "));
-    Serial.println(settings.TXpwr);
+    Serial.println(settings.txPwr);
   }
   fltTime.detectLiftoffTime = 10000UL; // 0.01s
   settings.setupTime = 3000UL;         // 3s startup time
@@ -929,7 +929,7 @@ static void calibrateOnPad()
   }
 
   // Calibrate the analog accelerometer to the digital one
-  float A2D = highG.gainZ / accel.gainZ; //.64599
+  float gainRatio = highG.gainZ / accel.gainZ; //.64599
   if (settings.testMode)
   {
     Serial.println(F("Re-calibrating high-G accelerometer..."));
@@ -937,9 +937,9 @@ static void calibrateOnPad()
     Serial.println(highG.z0);
   }
   // Z0 + correction = correctZ0
-  // correctZ0 = accel.z0/A2D
+  // correctZ0 = accel.z0/gainRatio
   // correction = correctZ0 - Z0
-  // corrected bias = original bias - directionX *(highG.z0 - accel.z0/A2D)
+  // corrected bias = original bias - directionX *(highG.z0 - accel.z0/gainRatio)
   if (highG.orientX == 'Z')
   {
     if (settings.testMode)
@@ -947,7 +947,7 @@ static void calibrateOnPad()
       Serial.print("Old Bias: ");
       Serial.println(highG.biasX);
     }
-    highG.biasX -= highG.dirX * (highG.z0 - (int)((float)accel.z0 / (float)A2D));
+    highG.biasX -= highG.dirX * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
     if (settings.testMode)
     {
       Serial.print(F("New Bias: "));
@@ -961,7 +961,7 @@ static void calibrateOnPad()
       Serial.print("Old Bias: ");
       Serial.println(highG.biasY);
     }
-    highG.biasY -= highG.dirY * (highG.z0 - (int)((float)accel.z0 / (float)A2D));
+    highG.biasY -= highG.dirY * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
     if (settings.testMode)
     {
       Serial.print(F("New Bias: "));
@@ -975,14 +975,14 @@ static void calibrateOnPad()
       Serial.print("Old Bias: ");
       Serial.println(highG.biasZ);
     }
-    highG.biasZ -= highG.dirZ * (highG.z0 - (int)((float)accel.z0 / (float)A2D));
+    highG.biasZ -= highG.dirZ * (highG.z0 - (int)((float)accel.z0 / (float)gainRatio));
     if (settings.testMode)
     {
       Serial.print(F("New Bias: "));
       Serial.println(highG.biasZ);
     }
   }
-  // highG.biasX = highGx0 - (int)((float)accel.x0 / (float)A2D) - 27;//old formula is kept for reference
+  // highG.biasX = highGx0 - (int)((float)accel.x0 / (float)gainRatio) - 27;//old formula is kept for reference
 
   // Compute the acceleromter based rotation angle
   if (accel.y0 >= 0)
@@ -1194,19 +1194,19 @@ static void setSerialDebug()
   switch (settings.serialDebug)
   {
   case 0:
-    GPSecho = false;
+    gpsEcho = false;
     radioDebug = false;
     break;
   case 1:
-    GPSecho = true;
+    gpsEcho = true;
     radioDebug = false;
     break;
   case 2:
-    GPSecho = false;
+    gpsEcho = false;
     radioDebug = true;
     break;
   case 3:
-    GPSecho = true;
+    gpsEcho = true;
     radioDebug = true;
     break;
   }
@@ -1251,7 +1251,7 @@ void setup(void)
   // if an EEPROM settings file exists on the SD card, read it and store it into EEPROM
   parseEEPROMsettingsSD();
 
-  readHardwareSettingsEEPROM();
+  readHardwareSettingsEeprom();
 
   // check for unitialized EEPROM
   if (sensors.accel == 255)
@@ -1289,13 +1289,13 @@ void setup(void)
   beginSensors();
 
   // check to see if a critical senor failed the startup test - if so, give an audible warning
-  bool sensorsOK = sensors.statusAccel & sensors.statusGyro & sensors.statusHighG & sensors.statusBaro;
+  bool sensorsOk = sensors.statusAccel & sensors.statusGyro & sensors.statusHighG & sensors.statusBaro;
   // halt progress and give an audible warning once per second
-  if (!sensorsOK)
+  if (!sensorsOk)
   {
     Serial.println("Sensor Failure! Cannot proceed to flight");
   }
-  while (!sensorsOK)
+  while (!sensorsOk)
   {
     for (uint8_t i = 0; i < 20; i++)
     {
@@ -1313,7 +1313,7 @@ void setup(void)
 
   limitSettings();
 
-  writeSettingsEEPROM();
+  writeSettingsEeprom();
 
   configurePyroChannels();
 
@@ -1350,7 +1350,7 @@ void setup(void)
     }
 
     // enable serial plotting
-    GPSecho = false;
+    gpsEcho = false;
     radioDebug = false;
 
     attachServos();
@@ -1488,7 +1488,7 @@ void setup(void)
   // set the trigger for the magnetic switch
   magTrigger = 3000;
 
-  readCalibrationEEPROM();
+  readCalibrationEeprom();
 
   // output the read values
   if (settings.testMode)

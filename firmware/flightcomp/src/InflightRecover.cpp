@@ -1,5 +1,5 @@
 /**
- * @file Infilght_Recover.cpp
+ * @file InflightRecover.cpp
  * @brief Resumes a flight after a power loss or reset in flight.
  *
  * @details
@@ -36,7 +36,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
-#include "Infilght_Recover.h"
+#include "InflightRecover.h"
 #include "declarations.h"
 #include "board.h"
 #include "flightcomp.h"
@@ -100,7 +100,7 @@ static eventList eventsAfter(uint8_t lastEvent)
 bool rapidReset(uint8_t lastEvent)
 {
   // bring the hardware up as setup() does
-  readHardwareSettingsEEPROM();
+  readHardwareSettingsEeprom();
   setPinModes();
   beginGnssSerial();
   setAnalogResolution();
@@ -116,7 +116,7 @@ bool rapidReset(uint8_t lastEvent)
   {
     attachServos();
   }
-  readCalibrationEEPROM();
+  readCalibrationEeprom();
   readOrientation();
 
   // resume complex flights as single stage, and fire nothing unless the user asked for pyros
@@ -180,7 +180,7 @@ bool rapidReset(uint8_t lastEvent)
 
   reOpenSD();
   radio.event = (settings.fltProfile == 'B') ? Booster_Power_Loss : Power_Loss_Restart;
-  if (settings.TXenable)
+  if (settings.txEnable)
   {
     radioTimer.begin(timerBuildPkt, pktInterval.inflight / pktInterval.samplesPerPkt);
   }

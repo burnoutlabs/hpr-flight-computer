@@ -114,7 +114,7 @@
 #include "Calibration.h"
 #include "Device_Mgmt.h"
 #include "FlightStep.h"
-#include "Infilght_Recover.h"
+#include "InflightRecover.h"
 #include "Rotation.h"
 #include "SD_Card.h"
 #include "SX127X_Driver.h"
@@ -368,7 +368,7 @@ void loop(void)
       // shutoff the live-pyro alarm
       livePyroAlarm = false;
       // if FHSS, start the postFlight synch packet timer
-      if (settings.FHSS)
+      if (settings.fhss)
       {
         syncTimer.begin(timerSyncPkt, pktInterval.postFlight);
         delayMicroseconds(300000UL);
@@ -435,18 +435,18 @@ void loop(void)
   // use the interrupt to build the packets at regular intervals
   bool pktFlag = buildPkt;
   interrupts();
-  if (settings.TXenable && pktFlag)
+  if (settings.txEnable && pktFlag)
   {
     buildTelmetryPkt();
   }
   // send the packet when its ready and the radio is available
-  if (settings.TXenable && sendPkt && !TX && sensors.statusRadio)
+  if (settings.txEnable && sendPkt && !TX && sensors.statusRadio)
   {
     sendTelemetryPkt();
   }
 
   // Radio Synchronization packet when 915MHz FHSS is used
-  if (settings.FHSS && (events.touchdown || events.timeOut))
+  if (settings.fhss && (events.touchdown || events.timeOut))
   {
     noInterrupts();
     syncFreq = syncFlag;
@@ -621,16 +621,16 @@ void loop(void)
   {
     char c = HWSERIAL->read();
     GPS.encode(c);
-    if (settings.GPSlog && !fileClose)
+    if (settings.gpsLog && !fileClose)
     {
       updateGPSlogSD(c);
     }
-    if (settings.testMode && GPSecho && !events.liftoff)
+    if (settings.testMode && gpsEcho && !events.liftoff)
     {
       gnss.serialBuffer[gnss.serialPosn] = c;
       gnss.serialPosn++;
       // print NMEA strings to the serial buffer if needed
-      if (settings.testMode && GPSecho && !events.liftoff && gnss.msgRX && (gnss.serialPosn >= 55))
+      if (settings.testMode && gpsEcho && !events.liftoff && gnss.msgRX && (gnss.serialPosn >= 55))
       {
         gnss.serialBuffer[gnss.serialPosn] = '\0';
         Serial.print(gnss.serialBuffer);

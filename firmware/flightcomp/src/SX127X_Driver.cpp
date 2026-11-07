@@ -37,7 +37,7 @@ bool beginSX127X()
 {
 
   radioBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
-  radioBus.cs = pins.radioCS;
+  radioBus.cs = pins.radioCs;
   radioBus.writeMask = 0x80;
   radioBus.readMask = 0x00;
   radioBus.incMask = 0x00;
@@ -47,16 +47,16 @@ bool beginSX127X()
   bool successFlag = true;
 
   // Set interrupts
-  pinMode(pins.radioIRQ, INPUT);
-  attachInterrupt(digitalPinToInterrupt(pins.radioIRQ), clearIRQ, RISING);
+  pinMode(pins.radioIrq, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pins.radioIrq), clearIRQ, RISING);
 
   // reset radio
-  digitalWrite(pins.radioCS, HIGH);
-  digitalWrite(pins.radioRST, HIGH);
+  digitalWrite(pins.radioCs, HIGH);
+  digitalWrite(pins.radioRst, HIGH);
   delay(10);
-  digitalWrite(pins.radioRST, LOW);
+  digitalWrite(pins.radioRst, LOW);
   delayMicroseconds(100);
-  digitalWrite(pins.radioRST, HIGH);
+  digitalWrite(pins.radioRst, HIGH);
   delay(10);
 
 #define RegOpMode 0x01
@@ -202,7 +202,7 @@ bool beginSX127X()
   write8(RegIrqFlags, 0xFF);
 
   // if the frequency band is 70cm, then we need to reconfigure the radio
-  if (settings.TXfreq > 400.000F && settings.TXfreq < 500.000F)
+  if (settings.txFreq > 400.000F && settings.txFreq < 500.000F)
   {
     if (!config70cmSX127X())
     {

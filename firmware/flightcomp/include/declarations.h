@@ -31,60 +31,60 @@ struct EepromMap
   int accelBiasX = 6; // 06-11: accel.bias(X,Y,Z)
   int accelBiasY = 8;
   int accelBiasZ = 10;
-  int highGbiasX = 12; // 12-17: highG.bias(X,Y,Z)
-  int highGbiasY = 14;
-  int highGbiasZ = 16;
+  int highGBiasX = 12; // 12-17: highG.bias(X,Y,Z)
+  int highGBiasY = 14;
+  int highGBiasZ = 16;
   int magBiasX = 18; // 18-23: mag.bias(X,Y,Z)
   int magBiasY = 20;
   int magBiasZ = 22;
-  int accelXsign = 24; // 24-29: accelerometer to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
-  int accelXptr = 25;
-  int accelYsign = 26;
-  int accelYptr = 27;
-  int accelZsign = 28;
-  int accelZptr = 29;
-  int gyroXsign = 30; // 30-35: gyro to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
-  int gyroXptr = 31;
-  int gyroYsign = 32;
-  int gyroYptr = 33;
-  int gyroZsign = 34;
-  int gyroZptr = 35;
-  int magXsign = 36; // 36-41: magnetometer to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
-  int magXptr = 37;
-  int magYsign = 38;
-  int magYptr = 39;
-  int magZsign = 40;
-  int magZptr = 41;
-  int highGxSign = 42; // 42-47: highG to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
-  int highGxPtr = 43;
-  int highGySign = 44;
-  int highGyPtr = 45;
-  int highGzSign = 46;
-  int highGzPtr = 47;
-  int accel2boardXaxis = 48; // 48-53: accelerometer to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
-  int accel2boardXsign = 49;
-  int accel2boardYaxis = 50;
-  int accel2boardYsign = 51;
-  int accel2boardZaxis = 52;
-  int accel2boardZsign = 53;
-  int gyro2boardXaxis = 54; // 54-59: gyro to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
-  int gyro2boardXsign = 55;
-  int gyro2boardYaxis = 56;
-  int gyro2boardYsign = 57;
-  int gyro2boardZaxis = 58;
-  int gyro2boardZsign = 59;
-  int mag2boardXaxis = 60; // 60-65: magnetometer to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
-  int mag2boardXsign = 61;
-  int mag2boardYaxis = 62;
-  int mag2boardYsign = 63;
-  int mag2boardZaxis = 64;
-  int mag2boardZsign = 65;
-  int highG2boardXaxis = 66; // 66-71: high-G accelerometer to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
-  int highG2boardXsign = 67;
-  int highG2boardYaxis = 68;
-  int highG2boardYsign = 69;
-  int highG2boardZaxis = 70;
-  int highG2boardZsign = 71;
+  int accelXSign = 24; // 24-29: accelerometer to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
+  int accelXPtr = 25;
+  int accelYSign = 26;
+  int accelYPtr = 27;
+  int accelZSign = 28;
+  int accelZPtr = 29;
+  int gyroXSign = 30; // 30-35: gyro to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
+  int gyroXPtr = 31;
+  int gyroYSign = 32;
+  int gyroYPtr = 33;
+  int gyroZSign = 34;
+  int gyroZPtr = 35;
+  int magXSign = 36; // 36-41: magnetometer to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
+  int magXPtr = 37;
+  int magYSign = 38;
+  int magYPtr = 39;
+  int magZSign = 40;
+  int magZPtr = 41;
+  int highGXSign = 42; // 42-47: highG to world orientation (x-sign,x-pointer,y-sign,y-pointer,z-sign,z-pointer)
+  int highGXPtr = 43;
+  int highGYSign = 44;
+  int highGYPtr = 45;
+  int highGZSign = 46;
+  int highGZPtr = 47;
+  int accel2BoardXAxis = 48; // 48-53: accelerometer to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
+  int accel2BoardXSign = 49;
+  int accel2BoardYAxis = 50;
+  int accel2BoardYSign = 51;
+  int accel2BoardZAxis = 52;
+  int accel2BoardZSign = 53;
+  int gyro2BoardXAxis = 54; // 54-59: gyro to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
+  int gyro2BoardXSign = 55;
+  int gyro2BoardYAxis = 56;
+  int gyro2BoardYSign = 57;
+  int gyro2BoardZAxis = 58;
+  int gyro2BoardZSign = 59;
+  int mag2BoardXAxis = 60; // 60-65: magnetometer to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
+  int mag2BoardXSign = 61;
+  int mag2BoardYAxis = 62;
+  int mag2BoardYSign = 63;
+  int mag2BoardZAxis = 64;
+  int mag2BoardZSign = 65;
+  int highG2BoardXAxis = 66; // 66-71: high-G accelerometer to main board orientation (x-sign,x-axis,y-sign,y-axis,z-sign,z-axis)
+  int highG2BoardXSign = 67;
+  int highG2BoardYAxis = 68;
+  int highG2BoardYSign = 69;
+  int highG2BoardZAxis = 70;
+  int highG2BoardZSign = 71;
   int accelBusType = 72; // 72-93: device bus info
   int accelBusNum = 73;
   int gyroBusType = 74;
@@ -103,48 +103,48 @@ struct EepromMap
   int sdBusNum = 93;
   int gpsBusType = 94;
   int gpsBusNum = 95;
-  int pyro1ContPin = 96;    // 96     : Pyro 1 Continuity Pin
-  int pyro1FirePin = 97;    // 97     : Pyro 1 Fire Pin
-  int pyro2ContPin = 98;    // 98     : Pyro 2 Continuity Pin
-  int pyro2FirePin = 99;    // 98     : Pyro 2 Fire Pin
-  int pyro3ContPin = 100;   // 100   : Pyro 3 Continuity Pin
-  int pyro3FirePin = 101;   // 101   : Pyro 3 Fire Pin
-  int pyro4ContPin = 102;   // 102   : Pyro 4 Continuity Pin
-  int pyro4FirePin = 103;   // 103   : Pyro 4 Fire Pin
-  int nullPin = 104;        // 104        : Null Continuity / Fire Pin
-  int beepPin = 105;        // 105        : Beeper Pin
-  int battReadPin = 106;    // 106    : Battery Read Pin
-  int testModeGndPin = 107; // 107 : Test Mode Button Gnd Pin
-  int testModeRdPin = 108;  // 108   : Test Mode Read Pin
-  int radioCSpin = 109;     // 109     : radio CS pin
-  int radioIRQpin = 110;    // 110    : radio interrupt pin
-  int radioRstPin = 111;    // 111    : radio reset pin
-  int radioEnPin = 112;     // 112     : radio enable pin (optional w/ Adafruit breakout only)
-  int accelCSpin = 113;
-  int gyroCSpin = 114;
-  int magCSpin = 115;
-  int highGcsPin = 116;
-  int sdCSpin = 117;
-  int baroCSpin = 118;
-  int servo1pin = 119; // 119   : servo 1 control pin
-  int servo2pin = 120; // 120   : servo 2 control pin
-  int servo3pin = 121; // 121   : servo 3 control pin
-  int servo4pin = 122; // 122   : servo 4 control pin
-  int servo5pin = 123; // 123   : servo 5 control pin
-  int servo6pin = 124; // 124   : servo 6 control pin
-  int servo7pin = 125; // 125   : servo 7 control pin
-  int servo8pin = 126; // 126   : servo 8 control pin
-  int accelID = 127;   // 127   : Sensor ID accel
-  int gyroID = 128;    // 128   : Sensor ID gyro
-  int highGID = 129;   // 129   : Sensor ID highG
-  int baroID = 130;    // 130   : Sensor ID baro
-  int radioID = 131;   // 131   : Sensor ID Radio
-  int GPSID = 132;     // 132   : Sensor ID GPS
-  int magID = 133;
-  int sdID = 134;
-  int HWversion = 135;
-  int HWsubVersion = 136;
-  int HWunitNum = 137;
+  int pyro1ContPin = 96;     // 96     : Pyro 1 Continuity Pin
+  int pyro1FirePin = 97;     // 97     : Pyro 1 Fire Pin
+  int pyro2ContPin = 98;     // 98     : Pyro 2 Continuity Pin
+  int pyro2FirePin = 99;     // 98     : Pyro 2 Fire Pin
+  int pyro3ContPin = 100;    // 100   : Pyro 3 Continuity Pin
+  int pyro3FirePin = 101;    // 101   : Pyro 3 Fire Pin
+  int pyro4ContPin = 102;    // 102   : Pyro 4 Continuity Pin
+  int pyro4FirePin = 103;    // 103   : Pyro 4 Fire Pin
+  int nullPin = 104;         // 104        : Null Continuity / Fire Pin
+  int beepPin = 105;         // 105        : Beeper Pin
+  int battReadPin = 106;     // 106    : Battery Read Pin
+  int testModeGndPin = 107;  // 107 : Test Mode Button Gnd Pin
+  int testModeReadPin = 108; // 108   : Test Mode Read Pin
+  int radioCsPin = 109;      // 109     : radio CS pin
+  int radioIrqPin = 110;     // 110    : radio interrupt pin
+  int radioRstPin = 111;     // 111    : radio reset pin
+  int radioEnPin = 112;      // 112     : radio enable pin (optional w/ Adafruit breakout only)
+  int accelCsPin = 113;
+  int gyroCsPin = 114;
+  int magCsPin = 115;
+  int highGCsPin = 116;
+  int sdCsPin = 117;
+  int baroCsPin = 118;
+  int servo1Pin = 119; // 119   : servo 1 control pin
+  int servo2Pin = 120; // 120   : servo 2 control pin
+  int servo3Pin = 121; // 121   : servo 3 control pin
+  int servo4Pin = 122; // 122   : servo 4 control pin
+  int servo5Pin = 123; // 123   : servo 5 control pin
+  int servo6Pin = 124; // 124   : servo 6 control pin
+  int servo7Pin = 125; // 125   : servo 7 control pin
+  int servo8Pin = 126; // 126   : servo 8 control pin
+  int accelId = 127;   // 127   : Sensor ID accel
+  int gyroId = 128;    // 128   : Sensor ID gyro
+  int highGId = 129;   // 129   : Sensor ID highG
+  int baroId = 130;    // 130   : Sensor ID baro
+  int radioId = 131;   // 131   : Sensor ID Radio
+  int gpsId = 132;     // 132   : Sensor ID GPS
+  int magId = 133;
+  int sdId = 134;
+  int hwVersion = 135;
+  int hwSubVersion = 136;
+  int hwUnitNum = 137;
   int callSign = 138; // 138-143: Ham Radio Callsign
   //-------------------------------------------------------------
   // flight settings stored in EEPROM to facilitate rapid recovery
@@ -168,10 +168,10 @@ struct EepromMap
   int pyro3Func = 193;
   int pyro2Func = 194;
   int pyro1Func = 195;
-  int TXenable = 196;
-  int TXpwr = 197;
-  int TXfreq = 198; // 4
-  int FHSS = 202;
+  int txEnable = 196;
+  int txPwr = 197;
+  int txFreq = 198; // 4
+  int fhss = 202;
   int boosterSeparationDelay = 203; // 4
   int sustainerFireDelay = 207;     // 4
   int airStart1Event = 211;
@@ -190,17 +190,17 @@ struct EepromMap
   //-------------------------------------------------------------
   // active stabilization parameters
   //-------------------------------------------------------------
-  int servo1trim = 233;
-  int servo2trim = 234;
-  int servo3trim = 235;
-  int servo4trim = 236;
-  int servo5trim = 237;
-  int servo6trim = 238;
-  int servo7trim = 239;
-  int servo8trim = 240;
-  int Kp = 241;           // 4
-  int Ki = 245;           // 4
-  int Kd = 249;           // 4
+  int servo1Trim = 233;
+  int servo2Trim = 234;
+  int servo3Trim = 235;
+  int servo4Trim = 236;
+  int servo5Trim = 237;
+  int servo6Trim = 238;
+  int servo7Trim = 239;
+  int servo8Trim = 240;
+  int kp = 241;           // 4
+  int ki = 245;           // 4
+  int kd = 249;           // 4
   int totalFlights = 253; // 2
   int gyroBiasX = 255;    // 2
   int gyroBiasY = 257;    // 2
@@ -219,7 +219,7 @@ struct SensorConfig
   byte highG = 0;
   byte baro = 0;
   byte radio = 0;
-  byte GNSS = 0;
+  byte gnss = 0;
   char accelBusType;
   byte accelBusNum;
   char gyroBusType;
@@ -242,7 +242,7 @@ struct SensorConfig
   bool statusBaro = false;
   bool statusMag = false;
   bool statusRadio = false;
-  bool pyroPWM = false;
+  bool pyroPwm = false;
 };
 alignas(4) extern SensorConfig sensors;
 //-----------------------------------------
@@ -254,11 +254,11 @@ struct UserSettings
   bool calibrationMode = false;
   //--------flight settings----------------
   char rocketName[20] = ""; // Maximum of 20 characters
-  char HWid[7] = "";
+  char hwId[7] = "";
   char fltProfile = 'S';
   char units = 'S';
   char reportStyle = 'P';
-  bool GPSfile = false;
+  bool gpsFileEnable = false;
   unsigned long setupTime = 5000000UL;
   float mainDeployAlt = 153;             // Up to 458m for main deploy
   unsigned long rcdTime = 900000000UL;   // 15min
@@ -266,7 +266,7 @@ struct UserSettings
   bool silentMode = false;               // true turns off beeper
   bool magSwitchEnable = false;
   byte inflightRecover = 0;
-  bool GPSlog = false;
+  bool gpsLog = false;
   byte serialDebug = 1;
   //--------pyro settings----------------
   unsigned long fireTime = 500000UL; // 0.5s
@@ -276,10 +276,10 @@ struct UserSettings
   char pyro1Func = 'N';
   //--------telemetry settings----------------
   char callSign[7] = "";
-  bool TXenable = true; // false turns off radio transmissions
-  byte TXpwr = 13;
-  float TXfreq = 433.250;
-  bool FHSS = false;
+  bool txEnable = true; // false turns off radio transmissions
+  byte txPwr = 13;
+  float txFreq = 433.250;
+  bool fhss = false;
   //--------2 stage settings----------------
   unsigned long boosterSeparationDelay = 500000UL; // 0.5s
   unsigned long sustainerFireDelay = 1000000UL;    // 1.0s
@@ -305,7 +305,7 @@ extern UserSettings settings;
 typedef struct
 {
   byte addr;
-  int16_t ADCmax;
+  int16_t adcMax;
   float gainX;
   float gainY;
   float gainZ;
@@ -321,9 +321,9 @@ typedef struct
   int16_t *ptrX;
   int16_t *ptrY;
   int16_t *ptrZ;
-  int8_t *ptrXsign;
-  int8_t *ptrYsign;
-  int8_t *ptrZsign;
+  int8_t *ptrXSign;
+  int8_t *ptrYSign;
+  int8_t *ptrZSign;
   int32_t sumX0 = 0L;
   int32_t sumY0 = 0L;
   int32_t sumZ0 = 0L;
@@ -339,11 +339,11 @@ typedef struct
   uint32_t timeLastSamp = 0UL;
   uint32_t timeBtwnSamp = 10000UL;
   boolean newSamp = false;
-} sensorData;
-extern sensorData accel;
-extern sensorData mag;
-extern sensorData gyro;
-extern sensorData highG;
+} SensorData;
+extern SensorData accel;
+extern SensorData mag;
+extern SensorData gyro;
+extern SensorData highG;
 //-----------------------------------------
 // pyro variables
 //-----------------------------------------
@@ -450,10 +450,10 @@ struct PinMap
   uint8_t pyro3Fire;
   uint8_t pyro4Cont;
   uint8_t pyro4Fire;
-  uint8_t radioCS;
-  uint8_t radioIRQ;
-  uint8_t radioRST;
-  uint8_t radioEN;
+  uint8_t radioCs;
+  uint8_t radioIrq;
+  uint8_t radioRst;
+  uint8_t radioEn;
   uint8_t servo1;
   uint8_t servo2;
   uint8_t servo3;
@@ -462,12 +462,12 @@ struct PinMap
   uint8_t servo6;
   uint8_t servo7;
   uint8_t servo8;
-  uint8_t accelCS;
-  uint8_t gyroCS;
-  uint8_t magCS;
-  uint8_t highG_CS;
-  uint8_t baroCS;
-  uint8_t SD_CS;
+  uint8_t accelCs;
+  uint8_t gyroCs;
+  uint8_t magCs;
+  uint8_t highGCs;
+  uint8_t baroCs;
+  uint8_t sdCs;
   uint8_t firePin = 0;
 };
 alignas(4) extern PinMap pins;
@@ -565,7 +565,7 @@ extern uint8_t sizeHighGfilter;
 extern uint8_t filterPosn;
 extern float highGsmooth;
 extern float adcConvert;
-extern uint16_t ADCmidValue;
+extern uint16_t adcMidValue;
 union CalUnion
 {
   int16_t calValue;
@@ -767,15 +767,15 @@ extern char userInput;
 extern int8_t servoTrim[8];
 const uint32_t controlInterval = 50000UL;
 extern uint32_t timeLastControl;
-extern float Kp;
-extern float Ki;
-extern float Kd;
+extern float kp;
+extern float ki;
+extern float kd;
 //-----------------------------------------
 // debug
 //-----------------------------------------
-extern boolean GPSecho;
+extern boolean gpsEcho;
 extern boolean radioDebug;
-extern boolean TXdataFile;
+extern boolean txDataFile;
 //-----------------------------------------
 // loop debug and analysis variables
 //-----------------------------------------

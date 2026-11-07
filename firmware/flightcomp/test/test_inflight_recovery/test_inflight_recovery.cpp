@@ -20,7 +20,7 @@
 
 #include "synthetic_flights.h"
 
-#include "../src/Infilght_Recover.cpp"
+#include "../src/InflightRecover.cpp"
 
 static std::vector<uint8_t> pristine;
 static const SyntheticFlight *truthSource = nullptr;
@@ -56,13 +56,13 @@ static void loadBoardEeprom(uint8_t inflightRecover)
 {
   shimEeprom.shimErase();
   uint8_t *e = shimEeprom.bytes;
-  e[eeprom.accelID] = 6;
-  e[eeprom.gyroID] = 6;
-  e[eeprom.magID] = 3;
-  e[eeprom.highGID] = 2;
-  e[eeprom.baroID] = 5;
-  e[eeprom.radioID] = 1;
-  e[eeprom.GPSID] = 2;
+  e[eeprom.accelId] = 6;
+  e[eeprom.gyroId] = 6;
+  e[eeprom.magId] = 3;
+  e[eeprom.highGId] = 2;
+  e[eeprom.baroId] = 5;
+  e[eeprom.radioId] = 1;
+  e[eeprom.gpsId] = 2;
   e[eeprom.accelBusType] = 'I';
   e[eeprom.accelBusNum] = 0;
   e[eeprom.gyroBusType] = 'I';
@@ -89,12 +89,12 @@ static void loadBoardEeprom(uint8_t inflightRecover)
   e[eeprom.beepPin] = 23;
   e[eeprom.battReadPin] = 40;
   e[eeprom.testModeGndPin] = 2;
-  e[eeprom.testModeRdPin] = 5;
-  e[eeprom.radioCSpin] = 9;
+  e[eeprom.testModeReadPin] = 5;
+  e[eeprom.radioCsPin] = 9;
   e[eeprom.radioEnPin] = 56;
-  e[eeprom.highGcsPin] = 10;
+  e[eeprom.highGCsPin] = 10;
   const int biasAddr[] = {eeprom.accelBiasX, eeprom.accelBiasY, eeprom.accelBiasZ, eeprom.gyroBiasX, eeprom.gyroBiasY, eeprom.gyroBiasZ,
-                          eeprom.highGbiasX, eeprom.highGbiasY, eeprom.highGbiasZ, eeprom.magBiasX, eeprom.magBiasY, eeprom.magBiasZ};
+                          eeprom.highGBiasX, eeprom.highGBiasY, eeprom.highGBiasZ, eeprom.magBiasX, eeprom.magBiasY, eeprom.magBiasZ};
   for (int address : biasAddr)
   {
     e[address] = 0;
@@ -125,16 +125,16 @@ static UserSettings flightSettingsFile(uint8_t inflightRecover, uint32_t apogeeD
   f.silentMode = false;
   f.magSwitchEnable = false;
   f.inflightRecover = inflightRecover;
-  f.GPSlog = false;
+  f.gpsLog = false;
   f.fireTime = 500000UL;
   f.pyro1Func = 'A';
   f.pyro2Func = 'M';
   f.pyro3Func = 'N';
   f.pyro4Func = 'N';
-  f.TXenable = true;
-  f.TXpwr = 10;
-  f.TXfreq = 433.25F;
-  f.FHSS = false;
+  f.txEnable = true;
+  f.txPwr = 10;
+  f.txFreq = 433.25F;
+  f.fhss = false;
   f.altThreshold = 91;
   f.maxAngle = 300;
   f.serialDebug = 0;
@@ -250,7 +250,7 @@ static RecoveryRun flyWithReset(uint8_t inflightRecover, uint32_t apogeeDelay, b
       baroFeedHook = baroFromTruth;
       // what the drivers' begin functions set (the stand-ins do not)
       accel.gainX = accel.gainY = accel.gainZ = ACCEL_G_PER_COUNT;
-      accel.ADCmax = (int16_t)(0.98 * 32768);
+      accel.adcMax = (int16_t)(0.98 * 32768);
       accel.timeBtwnSamp = ACCEL_SAMPLE_US;
       gyro.gainX = gyro.gainY = gyro.gainZ = 0.07F;
       gyro.timeBtwnSamp = GYRO_SAMPLE_US;
@@ -258,8 +258,8 @@ static RecoveryRun flyWithReset(uint8_t inflightRecover, uint32_t apogeeDelay, b
       highG.timeBtwnSamp = HIGHG_SAMPLE_US;
       mag.timeBtwnSamp = 25000;
       baro.timeBtwnSamp = BARO_SAMPLE_US;
-      sensorData *all[] = {&accel, &gyro, &mag, &highG};
-      for (sensorData *s : all)
+      SensorData *all[] = {&accel, &gyro, &mag, &highG};
+      for (SensorData *s : all)
       {
         s->dirX = s->dirY = s->dirZ = 1;
       }
@@ -398,8 +398,8 @@ void test_reset_on_the_pad_starts_normally()
     highG.timeBtwnSamp = HIGHG_SAMPLE_US;
     mag.timeBtwnSamp = 25000;
     baro.timeBtwnSamp = BARO_SAMPLE_US;
-    sensorData *all[] = {&accel, &gyro, &mag, &highG};
-    for (sensorData *s : all)
+    SensorData *all[] = {&accel, &gyro, &mag, &highG};
+    for (SensorData *s : all)
     {
       s->dirX = s->dirY = s->dirZ = 1;
     }

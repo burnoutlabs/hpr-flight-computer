@@ -22,7 +22,7 @@
   X(pktInterval) X(radio) X(cont) X(rotnOK) X(altOK) X(beep) X(pyroFire) X(fileClose) \
   X(boosterBurpTime) X(unitConvert) X(g) X(accelNow) X(maxG) X(gTrigger) X(high1G) X(filterFull) \
   X(highGsum) X(highGfilter) X(sizeHighGfilter) X(filterPosn) X(highGsmooth) X(adcConvert) \
-  X(ADCmidValue) X(calUnion) X(baro) X(baroTouchdown) X(touchdownTrigger) X(pressureAvg) \
+  X(adcMidValue) X(calUnion) X(baro) X(baroTouchdown) X(touchdownTrigger) X(pressureAvg) \
   X(pressureAvg5) X(pressureSum) X(pressurePosn) X(magTrigger) X(magCalibrateMode) X(magRoll) \
   X(magOffVert) X(magPitch) X(magYaw) X(dx) X(dy) X(dz) X(yawY0) X(pitchX0) X(pitchX) X(yawY) \
   X(rollZ) X(offVert) X(rotationFault) X(lastRotn) X(rotnRate) X(accelVel) X(accelAlt) \
@@ -33,7 +33,7 @@
   X(syncMains) X(maxAltDigits) X(maxVelDigits) X(voltageDigits) X(altDigits) X(velDigits) X(n) \
   X(voltage) X(writeVolt) X(voltRate) X(voltReading) X(lastVolt) X(reportCode) X(postFlightCode) \
   X(gnss) X(ulongUnion) X(intUnion) X(floatUnion) X(userInput) X(servoTrim) \
-  X(timeLastControl) X(Kp) X(Ki) X(Kd) X(GPSecho) X(radioDebug) X(TXdataFile) X(cyclesBtwn) \
+  X(timeLastControl) X(kp) X(ki) X(kd) X(gpsEcho) X(radioDebug) X(txDataFile) X(cyclesBtwn) \
   X(sampleTime) X(sampleStart) X(sampleTimeCheck) X(debugTimer) X(radioFnctn) X(beginAccel) \
   X(beginGyro) X(beginMag) X(beginHighG) X(beginBaro) X(beginRadio) X(getAccel) X(getGyro) \
   X(getMag) X(getHighG) X(getBaro) X(setRadioFreq) X(setRadioPWR) X(radioSleep) X(radioSendPkt) \

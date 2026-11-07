@@ -31,9 +31,9 @@
 #include "SD_Card.h"
 
 // serial input characters for setCanardTrim()
-char a;
-char b;
-char d;
+char trimServoChar;
+char trimDirectionChar;
+char trimEndChar;
 
 /**
  * @brief Calibration routine for IMU and High-G accelerometers.
@@ -67,18 +67,18 @@ void accelCalibrate()
   highG.ptrY = &highG.rawY;
   highG.ptrZ = &highG.rawZ;
   // reset the direction pointers
-  accel.ptrXsign = &accel.dirX;
-  accel.ptrYsign = &accel.dirY;
-  accel.ptrZsign = &accel.dirZ;
-  gyro.ptrXsign = &gyro.dirX;
-  gyro.ptrYsign = &gyro.dirY;
-  gyro.ptrZsign = &gyro.dirZ;
-  mag.ptrXsign = &mag.dirX;
-  mag.ptrYsign = &mag.dirY;
-  mag.ptrZsign = &mag.dirZ;
-  highG.ptrXsign = &highG.dirX;
-  highG.ptrYsign = &highG.dirY;
-  highG.ptrZsign = &highG.dirZ;
+  accel.ptrXSign = &accel.dirX;
+  accel.ptrYSign = &accel.dirY;
+  accel.ptrZSign = &accel.dirZ;
+  gyro.ptrXSign = &gyro.dirX;
+  gyro.ptrYSign = &gyro.dirY;
+  gyro.ptrZSign = &gyro.dirZ;
+  mag.ptrXSign = &mag.dirX;
+  mag.ptrYSign = &mag.dirY;
+  mag.ptrZSign = &mag.dirZ;
+  highG.ptrXSign = &highG.dirX;
+  highG.ptrYSign = &highG.dirY;
+  highG.ptrZSign = &highG.dirZ;
   // reset the direction values
   accel.dirX = accel.dirY = accel.dirZ = 1;
   gyro.dirX = gyro.dirY = gyro.dirZ = 1;
@@ -179,9 +179,9 @@ void accelCalibrate()
   writeCalibration(accel.biasX, eeprom.accelBiasX);
   writeCalibration(accel.biasY, eeprom.accelBiasY);
   writeCalibration(accel.biasZ, eeprom.accelBiasZ);
-  writeCalibration(highG.biasX, eeprom.highGbiasX);
-  writeCalibration(highG.biasY, eeprom.highGbiasY);
-  writeCalibration(highG.biasZ, eeprom.highGbiasZ);
+  writeCalibration(highG.biasX, eeprom.highGBiasX);
+  writeCalibration(highG.biasY, eeprom.highGBiasY);
+  writeCalibration(highG.biasZ, eeprom.highGBiasZ);
   writeCalibration(gyro.biasX, eeprom.gyroBiasX);
   writeCalibration(gyro.biasY, eeprom.gyroBiasY);
   writeCalibration(gyro.biasZ, eeprom.gyroBiasZ);
@@ -360,30 +360,30 @@ void setOrientation()
   byte orientCase = 0;
 
   // read from EEPROM the sensor orientations relative to the board
-  accel.orientX = (char)EEPROM.read(eeprom.accel2boardXaxis);
-  accel.dirX = (uint8_t)EEPROM.read(eeprom.accel2boardXsign);
-  accel.orientY = (char)EEPROM.read(eeprom.accel2boardYaxis);
-  accel.dirY = (uint8_t)EEPROM.read(eeprom.accel2boardYsign);
-  accel.orientZ = (char)EEPROM.read(eeprom.accel2boardZaxis);
-  accel.dirZ = (uint8_t)EEPROM.read(eeprom.accel2boardZsign);
-  gyro.orientX = (char)EEPROM.read(eeprom.gyro2boardXaxis);
-  gyro.dirX = (uint8_t)EEPROM.read(eeprom.gyro2boardXsign);
-  gyro.orientY = (char)EEPROM.read(eeprom.gyro2boardYaxis);
-  gyro.dirY = (uint8_t)EEPROM.read(eeprom.gyro2boardYsign);
-  gyro.orientZ = (char)EEPROM.read(eeprom.gyro2boardZaxis);
-  gyro.dirZ = (uint8_t)EEPROM.read(eeprom.gyro2boardZsign);
-  mag.orientX = (char)EEPROM.read(eeprom.mag2boardXaxis);
-  mag.dirX = (uint8_t)EEPROM.read(eeprom.mag2boardXsign);
-  mag.orientY = (char)EEPROM.read(eeprom.mag2boardYaxis);
-  mag.dirY = (uint8_t)EEPROM.read(eeprom.mag2boardYsign);
-  mag.orientZ = (char)EEPROM.read(eeprom.mag2boardZaxis);
-  mag.dirZ = (uint8_t)EEPROM.read(eeprom.mag2boardZsign);
-  highG.orientX = (char)EEPROM.read(eeprom.highG2boardXaxis);
-  highG.dirX = (uint8_t)EEPROM.read(eeprom.highG2boardXsign);
-  highG.orientY = (char)EEPROM.read(eeprom.highG2boardYaxis);
-  highG.dirY = (uint8_t)EEPROM.read(eeprom.highG2boardYsign);
-  highG.orientZ = (char)EEPROM.read(eeprom.highG2boardZaxis);
-  highG.dirZ = (uint8_t)EEPROM.read(eeprom.highG2boardZsign);
+  accel.orientX = (char)EEPROM.read(eeprom.accel2BoardXAxis);
+  accel.dirX = (uint8_t)EEPROM.read(eeprom.accel2BoardXSign);
+  accel.orientY = (char)EEPROM.read(eeprom.accel2BoardYAxis);
+  accel.dirY = (uint8_t)EEPROM.read(eeprom.accel2BoardYSign);
+  accel.orientZ = (char)EEPROM.read(eeprom.accel2BoardZAxis);
+  accel.dirZ = (uint8_t)EEPROM.read(eeprom.accel2BoardZSign);
+  gyro.orientX = (char)EEPROM.read(eeprom.gyro2BoardXAxis);
+  gyro.dirX = (uint8_t)EEPROM.read(eeprom.gyro2BoardXSign);
+  gyro.orientY = (char)EEPROM.read(eeprom.gyro2BoardYAxis);
+  gyro.dirY = (uint8_t)EEPROM.read(eeprom.gyro2BoardYSign);
+  gyro.orientZ = (char)EEPROM.read(eeprom.gyro2BoardZAxis);
+  gyro.dirZ = (uint8_t)EEPROM.read(eeprom.gyro2BoardZSign);
+  mag.orientX = (char)EEPROM.read(eeprom.mag2BoardXAxis);
+  mag.dirX = (uint8_t)EEPROM.read(eeprom.mag2BoardXSign);
+  mag.orientY = (char)EEPROM.read(eeprom.mag2BoardYAxis);
+  mag.dirY = (uint8_t)EEPROM.read(eeprom.mag2BoardYSign);
+  mag.orientZ = (char)EEPROM.read(eeprom.mag2BoardZAxis);
+  mag.dirZ = (uint8_t)EEPROM.read(eeprom.mag2BoardZSign);
+  highG.orientX = (char)EEPROM.read(eeprom.highG2BoardXAxis);
+  highG.dirX = (uint8_t)EEPROM.read(eeprom.highG2BoardXSign);
+  highG.orientY = (char)EEPROM.read(eeprom.highG2BoardYAxis);
+  highG.dirY = (uint8_t)EEPROM.read(eeprom.highG2BoardYSign);
+  highG.orientZ = (char)EEPROM.read(eeprom.highG2BoardZAxis);
+  highG.dirZ = (uint8_t)EEPROM.read(eeprom.highG2BoardZSign);
 
   // use the accelerometer to determine which of the 6 possible system orientations is present
   // Accelerometer Z-axis is pointed up
@@ -592,246 +592,246 @@ void setOrientation()
 
   // write to EEPROM
   // Accelerometer
-  EEPROM.update(eeprom.accelXsign, accel.dirX);
-  EEPROM.update(eeprom.accelXptr, accel.orientX);
-  EEPROM.update(eeprom.accelYsign, accel.dirY);
-  EEPROM.update(eeprom.accelYptr, accel.orientY);
-  EEPROM.update(eeprom.accelZsign, accel.dirZ);
-  EEPROM.update(eeprom.accelZptr, accel.orientZ);
+  EEPROM.update(eeprom.accelXSign, accel.dirX);
+  EEPROM.update(eeprom.accelXPtr, accel.orientX);
+  EEPROM.update(eeprom.accelYSign, accel.dirY);
+  EEPROM.update(eeprom.accelYPtr, accel.orientY);
+  EEPROM.update(eeprom.accelZSign, accel.dirZ);
+  EEPROM.update(eeprom.accelZPtr, accel.orientZ);
   // Gyroscope
-  EEPROM.update(eeprom.gyroXsign, gyro.dirX);
-  EEPROM.update(eeprom.gyroXptr, gyro.orientX);
-  EEPROM.update(eeprom.gyroYsign, gyro.dirY);
-  EEPROM.update(eeprom.gyroYptr, gyro.orientY);
-  EEPROM.update(eeprom.gyroZsign, gyro.dirZ);
-  EEPROM.update(eeprom.gyroZptr, gyro.orientZ);
+  EEPROM.update(eeprom.gyroXSign, gyro.dirX);
+  EEPROM.update(eeprom.gyroXPtr, gyro.orientX);
+  EEPROM.update(eeprom.gyroYSign, gyro.dirY);
+  EEPROM.update(eeprom.gyroYPtr, gyro.orientY);
+  EEPROM.update(eeprom.gyroZSign, gyro.dirZ);
+  EEPROM.update(eeprom.gyroZPtr, gyro.orientZ);
   // Magnetometer
-  EEPROM.update(eeprom.magXsign, mag.dirX);
-  EEPROM.update(eeprom.magXptr, mag.orientX);
-  EEPROM.update(eeprom.magYsign, mag.dirY);
-  EEPROM.update(eeprom.magYptr, mag.orientY);
-  EEPROM.update(eeprom.magZsign, mag.dirZ);
-  EEPROM.update(eeprom.magZptr, mag.orientZ);
+  EEPROM.update(eeprom.magXSign, mag.dirX);
+  EEPROM.update(eeprom.magXPtr, mag.orientX);
+  EEPROM.update(eeprom.magYSign, mag.dirY);
+  EEPROM.update(eeprom.magYPtr, mag.orientY);
+  EEPROM.update(eeprom.magZSign, mag.dirZ);
+  EEPROM.update(eeprom.magZPtr, mag.orientZ);
   // High-G Accelerometer
-  EEPROM.update(eeprom.highGxSign, highG.dirX);
-  EEPROM.update(eeprom.highGxPtr, highG.orientX);
-  EEPROM.update(eeprom.highGySign, highG.dirY);
-  EEPROM.update(eeprom.highGyPtr, highG.orientY);
-  EEPROM.update(eeprom.highGzSign, highG.dirZ);
-  EEPROM.update(eeprom.highGzPtr, highG.orientZ);
+  EEPROM.update(eeprom.highGXSign, highG.dirX);
+  EEPROM.update(eeprom.highGXPtr, highG.orientX);
+  EEPROM.update(eeprom.highGYSign, highG.dirY);
+  EEPROM.update(eeprom.highGYPtr, highG.orientY);
+  EEPROM.update(eeprom.highGZSign, highG.dirZ);
+  EEPROM.update(eeprom.highGZPtr, highG.orientZ);
 
   Serial.println("Calibration Complete!");
 
 } // end void
 
-void exchangeAxes(char A, char B)
+void exchangeAxes(char axisA, char axisB)
 {
 
   // accelerometer
-  if (accel.orientX == A)
+  if (accel.orientX == axisA)
   {
-    accel.orientX = B;
-    if (accel.orientY == B)
+    accel.orientX = axisB;
+    if (accel.orientY == axisB)
     {
-      accel.orientY = A;
+      accel.orientY = axisA;
     }
-    if (accel.orientZ == B)
+    if (accel.orientZ == axisB)
     {
-      accel.orientZ = A;
+      accel.orientZ = axisA;
     }
   }
-  else if (accel.orientY == A)
+  else if (accel.orientY == axisA)
   {
-    accel.orientY = B;
-    if (accel.orientX == B)
+    accel.orientY = axisB;
+    if (accel.orientX == axisB)
     {
-      accel.orientX = A;
+      accel.orientX = axisA;
     }
-    if (accel.orientZ == B)
+    if (accel.orientZ == axisB)
     {
-      accel.orientZ = A;
+      accel.orientZ = axisA;
     }
   }
-  else if (accel.orientZ == A)
+  else if (accel.orientZ == axisA)
   {
-    accel.orientZ = B;
-    if (accel.orientX == B)
+    accel.orientZ = axisB;
+    if (accel.orientX == axisB)
     {
-      accel.orientX = A;
+      accel.orientX = axisA;
     }
-    if (accel.orientY == B)
+    if (accel.orientY == axisB)
     {
-      accel.orientY = A;
+      accel.orientY = axisA;
     }
   }
 
   // gyroscope
-  if (gyro.orientX == A)
+  if (gyro.orientX == axisA)
   {
-    gyro.orientX = B;
-    if (gyro.orientY == B)
+    gyro.orientX = axisB;
+    if (gyro.orientY == axisB)
     {
-      gyro.orientY = A;
+      gyro.orientY = axisA;
     }
-    if (gyro.orientZ == B)
+    if (gyro.orientZ == axisB)
     {
-      gyro.orientZ = A;
+      gyro.orientZ = axisA;
     }
   }
-  else if (gyro.orientY == A)
+  else if (gyro.orientY == axisA)
   {
-    gyro.orientY = B;
-    if (gyro.orientX == B)
+    gyro.orientY = axisB;
+    if (gyro.orientX == axisB)
     {
-      gyro.orientX = A;
+      gyro.orientX = axisA;
     }
-    if (gyro.orientZ == B)
+    if (gyro.orientZ == axisB)
     {
-      gyro.orientZ = A;
+      gyro.orientZ = axisA;
     }
   }
-  else if (gyro.orientZ == A)
+  else if (gyro.orientZ == axisA)
   {
-    gyro.orientZ = B;
-    if (gyro.orientX == B)
+    gyro.orientZ = axisB;
+    if (gyro.orientX == axisB)
     {
-      gyro.orientX = A;
+      gyro.orientX = axisA;
     }
-    if (gyro.orientY == B)
+    if (gyro.orientY == axisB)
     {
-      gyro.orientY = A;
+      gyro.orientY = axisA;
     }
   }
 
   // magnetometer
-  if (mag.orientX == A)
+  if (mag.orientX == axisA)
   {
-    mag.orientX = B;
-    if (mag.orientY == B)
+    mag.orientX = axisB;
+    if (mag.orientY == axisB)
     {
-      mag.orientY = A;
+      mag.orientY = axisA;
     }
-    if (mag.orientZ == B)
+    if (mag.orientZ == axisB)
     {
-      mag.orientZ = A;
+      mag.orientZ = axisA;
     }
   }
-  else if (mag.orientY == A)
+  else if (mag.orientY == axisA)
   {
-    mag.orientY = B;
-    if (mag.orientX == B)
+    mag.orientY = axisB;
+    if (mag.orientX == axisB)
     {
-      mag.orientX = A;
+      mag.orientX = axisA;
     }
-    if (mag.orientZ == B)
+    if (mag.orientZ == axisB)
     {
-      mag.orientZ = A;
+      mag.orientZ = axisA;
     }
   }
-  else if (mag.orientZ == A)
+  else if (mag.orientZ == axisA)
   {
-    mag.orientZ = B;
-    if (mag.orientX == B)
+    mag.orientZ = axisB;
+    if (mag.orientX == axisB)
     {
-      mag.orientX = A;
+      mag.orientX = axisA;
     }
-    if (mag.orientY == B)
+    if (mag.orientY == axisB)
     {
-      mag.orientY = A;
+      mag.orientY = axisA;
     }
   }
 
   // high-G accelerometer
-  if (highG.orientX == A)
+  if (highG.orientX == axisA)
   {
-    highG.orientX = B;
-    if (highG.orientY == B)
+    highG.orientX = axisB;
+    if (highG.orientY == axisB)
     {
-      highG.orientY = A;
+      highG.orientY = axisA;
     }
-    if (highG.orientZ == B)
+    if (highG.orientZ == axisB)
     {
-      highG.orientZ = A;
+      highG.orientZ = axisA;
     }
   }
-  else if (highG.orientY == A)
+  else if (highG.orientY == axisA)
   {
-    highG.orientY = B;
-    if (highG.orientX == B)
+    highG.orientY = axisB;
+    if (highG.orientX == axisB)
     {
-      highG.orientX = A;
+      highG.orientX = axisA;
     }
-    if (highG.orientZ == B)
+    if (highG.orientZ == axisB)
     {
-      highG.orientZ = A;
+      highG.orientZ = axisA;
     }
   }
-  else if (highG.orientZ == A)
+  else if (highG.orientZ == axisA)
   {
-    highG.orientZ = B;
-    if (highG.orientX == B)
+    highG.orientZ = axisB;
+    if (highG.orientX == axisB)
     {
-      highG.orientX = A;
+      highG.orientX = axisA;
     }
-    if (highG.orientY == B)
+    if (highG.orientY == axisB)
     {
-      highG.orientY = A;
+      highG.orientY = axisA;
     }
   }
 } // end exchangeAxes
 
-void flipAxis(char A)
+void flipAxis(char axis)
 {
 
   // accelerometer
-  if (accel.orientX == A)
+  if (accel.orientX == axis)
   {
     accel.dirX *= -1;
   }
-  if (accel.orientY == A)
+  if (accel.orientY == axis)
   {
     accel.dirY *= -1;
   }
-  if (accel.orientZ == A)
+  if (accel.orientZ == axis)
   {
     accel.dirZ *= -1;
   }
   // gyroscope
-  if (gyro.orientX == A)
+  if (gyro.orientX == axis)
   {
     gyro.dirX *= -1;
   }
-  if (gyro.orientY == A)
+  if (gyro.orientY == axis)
   {
     gyro.dirY *= -1;
   }
-  if (gyro.orientZ == A)
+  if (gyro.orientZ == axis)
   {
     gyro.dirZ *= -1;
   }
   // magnetometer
-  if (mag.orientX == A)
+  if (mag.orientX == axis)
   {
     mag.dirX *= -1;
   }
-  if (mag.orientY == A)
+  if (mag.orientY == axis)
   {
     mag.dirY *= -1;
   }
-  if (mag.orientZ == A)
+  if (mag.orientZ == axis)
   {
     mag.dirZ *= -1;
   }
   // high-G accelerometer
-  if (highG.orientX == A)
+  if (highG.orientX == axis)
   {
     highG.dirX *= -1;
   }
-  if (highG.orientY == A)
+  if (highG.orientY == axis)
   {
     highG.dirY *= -1;
   }
-  if (highG.orientZ == A)
+  if (highG.orientZ == axis)
   {
     highG.dirZ *= -1;
   }
@@ -851,57 +851,57 @@ void readOrientation()
   // Accelerometer
   //*****************************************************
   // X-Axis
-  accel.orientX = (char)EEPROM.read(eeprom.accelXptr);
-  accel.dirX = (int8_t)EEPROM.read(eeprom.accelXsign);
+  accel.orientX = (char)EEPROM.read(eeprom.accelXPtr);
+  accel.dirX = (int8_t)EEPROM.read(eeprom.accelXSign);
   switch (accel.orientX)
   {
   case 'X':
     accel.ptrX = &accel.rawX;
-    accel.ptrXsign = &accel.dirX;
+    accel.ptrXSign = &accel.dirX;
     break;
   case 'Y':
     accel.ptrY = &accel.rawX;
-    accel.ptrYsign = &accel.dirX;
+    accel.ptrYSign = &accel.dirX;
     break;
   case 'Z':
     accel.ptrZ = &accel.rawX;
-    accel.ptrZsign = &accel.dirX;
+    accel.ptrZSign = &accel.dirX;
     break;
   }
   // Y-Axis
-  accel.orientY = (char)EEPROM.read(eeprom.accelYptr);
-  accel.dirY = (int8_t)EEPROM.read(eeprom.accelYsign);
+  accel.orientY = (char)EEPROM.read(eeprom.accelYPtr);
+  accel.dirY = (int8_t)EEPROM.read(eeprom.accelYSign);
   switch (accel.orientY)
   {
   case 'X':
     accel.ptrX = &accel.rawY;
-    accel.ptrXsign = &accel.dirY;
+    accel.ptrXSign = &accel.dirY;
     break;
   case 'Y':
     accel.ptrY = &accel.rawY;
-    accel.ptrYsign = &accel.dirY;
+    accel.ptrYSign = &accel.dirY;
     break;
   case 'Z':
     accel.ptrZ = &accel.rawY;
-    accel.ptrZsign = &accel.dirY;
+    accel.ptrZSign = &accel.dirY;
     break;
   }
   // Z-Axis
-  accel.orientZ = (char)EEPROM.read(eeprom.accelZptr);
-  accel.dirZ = (int8_t)EEPROM.read(eeprom.accelZsign);
+  accel.orientZ = (char)EEPROM.read(eeprom.accelZPtr);
+  accel.dirZ = (int8_t)EEPROM.read(eeprom.accelZSign);
   switch (accel.orientZ)
   {
   case 'X':
     accel.ptrX = &accel.rawZ;
-    accel.ptrXsign = &accel.dirZ;
+    accel.ptrXSign = &accel.dirZ;
     break;
   case 'Y':
     accel.ptrY = &accel.rawZ;
-    accel.ptrYsign = &accel.dirZ;
+    accel.ptrYSign = &accel.dirZ;
     break;
   case 'Z':
     accel.ptrZ = &accel.rawZ;
-    accel.ptrZsign = &accel.dirZ;
+    accel.ptrZSign = &accel.dirZ;
     break;
   }
 
@@ -909,57 +909,57 @@ void readOrientation()
   // Gyroscope
   //*****************************************************
   // X-Axis
-  gyro.orientX = (char)EEPROM.read(eeprom.gyroXptr);
-  gyro.dirX = (int8_t)EEPROM.read(eeprom.gyroXsign);
+  gyro.orientX = (char)EEPROM.read(eeprom.gyroXPtr);
+  gyro.dirX = (int8_t)EEPROM.read(eeprom.gyroXSign);
   switch (gyro.orientX)
   {
   case 'X':
     gyro.ptrX = &gyro.rawX;
-    gyro.ptrXsign = &gyro.dirX;
+    gyro.ptrXSign = &gyro.dirX;
     break;
   case 'Y':
     gyro.ptrY = &gyro.rawX;
-    gyro.ptrYsign = &gyro.dirX;
+    gyro.ptrYSign = &gyro.dirX;
     break;
   case 'Z':
     gyro.ptrZ = &gyro.rawX;
-    gyro.ptrZsign = &gyro.dirX;
+    gyro.ptrZSign = &gyro.dirX;
     break;
   }
   // Y-Axis
-  gyro.orientY = (char)EEPROM.read(eeprom.gyroYptr);
-  gyro.dirY = (int8_t)EEPROM.read(eeprom.gyroYsign);
+  gyro.orientY = (char)EEPROM.read(eeprom.gyroYPtr);
+  gyro.dirY = (int8_t)EEPROM.read(eeprom.gyroYSign);
   switch (gyro.orientY)
   {
   case 'X':
     gyro.ptrX = &gyro.rawY;
-    gyro.ptrXsign = &gyro.dirY;
+    gyro.ptrXSign = &gyro.dirY;
     break;
   case 'Y':
     gyro.ptrY = &gyro.rawY;
-    gyro.ptrYsign = &gyro.dirY;
+    gyro.ptrYSign = &gyro.dirY;
     break;
   case 'Z':
     gyro.ptrZ = &gyro.rawY;
-    gyro.ptrZsign = &gyro.dirY;
+    gyro.ptrZSign = &gyro.dirY;
     break;
   }
   // Z-Axis
-  gyro.orientZ = (char)EEPROM.read(eeprom.gyroZptr);
-  gyro.dirZ = (int8_t)EEPROM.read(eeprom.gyroZsign);
+  gyro.orientZ = (char)EEPROM.read(eeprom.gyroZPtr);
+  gyro.dirZ = (int8_t)EEPROM.read(eeprom.gyroZSign);
   switch (gyro.orientZ)
   {
   case 'X':
     gyro.ptrX = &gyro.rawZ;
-    gyro.ptrXsign = &gyro.dirZ;
+    gyro.ptrXSign = &gyro.dirZ;
     break;
   case 'Y':
     gyro.ptrY = &gyro.rawZ;
-    gyro.ptrYsign = &gyro.dirZ;
+    gyro.ptrYSign = &gyro.dirZ;
     break;
   case 'Z':
     gyro.ptrZ = &gyro.rawZ;
-    gyro.ptrZsign = &gyro.dirZ;
+    gyro.ptrZSign = &gyro.dirZ;
     break;
   }
 
@@ -967,57 +967,57 @@ void readOrientation()
   // Magnetometer
   //*****************************************************
   // X-Axis
-  mag.orientX = (char)EEPROM.read(eeprom.magXptr);
-  mag.dirX = (int8_t)EEPROM.read(eeprom.magXsign);
+  mag.orientX = (char)EEPROM.read(eeprom.magXPtr);
+  mag.dirX = (int8_t)EEPROM.read(eeprom.magXSign);
   switch (mag.orientX)
   {
   case 'X':
     mag.ptrX = &mag.rawX;
-    mag.ptrXsign = &mag.dirX;
+    mag.ptrXSign = &mag.dirX;
     break;
   case 'Y':
     mag.ptrY = &mag.rawX;
-    mag.ptrYsign = &mag.dirX;
+    mag.ptrYSign = &mag.dirX;
     break;
   case 'Z':
     mag.ptrZ = &mag.rawX;
-    mag.ptrZsign = &mag.dirX;
+    mag.ptrZSign = &mag.dirX;
     break;
   }
   // Y-Axis
-  mag.orientY = (char)EEPROM.read(eeprom.magYptr);
-  mag.dirY = (int8_t)EEPROM.read(eeprom.magYsign);
+  mag.orientY = (char)EEPROM.read(eeprom.magYPtr);
+  mag.dirY = (int8_t)EEPROM.read(eeprom.magYSign);
   switch (mag.orientY)
   {
   case 'X':
     mag.ptrX = &mag.rawY;
-    mag.ptrXsign = &mag.dirY;
+    mag.ptrXSign = &mag.dirY;
     break;
   case 'Y':
     mag.ptrY = &mag.rawY;
-    mag.ptrYsign = &mag.dirY;
+    mag.ptrYSign = &mag.dirY;
     break;
   case 'Z':
     mag.ptrZ = &mag.rawY;
-    mag.ptrZsign = &mag.dirY;
+    mag.ptrZSign = &mag.dirY;
     break;
   }
   // Z-Axis
-  mag.orientZ = (char)EEPROM.read(eeprom.magZptr);
-  mag.dirZ = (int8_t)EEPROM.read(eeprom.magZsign);
+  mag.orientZ = (char)EEPROM.read(eeprom.magZPtr);
+  mag.dirZ = (int8_t)EEPROM.read(eeprom.magZSign);
   switch (mag.orientZ)
   {
   case 'X':
     mag.ptrX = &mag.rawZ;
-    mag.ptrXsign = &mag.dirZ;
+    mag.ptrXSign = &mag.dirZ;
     break;
   case 'Y':
     mag.ptrY = &mag.rawZ;
-    mag.ptrYsign = &mag.dirZ;
+    mag.ptrYSign = &mag.dirZ;
     break;
   case 'Z':
     mag.ptrZ = &mag.rawZ;
-    mag.ptrZsign = &mag.dirZ;
+    mag.ptrZSign = &mag.dirZ;
     break;
   }
 
@@ -1025,57 +1025,57 @@ void readOrientation()
   // High-G Accelerometer
   //*****************************************************
   // X-Axis
-  highG.orientX = (char)EEPROM.read(eeprom.highGxPtr);
-  highG.dirX = (int8_t)EEPROM.read(eeprom.highGxSign);
+  highG.orientX = (char)EEPROM.read(eeprom.highGXPtr);
+  highG.dirX = (int8_t)EEPROM.read(eeprom.highGXSign);
   switch (highG.orientX)
   {
   case 'X':
     highG.ptrX = &highG.rawX;
-    highG.ptrXsign = &highG.dirX;
+    highG.ptrXSign = &highG.dirX;
     break;
   case 'Y':
     highG.ptrY = &highG.rawX;
-    highG.ptrYsign = &highG.dirX;
+    highG.ptrYSign = &highG.dirX;
     break;
   case 'Z':
     highG.ptrZ = &highG.rawX;
-    highG.ptrZsign = &highG.dirX;
+    highG.ptrZSign = &highG.dirX;
     break;
   }
   // Y-Axis
-  highG.orientY = (char)EEPROM.read(eeprom.highGyPtr);
-  highG.dirY = (int8_t)EEPROM.read(eeprom.highGySign);
+  highG.orientY = (char)EEPROM.read(eeprom.highGYPtr);
+  highG.dirY = (int8_t)EEPROM.read(eeprom.highGYSign);
   switch (highG.orientY)
   {
   case 'X':
     highG.ptrX = &highG.rawY;
-    highG.ptrXsign = &highG.dirY;
+    highG.ptrXSign = &highG.dirY;
     break;
   case 'Y':
     highG.ptrY = &highG.rawY;
-    highG.ptrYsign = &highG.dirY;
+    highG.ptrYSign = &highG.dirY;
     break;
   case 'Z':
     highG.ptrZ = &highG.rawY;
-    highG.ptrZsign = &highG.dirY;
+    highG.ptrZSign = &highG.dirY;
     break;
   }
   // Z-Axis
-  highG.orientZ = (char)EEPROM.read(eeprom.highGzPtr);
-  highG.dirZ = (int8_t)EEPROM.read(eeprom.highGzSign);
+  highG.orientZ = (char)EEPROM.read(eeprom.highGZPtr);
+  highG.dirZ = (int8_t)EEPROM.read(eeprom.highGZSign);
   switch (highG.orientZ)
   {
   case 'X':
     highG.ptrX = &highG.rawZ;
-    highG.ptrXsign = &highG.dirZ;
+    highG.ptrXSign = &highG.dirZ;
     break;
   case 'Y':
     highG.ptrY = &highG.rawZ;
-    highG.ptrYsign = &highG.dirZ;
+    highG.ptrYSign = &highG.dirZ;
     break;
   case 'Z':
     highG.ptrZ = &highG.rawZ;
-    highG.ptrZsign = &highG.dirZ;
+    highG.ptrZSign = &highG.dirZ;
     break;
   }
 } // end readOrientation
@@ -1240,7 +1240,7 @@ void setCanardTrim()
   // clear the buffer
   while (Serial.available() > 0)
   {
-    a = Serial.read();
+    trimServoChar = Serial.read();
   }
 
   // Set loop flags
@@ -1254,31 +1254,31 @@ void setCanardTrim()
     {
 
       // read data
-      a = Serial.read();
-      b = Serial.read();
-      d = Serial.read();
+      trimServoChar = Serial.read();
+      trimDirectionChar = Serial.read();
+      trimEndChar = Serial.read();
 
       // exit condition
-      if (a == 'e' || b == 'e')
+      if (trimServoChar == 'e' || trimDirectionChar == 'e')
       {
         exitFlag = true;
       }
 
       // error check
-      if (a != '1' && a != '2' && a != '3' && a != '4' && a != '5' && a != '6' && a != '7' && a != '8')
+      if (trimServoChar != '1' && trimServoChar != '2' && trimServoChar != '3' && trimServoChar != '4' && trimServoChar != '5' && trimServoChar != '6' && trimServoChar != '7' && trimServoChar != '8')
       {
         errorFlag = true;
       }
-      if (b != '+' && b != '-')
+      if (trimDirectionChar != '+' && trimDirectionChar != '-')
       {
         errorFlag = true;
       }
 
       // update trim settings
-      if (a >= '1' && a <= '8')
+      if (trimServoChar >= '1' && trimServoChar <= '8')
       {
-        const byte servo = a - '0';
-        servoTrim[servo - 1] += (b == '+' ? 1 : -1);
+        const byte servo = trimServoChar - '0';
+        servoTrim[servo - 1] += (trimDirectionChar == '+' ? 1 : -1);
         Serial.print(F("Servo"));
         Serial.print(servo);
         Serial.print(F(" Trim: "));
@@ -1293,8 +1293,8 @@ void setCanardTrim()
       Serial.println(Serial.available());
       while (Serial.available() > 0)
       {
-        a = (char)Serial.read();
-        Serial.print(a);
+        trimServoChar = (char)Serial.read();
+        Serial.print(trimServoChar);
       }
       Serial.println(' ');
       errorFlag = true;
@@ -1311,10 +1311,10 @@ void setCanardTrim()
   } // end trim update loop
 
   // update the EEPROM
-  // servo 1's trim is at eeprom.servo1trim, the others after it
+  // servo 1's trim is at eeprom.servo1Trim, the others after it
   for (byte i = 0; i < 8; i++)
   {
-    EEPROM.update(eeprom.servo1trim + i, servoTrim[i]);
+    EEPROM.update(eeprom.servo1Trim + i, servoTrim[i]);
   }
 
   // display settings to user

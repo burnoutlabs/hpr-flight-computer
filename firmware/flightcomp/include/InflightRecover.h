@@ -1,6 +1,6 @@
 /**
- * @file Infilght_Recover.h
- * @brief In-flight recovery after a power loss or reset, in Infilght_Recover.cpp.
+ * @file InflightRecover.h
+ * @brief In-flight recovery after a power loss or reset, in InflightRecover.cpp.
  */
 #pragma once
 

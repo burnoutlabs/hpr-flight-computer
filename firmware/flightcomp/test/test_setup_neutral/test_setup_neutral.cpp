@@ -31,7 +31,7 @@
 
 #include "startup_harness.h"
 
-#include "../src/Infilght_Recover.cpp"
+#include "../src/InflightRecover.cpp"
 
 // The reference's rapidReset() was unreachable from its setup() (#28): any call is logged, and
 // the test fails on it. The scenarios here leave the in-flight recovery off or have no flight to
@@ -48,7 +48,7 @@ bool rapidReset()
 namespace legacy
 {
 // The reference's names for the pyro channels, servos and servo trims, which are elements of
-// pyros, servos and servoTrim now
+// pyros, servos and servoTrim now (the trims as legacy_names.h spells them)
 static pyroMap &pyro1 = pyros[0];
 static pyroMap &pyro2 = pyros[1];
 static pyroMap &pyro3 = pyros[2];
@@ -57,10 +57,12 @@ static PWMServo &canardYaw1 = servos[0];
 static PWMServo &canardYaw2 = servos[1];
 static PWMServo &canardPitch3 = servos[2];
 static PWMServo &canardPitch4 = servos[3];
-static int8_t &servo1trim = servoTrim[0];
-static int8_t &servo2trim = servoTrim[1];
-static int8_t &servo3trim = servoTrim[2];
-static int8_t &servo4trim = servoTrim[3];
+static int8_t &servo1Trim = servoTrim[0];
+static int8_t &servo2Trim = servoTrim[1];
+static int8_t &servo3Trim = servoTrim[2];
+static int8_t &servo4Trim = servoTrim[3];
+
+#include "../legacy_names.h"
 
 #include "../legacy_setup/parse_beep.inc"
 
@@ -69,6 +71,8 @@ static int8_t &servo4trim = servoTrim[3];
 #include "../legacy_setup/set_poly_morphs.inc"
 
 #include "../legacy_setup/setup.inc"
+
+#include "../legacy_names_end.h"
 } // namespace legacy
 
 //-----------------------------------------
@@ -78,12 +82,12 @@ struct SetupScenario
 {
   const char *name;
   // EEPROMsettings.txt as stored in EEPROM
-  uint8_t accelID = 6, gyroID = 6, magID = 3, highGID = 2, baroID = 5, radioID = 1, gnssID = 2;
+  uint8_t accelId = 6, gyroId = 6, magId = 3, highGId = 2, baroId = 5, radioId = 1, gnssID = 2;
   uint8_t gnssBusNum = 1;
   uint8_t pyroCont[4] = {14, 16, 20, 22};
   uint8_t pyroFire[4] = {39, 15, 17, 21};
   uint8_t battPin = 40;
-  uint8_t radioEN = 56;
+  uint8_t radioEn = 56;
   bool calibrated = true;   // bias and baro offsets written (else erased, 0xFF)
   bool initialUse = false;  // maxFltAlt digits erased, as on a new part
   uint8_t lastEvent = 27;
@@ -116,13 +120,13 @@ static void loadEeprom(const SetupScenario &s)
 {
   shimEeprom.shimErase();
   uint8_t *e = shimEeprom.bytes;
-  e[eeprom.accelID] = s.accelID;
-  e[eeprom.gyroID] = s.gyroID;
-  e[eeprom.magID] = s.magID;
-  e[eeprom.highGID] = s.highGID;
-  e[eeprom.baroID] = s.baroID;
-  e[eeprom.radioID] = s.radioID;
-  e[eeprom.GPSID] = s.gnssID;
+  e[eeprom.accelId] = s.accelId;
+  e[eeprom.gyroId] = s.gyroId;
+  e[eeprom.magId] = s.magId;
+  e[eeprom.highGId] = s.highGId;
+  e[eeprom.baroId] = s.baroId;
+  e[eeprom.radioId] = s.radioId;
+  e[eeprom.gpsId] = s.gnssID;
   e[eeprom.accelBusType] = 'I';
   e[eeprom.gyroBusType] = 'I';
   e[eeprom.magBusType] = 'I';
@@ -151,22 +155,22 @@ static void loadEeprom(const SetupScenario &s)
   e[eeprom.beepPin] = 23;
   e[eeprom.battReadPin] = s.battPin;
   e[eeprom.testModeGndPin] = 2;
-  e[eeprom.testModeRdPin] = 5;
-  e[eeprom.radioIRQpin] = 28;
+  e[eeprom.testModeReadPin] = 5;
+  e[eeprom.radioIrqPin] = 28;
   e[eeprom.radioRstPin] = 34;
-  e[eeprom.radioEnPin] = s.radioEN;
-  e[eeprom.radioCSpin] = 9;
-  e[eeprom.accelCSpin] = 56;
-  e[eeprom.gyroCSpin] = 57;
-  e[eeprom.highGcsPin] = 10;
-  e[eeprom.magCSpin] = 58;
-  e[eeprom.baroCSpin] = 59;
-  e[eeprom.sdCSpin] = 60;
+  e[eeprom.radioEnPin] = s.radioEn;
+  e[eeprom.radioCsPin] = 9;
+  e[eeprom.accelCsPin] = 56;
+  e[eeprom.gyroCsPin] = 57;
+  e[eeprom.highGCsPin] = 10;
+  e[eeprom.magCsPin] = 58;
+  e[eeprom.baroCsPin] = 59;
+  e[eeprom.sdCsPin] = 60;
   const uint8_t servoPins[8] = {3, 4, 7, 6, 38, 37, 36, 35};
-  const int servoPinAddr[8] = {eeprom.servo1pin, eeprom.servo2pin, eeprom.servo3pin, eeprom.servo4pin,
-                               eeprom.servo5pin, eeprom.servo6pin, eeprom.servo7pin, eeprom.servo8pin};
-  const int servoTrimAddr[8] = {eeprom.servo1trim, eeprom.servo2trim, eeprom.servo3trim, eeprom.servo4trim,
-                                eeprom.servo5trim, eeprom.servo6trim, eeprom.servo7trim, eeprom.servo8trim};
+  const int servoPinAddr[8] = {eeprom.servo1Pin, eeprom.servo2Pin, eeprom.servo3Pin, eeprom.servo4Pin,
+                               eeprom.servo5Pin, eeprom.servo6Pin, eeprom.servo7Pin, eeprom.servo8Pin};
+  const int servoTrimAddr[8] = {eeprom.servo1Trim, eeprom.servo2Trim, eeprom.servo3Trim, eeprom.servo4Trim,
+                                eeprom.servo5Trim, eeprom.servo6Trim, eeprom.servo7Trim, eeprom.servo8Trim};
   for (int i = 0; i < 8; i++)
   {
     e[servoPinAddr[i]] = servoPins[i];
@@ -174,9 +178,9 @@ static void loadEeprom(const SetupScenario &s)
   }
   const char call[] = "KK4ELF";
   memcpy(&e[eeprom.callSign], call, sizeof(call));
-  e[eeprom.HWversion] = '4';
-  e[eeprom.HWsubVersion] = '0';
-  e[eeprom.HWunitNum] = '1';
+  e[eeprom.hwVersion] = '4';
+  e[eeprom.hwSubVersion] = '0';
+  e[eeprom.hwUnitNum] = '1';
   if (s.calibrated)
   {
     writeEepromWord(eeprom.accelBiasX, 12);
@@ -185,9 +189,9 @@ static void loadEeprom(const SetupScenario &s)
     writeEepromWord(eeprom.gyroBiasX, -3);
     writeEepromWord(eeprom.gyroBiasY, 4);
     writeEepromWord(eeprom.gyroBiasZ, -1);
-    writeEepromWord(eeprom.highGbiasX, 2);
-    writeEepromWord(eeprom.highGbiasY, -2);
-    writeEepromWord(eeprom.highGbiasZ, 5);
+    writeEepromWord(eeprom.highGBiasX, 2);
+    writeEepromWord(eeprom.highGBiasY, -2);
+    writeEepromWord(eeprom.highGBiasZ, 5);
     writeEepromWord(eeprom.magBiasX, 100);
     writeEepromWord(eeprom.magBiasY, -60);
     writeEepromWord(eeprom.magBiasZ, 25);
@@ -221,16 +225,16 @@ static UserSettings sampleSettings()
   f.silentMode = false;
   f.magSwitchEnable = false;
   f.inflightRecover = 1;
-  f.GPSlog = false;
+  f.gpsLog = false;
   f.fireTime = 500000UL;
   f.pyro4Func = 'M';
   f.pyro3Func = 'A';
   f.pyro2Func = 'N';
   f.pyro1Func = 'N';
-  f.TXenable = true;
-  f.TXpwr = 10;
-  f.TXfreq = 433.250F;
-  f.FHSS = false;
+  f.txEnable = true;
+  f.txPwr = 10;
+  f.txFreq = 433.250F;
+  f.fhss = false;
   f.boosterSeparationDelay = 500000UL;
   f.sustainerFireDelay = 1000000UL;
   f.airStart1Event = 'B';
@@ -274,7 +278,7 @@ static void startScenario(const SetupScenario &s)
   shimMicrosPerCall = 37;
   // what the drivers' begin functions set (the stand-ins do not)
   accel.gainX = accel.gainY = accel.gainZ = 0.000488F;
-  accel.ADCmax = (int16_t)(0.98 * 32768);
+  accel.adcMax = (int16_t)(0.98 * 32768);
   accel.timeBtwnSamp = 1000;
   gyro.gainX = gyro.gainY = gyro.gainZ = 0.07F;
   gyro.timeBtwnSamp = 1000;
@@ -341,12 +345,12 @@ void test_test_mode_with_servos_uncalibrated_first_use()
   s.file.fltProfile = 'B';
   s.file.stableRotn = true;
   s.file.silentMode = true;
-  s.file.TXfreq = 915.0F;
+  s.file.txFreq = 915.0F;
   s.file.serialDebug = 3;
   s.calibrated = false;
   s.initialUse = true;
   s.testButton = {{2, LOW}, {1, HIGH}};
-  s.reached = [] { return settings.testMode && !settings.calibrationMode && servos[0].pin == 3 && settings.TXpwr == 2 && radio.event == Booster_Preflight; };
+  s.reached = [] { return settings.testMode && !settings.calibrationMode && servos[0].pin == 3 && settings.txPwr == 2 && radio.event == Booster_Preflight; };
   runSideBySide(s);
 }
 
@@ -380,15 +384,15 @@ void test_radio_off_two_stage_without_pyros()
   SetupScenario s;
   s.name = "radio off, two stage with no stage pyros";
   s.file = sampleSettings();
-  s.file.TXenable = false;
+  s.file.txEnable = false;
   s.file.fltProfile = '2';
   s.file.pyro1Func = 'I';
   s.file.pyro2Func = 'B';
   s.continuity[0] = s.continuity[1] = false;
-  s.radioEN = 33;
-  s.file.FHSS = true;
-  s.file.TXfreq = 430.0F;
-  s.reached = [] { return settings.fltProfile == 'S' && pyros[0].func == 'N' && pyros[1].func == 'N' && !settings.FHSS; };
+  s.radioEn = 33;
+  s.file.fhss = true;
+  s.file.txFreq = 430.0F;
+  s.reached = [] { return settings.fltProfile == 'S' && pyros[0].func == 'N' && pyros[1].func == 'N' && !settings.fhss; };
   runSideBySide(s);
 }
 
@@ -400,12 +404,12 @@ void test_airstart_separate_gyro()
   s.file.fltProfile = 'A';
   s.file.pyro1Func = '1';
   s.file.pyro2Func = '2';
-  s.file.FHSS = true;
-  s.file.TXfreq = 915.0F;
+  s.file.fhss = true;
+  s.file.txFreq = 915.0F;
   s.file.units = 'M';
-  s.gyroID = 1;
-  s.highGID = 3;
-  s.magID = 0;
+  s.gyroId = 1;
+  s.highGId = 3;
+  s.magId = 0;
   s.gnssID = 3;
   s.gnssBusNum = 4;
   s.reached = [] { return settings.fltProfile == 'A' && cont.beepCode == 4 && unitConvert == 1.0F; };
@@ -426,13 +430,13 @@ void test_settings_clamped_high()
   s.file.airStart2Delay = 3000000UL;
   s.file.maxAngle = 600;
   s.file.setupTime = 90000UL;
-  s.file.TXpwr = 20;
-  s.file.TXfreq = 950.0F;
-  s.file.FHSS = true;
+  s.file.txPwr = 20;
+  s.file.txFreq = 950.0F;
+  s.file.fhss = true;
   s.file.fltProfile = '2';
   s.file.pyro1Func = 'I';
   s.file.pyro2Func = 'B';
-  s.reached = [] { return settings.apogeeDelay == 5000000UL && settings.mainDeployAlt == 458 && settings.TXfreq == 914.9F && boosterBurpTime == 1000000UL; };
+  s.reached = [] { return settings.apogeeDelay == 5000000UL && settings.mainDeployAlt == 458 && settings.txFreq == 914.9F && boosterBurpTime == 1000000UL; };
   runSideBySide(s);
 }
 
@@ -446,14 +450,14 @@ void test_settings_clamped_low_old_battery_pin()
   s.file.altThreshold = 20;
   s.file.rcdTime = 1000000UL;
   s.file.setupTime = 100UL;
-  s.file.TXpwr = 0;
-  s.file.TXfreq = 400.0F;
-  s.file.TXenable = false;
+  s.file.txPwr = 0;
+  s.file.txFreq = 400.0F;
+  s.file.txEnable = false;
   s.file.pyro2Func = 'M';
   s.file.serialDebug = 1;
-  s.radioID = 0;
+  s.radioId = 0;
   s.battPin = 22;
-  s.reached = [] { return settings.fireTime == 200000UL && settings.TXfreq == 421.0F && pins.batt == 16; };
+  s.reached = [] { return settings.fireTime == 200000UL && settings.txFreq == 421.0F && pins.batt == 16; };
   runSideBySide(s);
 }
 
@@ -493,12 +497,12 @@ void test_other_devices()
     snprintf(names[i], sizeof(names[i]), "devices %u/%u/%u/%u/%u/%u/%u", accels[i], gyros[i], highGs[i], mags[i], baros[i], radios[i], gnss[i]);
     s.name = names[i];
     s.file = sampleSettings();
-    s.accelID = accels[i];
-    s.gyroID = gyros[i];
-    s.highGID = highGs[i];
-    s.magID = mags[i];
-    s.baroID = baros[i];
-    s.radioID = radios[i];
+    s.accelId = accels[i];
+    s.gyroId = gyros[i];
+    s.highGId = highGs[i];
+    s.magId = mags[i];
+    s.baroId = baros[i];
+    s.radioId = radios[i];
     s.gnssID = gnss[i];
     runSideBySide(s);
   }
@@ -507,7 +511,7 @@ void test_other_devices()
 /** setPolyMorphs() alone, every ID 0-255 of every device with the others at the sample's. */
 void test_set_poly_morphs_every_id()
 {
-  uint8_t *ids[] = {&sensors.accel, &sensors.gyro, &sensors.highG, &sensors.mag, &sensors.baro, &sensors.radio, &sensors.GNSS};
+  uint8_t *ids[] = {&sensors.accel, &sensors.gyro, &sensors.highG, &sensors.mag, &sensors.baro, &sensors.radio, &sensors.gnss};
   int compared = 0;
   for (uint8_t *id : ids)
   {
@@ -520,7 +524,7 @@ void test_set_poly_morphs_every_id()
       sensors.mag = 3;
       sensors.baro = 5;
       sensors.radio = 1;
-      sensors.GNSS = 2;
+      sensors.gnss = 2;
       *id = (uint8_t)value;
       legacy::setPolyMorphs();
       const std::vector<uint8_t> reference = saveStartupState();
@@ -531,7 +535,7 @@ void test_set_poly_morphs_every_id()
       sensors.mag = 3;
       sensors.baro = 5;
       sensors.radio = 1;
-      sensors.GNSS = 2;
+      sensors.gnss = 2;
       *id = (uint8_t)value;
       setPolyMorphs();
       const std::string difference = firstStartupDifference(reference, saveStartupState());

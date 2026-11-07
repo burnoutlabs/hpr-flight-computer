@@ -283,7 +283,7 @@ void test_sync_packets_go_out_on_the_configured_frequency()
   for (float f : configured)
   {
     runTelemetryScenario(true, f);
-    TEST_ASSERT_TRUE(settings.TXfreq == f);
+    TEST_ASSERT_TRUE(settings.txFreq == f);
     int syncs = 0;
     for (int i = 0; i < sentCount; i++)
     {

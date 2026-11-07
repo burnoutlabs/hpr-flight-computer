@@ -103,9 +103,9 @@ void beginSD()
 #else
 
   // Use the SDFat library
-  if (pins.SD_CS != pins.nullFire)
+  if (pins.sdCs != pins.nullFire)
   {
-    if (!SD.begin(pins.SD_CS))
+    if (!SD.begin(pins.sdCs))
     {
       Serial.println(F("SD card failed!"));
     }
@@ -133,15 +133,15 @@ void restartSD()
 #else
 
   // if the SD Chip Select pin is set to the nullpin, then it must be a Teensy4.1 or Teensy4.0 using a builtin SDIO port
-  if (pins.SD_CS == pins.nullFire)
+  if (pins.sdCs == pins.nullFire)
   {
     SD.begin();
   } // BUILTIN_SDCARD
 
   // if the SD Chip Select is not set to the nullpin, then it must be a Teensy3.2 or Teensy4.0 so use the chip select pin
-  if (pins.SD_CS != pins.nullFire)
+  if (pins.sdCs != pins.nullFire)
   {
-    SD.begin(pins.SD_CS);
+    SD.begin(pins.sdCs);
   }
 
 #endif
@@ -166,35 +166,35 @@ void parseEEPROMsettingsSD()
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.accelID, kk);
+    EEPROM.update(eeprom.accelId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.magID, kk);
+    EEPROM.update(eeprom.magId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.gyroID, kk);
+    EEPROM.update(eeprom.gyroId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.highGID, kk);
+    EEPROM.update(eeprom.highGId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.baroID, kk);
+    EEPROM.update(eeprom.baroId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.radioID, kk);
+    EEPROM.update(eeprom.radioId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.GPSID, kk);
+    EEPROM.update(eeprom.gpsId, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.sdID, kk);
+    EEPROM.update(eeprom.sdId, kk);
     //-----------------------------------------------------------------
     // read the device buses
     //-----------------------------------------------------------------
@@ -262,85 +262,85 @@ void parseEEPROMsettingsSD()
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.accel2boardXsign, ii);
-    EEPROM.update(eeprom.accel2boardXaxis, (char)dataString[1]); // accelX orientation
+    EEPROM.update(eeprom.accel2BoardXSign, ii);
+    EEPROM.update(eeprom.accel2BoardXAxis, (char)dataString[1]); // accelX orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.accel2boardYsign, ii);
-    EEPROM.update(eeprom.accel2boardYaxis, (char)dataString[1]); // accelY orientation
+    EEPROM.update(eeprom.accel2BoardYSign, ii);
+    EEPROM.update(eeprom.accel2BoardYAxis, (char)dataString[1]); // accelY orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.accel2boardZsign, ii);
-    EEPROM.update(eeprom.accel2boardZaxis, (char)dataString[1]); // accelZ orientation
+    EEPROM.update(eeprom.accel2BoardZSign, ii);
+    EEPROM.update(eeprom.accel2BoardZAxis, (char)dataString[1]); // accelZ orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.gyro2boardXsign, ii);
-    EEPROM.update(eeprom.gyro2boardXaxis, (char)dataString[1]); // gyroX orientation
+    EEPROM.update(eeprom.gyro2BoardXSign, ii);
+    EEPROM.update(eeprom.gyro2BoardXAxis, (char)dataString[1]); // gyroX orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.gyro2boardYsign, ii);
-    EEPROM.update(eeprom.gyro2boardYaxis, (char)dataString[1]); // gyroY orientation
+    EEPROM.update(eeprom.gyro2BoardYSign, ii);
+    EEPROM.update(eeprom.gyro2BoardYAxis, (char)dataString[1]); // gyroY orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.gyro2boardZsign, ii);
-    EEPROM.update(eeprom.gyro2boardZaxis, (char)dataString[1]); // gyroZ orientation
+    EEPROM.update(eeprom.gyro2BoardZSign, ii);
+    EEPROM.update(eeprom.gyro2BoardZAxis, (char)dataString[1]); // gyroZ orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.highG2boardXsign, ii);
-    EEPROM.update(eeprom.highG2boardXaxis, (char)dataString[1]); // highGX orientation
+    EEPROM.update(eeprom.highG2BoardXSign, ii);
+    EEPROM.update(eeprom.highG2BoardXAxis, (char)dataString[1]); // highGX orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.highG2boardYsign, ii);
-    EEPROM.update(eeprom.highG2boardYaxis, (char)dataString[1]); // highGY orientation
+    EEPROM.update(eeprom.highG2BoardYSign, ii);
+    EEPROM.update(eeprom.highG2BoardYAxis, (char)dataString[1]); // highGY orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.highG2boardZsign, ii);
-    EEPROM.update(eeprom.highG2boardZaxis, (char)dataString[1]); // highGZ orientation
+    EEPROM.update(eeprom.highG2BoardZSign, ii);
+    EEPROM.update(eeprom.highG2BoardZAxis, (char)dataString[1]); // highGZ orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.mag2boardXsign, ii);
-    EEPROM.update(eeprom.mag2boardXaxis, (char)dataString[1]); // magX orientation
+    EEPROM.update(eeprom.mag2BoardXSign, ii);
+    EEPROM.update(eeprom.mag2BoardXAxis, (char)dataString[1]); // magX orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.mag2boardYsign, ii);
-    EEPROM.update(eeprom.mag2boardYaxis, (char)dataString[1]); // magY orientation
+    EEPROM.update(eeprom.mag2BoardYSign, ii);
+    EEPROM.update(eeprom.mag2BoardYAxis, (char)dataString[1]); // magY orientation
     parseNextVariable(false);
     ii = (dataString[0] == '-') ? -1 : 1;
     Serial.print((char)dataString[0]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.mag2boardZsign, ii);
-    EEPROM.update(eeprom.mag2boardZaxis, (char)dataString[1]); // magZ orientation
+    EEPROM.update(eeprom.mag2BoardZSign, ii);
+    EEPROM.update(eeprom.mag2BoardZAxis, (char)dataString[1]); // magZ orientation
     //-----------------------------------------------------------------
     // read the GPIO control pins
     //-----------------------------------------------------------------
@@ -395,11 +395,11 @@ void parseEEPROMsettingsSD()
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.testModeRdPin, kk);
+    EEPROM.update(eeprom.testModeReadPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.radioIRQpin, kk);
+    EEPROM.update(eeprom.radioIrqPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
@@ -411,66 +411,66 @@ void parseEEPROMsettingsSD()
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.radioCSpin, kk);
+    EEPROM.update(eeprom.radioCsPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.accelCSpin, kk);
+    EEPROM.update(eeprom.accelCsPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.gyroCSpin, kk);
+    EEPROM.update(eeprom.gyroCsPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.highGcsPin, kk);
+    EEPROM.update(eeprom.highGCsPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.magCSpin, kk);
+    EEPROM.update(eeprom.magCsPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.baroCSpin, kk);
+    EEPROM.update(eeprom.baroCsPin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.sdCSpin, kk);
+    EEPROM.update(eeprom.sdCsPin, kk);
     //-----------------------------------------------------------------
     // read the servo control pins
     //-----------------------------------------------------------------
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo1pin, kk);
+    EEPROM.update(eeprom.servo1Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo2pin, kk);
+    EEPROM.update(eeprom.servo2Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo3pin, kk);
+    EEPROM.update(eeprom.servo3Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo4pin, kk);
+    EEPROM.update(eeprom.servo4Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo5pin, kk);
+    EEPROM.update(eeprom.servo5Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo6pin, kk);
+    EEPROM.update(eeprom.servo6Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo7pin, kk);
+    EEPROM.update(eeprom.servo7Pin, kk);
     kk = (byte)parseNextVariable(true);
     Serial.print(kk);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.servo8pin, kk);
+    EEPROM.update(eeprom.servo8Pin, kk);
     //-----------------------------------------------------------------
     // read the ham radio call sign
     //-----------------------------------------------------------------
@@ -489,13 +489,13 @@ void parseEEPROMsettingsSD()
     // read hardware ID into EEPROM
     //-----------------------------------------------------------------
     parseNextVariable(false);
-    EEPROM.update(eeprom.HWversion, (char)dataString[0]);
+    EEPROM.update(eeprom.hwVersion, (char)dataString[0]);
     Serial.print((char)dataString[0]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.HWsubVersion, (char)dataString[1]);
+    EEPROM.update(eeprom.hwSubVersion, (char)dataString[1]);
     Serial.print((char)dataString[1]);
     Serial.print(F(", "));
-    EEPROM.update(eeprom.HWunitNum, (char)dataString[2]);
+    EEPROM.update(eeprom.hwUnitNum, (char)dataString[2]);
     Serial.print((char)dataString[2]);
     Serial.print(F("..."));
     settingsFile.close();
@@ -542,7 +542,7 @@ void createNextFileSD()
   outputFile.flush();
 
   // create GPS file
-  if (settings.GPSlog)
+  if (settings.gpsLog)
   {
     fileName[0] = 'G';
     fileName[1] = 'P';
@@ -611,7 +611,7 @@ void reOpenSD()
 void syncSD()
 {
   outputFile.flush();
-  if (settings.GPSlog)
+  if (settings.gpsLog)
   {
     gpsFile.flush();
   }
@@ -654,8 +654,8 @@ void readFlightSettingsSD()
   settings.silentMode = (boolean)(parseNextVariable(true));
   settings.magSwitchEnable = (boolean)(parseNextVariable(true));
   settings.inflightRecover = (byte)(parseNextVariable(true));
-  settings.GPSlog = (boolean)(parseNextVariable(true));
-  if (settings.GPSlog)
+  settings.gpsLog = (boolean)(parseNextVariable(true));
+  if (settings.gpsLog)
   {
     Serial.println("GPS Log Active");
   }
@@ -668,10 +668,10 @@ void readFlightSettingsSD()
   settings.pyro2Func = dataString[0];
   parseNextVariable(false);
   settings.pyro1Func = dataString[0];
-  settings.TXenable = (boolean)parseNextVariable(true);
-  settings.TXpwr = (byte)(parseNextVariable(true));
-  settings.TXfreq = (float)(parseNextVariable(true));
-  settings.FHSS = (boolean)parseNextVariable(true);
+  settings.txEnable = (boolean)parseNextVariable(true);
+  settings.txPwr = (byte)(parseNextVariable(true));
+  settings.txFreq = (float)(parseNextVariable(true));
+  settings.fhss = (boolean)parseNextVariable(true);
   settings.boosterSeparationDelay = (unsigned long)(parseNextVariable(true) * 1000000UL);
   settings.sustainerFireDelay = (unsigned long)(parseNextVariable(true) * 1000000UL);
   parseNextVariable(false);
@@ -810,9 +810,9 @@ void writeSDfooterClose()
   outputFile.print(cs);
   outputFile.print(settings.callSign);
   outputFile.print(cs);
-  outputFile.print(settings.HWid);
+  outputFile.print(settings.hwId);
   outputFile.print(cs);
-  outputFile.print(codeVersion, 2);
+  outputFile.print(CODE_VERSION, 2);
   outputFile.print(cs);
   outputFile.print((char)settings.fltProfile);
   outputFile.print(cs);
@@ -834,12 +834,12 @@ void writeSDfooterClose()
   writeFloatData(((float)settings.setupTime) / 1000, 0); // issue
   writeFloatData(settings.rcdTime * mlnth, 0);
   writeFloatData(settings.fireTime * mlnth, 1);
-  writeBoolData(settings.TXenable);
+  writeBoolData(settings.txEnable);
   dataString[strPosn] = cs;
   strPosn++;
-  writeIntData(settings.TXpwr);
-  writeFloatData(settings.TXfreq, 3);
-  writeBoolData(settings.FHSS);
+  writeIntData(settings.txPwr);
+  writeFloatData(settings.txFreq, 3);
+  writeBoolData(settings.fhss);
   dataString[strPosn] = cs;
   strPosn++;
   writeFloatData(baro.seaLevelPressure, 2);
@@ -872,7 +872,7 @@ void writeSDfooterClose()
 
   // close the file
   outputFile.close();
-  if (settings.GPSlog)
+  if (settings.gpsLog)
   {
     gpsFile.close();
   }

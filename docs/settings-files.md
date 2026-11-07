@@ -63,6 +63,11 @@ The bus letter is `I` (I2C), `S` (SPI) or `U` (hardware serial), and the digit s
 pins as listed in the legend at the end of the sample file. `firmware/flightcomp/src/Bus_Mgmt.cpp`
 and the drivers in `Device_Drivers.cpp` are what interpret them.
 
+The GNSS receiver's serial port must be one the board has: `U1`-`U3` on every board, `U4`-`U6`
+on a Teensy 3.5, 3.6, 4.0 or 4.1, `U7` on a Teensy 4.x and `U8` on a Teensy 4.1. With any other
+number, start-up prints `GNSS serial port not available, GNSS disabled` and runs with no GNSS
+receiver.
+
 ### Device ID codes
 
 Source: `setPolyMorphs()` in `firmware/flightcomp/src/Device_Mgmt.cpp`. An ID with no entry gets

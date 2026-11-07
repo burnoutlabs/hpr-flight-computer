@@ -405,6 +405,8 @@ const float COS_TABLE[901] = {
 // speed tangent
 //------------------------------------------------------------------------------
 
+// Returns |tan|, not tan: negative angles and angles past 90 degrees are folded onto 0 to 90
+// degrees. A caller that needs the sign must apply it.
 float speedTan(int rotn)
 {
   if (rotn < 0)
@@ -542,7 +544,8 @@ int speedArcSin(float myValue)
   }
   else if (myValue == 1.0)
   {
-    posnA = 900 * sign;
+    // the sign is applied on return
+    posnA = 900;
     exitFlag = true;
   }
 
@@ -611,61 +614,17 @@ float speedCos(int degree)
 
 int speedArcCos(float myValue)
 {
-
-  int sign = 1;
-  if (myValue < 0)
+  // 0 to 180 degrees; past +/-1 the result is the end of the range
+  if (myValue >= 1.0)
   {
-    myValue *= -1;
-    sign = -1;
+    return 0;
   }
-  int cycle = 0;
-  int posnA = 0;
-  int posnB = 900;
-  int posnC = 450;
-  boolean exitFlag = false;
-
-  if (settings.testMode && myValue > 1.0)
+  if (myValue <= -1.0)
   {
-    Serial.println(F("Arc Cosine value too large"));
-    exitFlag = true;
+    return 1800;
   }
-
-  // if the value is outside the max range, then its at 90 degrees
-  if (myValue == 0.0)
-  {
-    posnA = 0;
-    exitFlag = true;
-  }
-  else if (myValue == 1.0)
-  {
-    posnA = 900 * sign;
-    exitFlag = true;
-  }
-
-  // use the binary algorithm to speed things up
-  while (!exitFlag && cycle < 900)
-  {
-
-    if (myValue > COS_TABLE[posnC])
-    {
-      posnA = posnC;
-    }
-    else
-    {
-      posnB = posnC;
-    }
-    if (posnB - posnA <= 1)
-    {
-      exitFlag = true;
-    }
-    else
-    {
-      posnC = (int)((posnA + posnB) * 0.5);
-      cycle++;
-    }
-  }
-
-  return (posnA * sign);
+  // acos(x) = 90 deg - asin(x)
+  return 900 - speedArcSin(myValue);
 }
 
 //------------------------------------------------------------------------------
@@ -711,8 +670,8 @@ float cosSmallAngle(float rad)
   float cosine;
 
   // small angle approximation of cosine
-  // accurate to 10 sig figs at angles less than 0.7
-  if (fabs(rad) < COS_TABLE[7])
+  // accurate to 10 sig figs at angles less than 0.7 degrees (0.0122173 rad)
+  if (fabs(rad) < 0.0122173F)
   {
     cosine = 1 - rad * rad * 0.5;
     return cosine;

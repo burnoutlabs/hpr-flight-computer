@@ -25,16 +25,24 @@
  * reference stored a copy of the flight settings in EEPROM (164-223), whose fields overlapped and
  * which nothing read, and setup() now stores only the in-flight recovery setting (186) of it
  * (retiredSettingsAddresses() below; test_retired_settings_copy shows the difference). The
- * byte-copy unions it used as scratch are cleared in both runs (clearScratchUnions()).
+ * byte-copy unions it used as scratch are cleared in both runs (clearScratchUnions()). In test
+ * mode the reference's rail-clear time (20 ms) is replaced with setup()'s 5 ms (#44,
+ * takeOutBenchClearRailTime()). The reference's magnetic switch wait tests the oriented
+ * magnetometer fields without calling orientMag(), so on a board it never ends (#45); its run
+ * here has the magnetometer stand-in fill those fields (BoardInputs::magFillsOriented), and
+ * setup()'s run does not.
  * The scenarios between them take every branch of setup() that returns; the ones that never do
  * (uninitialized EEPROM, a failed sensor) are not run. Nor is a board with no high-G
- * accelerometer: setup() then divides by a zero sample count, which the Teensy's divide
- * instruction answers with 0 and the host's traps. setPolyMorphs() is compared on its own for
- * every device ID, 0 included.
+ * accelerometer: the reference then divides by a zero sample count, which the Teensy's divide
+ * instruction answers with 0 and the host's traps; setup() no longer does (#46,
+ * test_no_high_g_accelerometer). setPolyMorphs() is compared on its own for every device ID, 0
+ * included.
  */
 #include <unity.h>
 
 #include "startup_harness.h"
+
+#include "synthetic_flights.h"
 
 #include "../src/InflightRecover.cpp"
 
@@ -394,20 +402,46 @@ static void clearScratchUnions()
   memset((void *)&floatUnion, 0, sizeof(floatUnion));
 }
 
+/**
+ * Test mode's rail-clear time: the reference set 20 ms, after its 10 ms false-liftoff check had
+ * ended, so no false-liftoff reset could fire on the bench; setup() sets 5 ms (#44,
+ * test_bench_mode_resets_a_short_bump). Puts the new value into the reference's result.
+ */
+static void takeOutBenchClearRailTime()
+{
+  if (settings.testMode && clearRailTime == 20000UL)
+  {
+    clearRailTime = 5000UL;
+  }
+}
+
 static void runSideBySide(const SetupScenario &s)
 {
   startScenario(s);
   uint8_t eepromBefore[ShimEEPROM::size];
   memcpy(eepromBefore, shimEeprom.bytes, sizeof(eepromBefore));
+  // the reference's magnetic switch wait needs the oriented fields filled to end (#45)
+  boardInputs.magFillsOriented = true;
   legacy::setup();
   std::vector<std::string> referenceLog = ioLog;
   const size_t retiredWrites = removeRetiredWrites(referenceLog, eepromBefore);
   clearScratchUnions();
+  takeOutBenchClearRailTime();
   const std::vector<uint8_t> referenceState = saveStartupState();
   const bool reached = s.reached == nullptr || s.reached();
 
   startScenario(s);
-  setup();
+  boardInputs.magReadLimit = 100000;
+  try
+  {
+    setup();
+  }
+  catch (const MagReadLimit &)
+  {
+    char hung[160];
+    snprintf(hung, sizeof(hung), "%s: setup() never ended (%d magnetometer reads)", s.name, boardInputs.magReadLimit);
+    TEST_FAIL_MESSAGE(hung);
+  }
   clearScratchUnions();
   const std::vector<uint8_t> state = saveStartupState();
   const std::vector<std::string> &log = ioLog;
@@ -594,8 +628,8 @@ void test_other_devices()
   // every device type, a few at a time, through setup()
   const uint8_t accels[] = {1, 2, 3, 4, 5, 7, 8, 0, 9};
   const uint8_t gyros[] = {0, 1, 2, 7, 6, 3, 4, 5, 9};
-  // never high-G ID 0 here: with no high-G accelerometer, setup() divides by a zero sample count
-  // (highG.sumX0 / highGsamps), which gives 0 on the Teensy and traps on the host
+  // never high-G ID 0 here: with no high-G accelerometer, the reference divides by a zero sample
+  // count (highG.sumX0 / highGsamps), which gives 0 on the Teensy and traps on the host
   const uint8_t highGs[] = {1, 2, 3, 4, 1, 2, 3, 4, 2};
   const uint8_t mags[] = {1, 2, 3, 4, 5, 0, 6, 1, 2};
   const uint8_t baros[] = {1, 2, 3, 4, 6, 7, 8, 0, 9};
@@ -709,6 +743,171 @@ void test_set_poly_morphs_every_id()
   printf("  setPolyMorphs: %d ID sets, identical pointers\n", compared);
 }
 
+//-----------------------------------------
+// setup() fixes: the new setup() alone, where it differs from the reference on purpose
+//-----------------------------------------
+/** Whether the I/O log has an entry that starts with prefix. */
+static bool logHas(const std::string &prefix)
+{
+  for (const std::string &entry : ioLog)
+  {
+    if (entry.compare(0, prefix.size(), prefix) == 0)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * #29: a GNSS bus number the board does not have leaves no GNSS port. setup() reports it, does
+ * not start the port, and runs on with no GNSS receiver, so nothing reaches the port.
+ */
+void test_unsupported_gnss_bus_is_reported_and_skipped()
+{
+  SetupScenario s;
+  s.name = "GNSS on Serial7 of a Teensy 3.2";
+  s.file = sampleSettings();
+  s.gnssBusNum = 7;
+  startScenario(s);
+  boardSerialPorts = 3;
+  setup();
+  boardSerialPorts = 8;
+  TEST_ASSERT_NULL(gnssSerial);
+  TEST_ASSERT_FALSE_MESSAGE(logHas("gnssSerial.begin"), "the missing GNSS port was started");
+  TEST_ASSERT_TRUE_MESSAGE(logHas("println s:GNSS serial port not available, GNSS disabled"), "not reported");
+  TEST_ASSERT_EQUAL_UINT8(0, sensors.gnss);
+  TEST_ASSERT_TRUE(gnssConfig == dummyVoid);
+  TEST_ASSERT_TRUE(gnssPowerSave == dummyVoid);
+  TEST_ASSERT_TRUE(gnssRestoreDefaults == dummyVoid);
+}
+
+/** What a run of the flight step on a bump made: liftoffs, false-liftoff resets, and the end state. */
+struct BumpRun
+{
+  int liftoffs = 0;
+  int resets = 0;
+  bool inFlightAtEnd = false;
+};
+
+/**
+ * The flight step, with test mode's timings from the real applyBenchTestOverrides(), on the pad
+ * through one 4 g bump of the given length.
+ */
+static BumpRun runBenchBump(float seconds)
+{
+  restoreStartupState(pristine);
+  ioLog.clear();
+  configureSensors();
+  configurePyros('A', 'M', 'N', 'N');
+  settings.mainDeployAlt = 200;
+  settings.altThreshold = 91;
+  settings.maxAngle = 300;
+  settings.testMode = true;
+  settings.txEnable = false;
+  applyBenchTestOverrides();
+  ProfileSpec spec;
+  spec.padBumps = {{1.0F, seconds, 30.0F}};
+  spec.duration = 3.0F;
+  const SyntheticFlight flight(spec);
+  LoopState loopState;
+  BumpRun run;
+  for (uint32_t now = 500; now < flight.durationMicros(); now += 500)
+  {
+    const FlightActions actions = runPass(loopState, now, flight.at(now));
+    for (uint8_t i = 0; i < actions.count; i++)
+    {
+      run.liftoffs += actions.kind[i] == FlightAction::PRINT_SIMULATED_LIFTOFF;
+      run.resets += actions.kind[i] == FlightAction::RADIO_PRELIFTOFF;
+    }
+  }
+  run.inFlightAtEnd = events.liftoff;
+  return run;
+}
+
+/**
+ * #46: with no high-G accelerometer (ID 0) setup() runs to the end and leaves the high-G values
+ * alone. It divided by the high-G gain (0) for high1G and by the high-G sample count (0) for the
+ * resting values, which the host traps on.
+ */
+void test_no_high_g_accelerometer()
+{
+  SetupScenario s;
+  s.name = "no high-G accelerometer";
+  s.file = sampleSettings();
+  s.highGId = 0;
+  s.testButton = {{2, LOW}, {1, HIGH}}; // test mode, which also prints the high-G values
+  startScenario(s);
+  // no high-G driver ran its begin function
+  highG.gainX = highG.gainY = highG.gainZ = 0.0F;
+  const int high1GBefore = high1G;
+  setup();
+  TEST_ASSERT_TRUE(settings.testMode);
+  TEST_ASSERT_TRUE(logHas("radioTimer.begin"));
+  TEST_ASSERT_EQUAL_INT(high1GBefore, high1G);
+  TEST_ASSERT_EQUAL_FLOAT(0.0F, highG.gainZ);
+  TEST_ASSERT_EQUAL_INT16(0, highG.x0);
+  TEST_ASSERT_EQUAL_INT16(0, highG.y0);
+  TEST_ASSERT_EQUAL_INT16(0, highG.z0);
+  // the high-G biases are the stored ones, not re-calibrated against the accelerometer
+  TEST_ASSERT_EQUAL_INT16(2, highG.biasX);
+  TEST_ASSERT_EQUAL_INT16(-2, highG.biasY);
+  TEST_ASSERT_EQUAL_INT16(5, highG.biasZ);
+  TEST_ASSERT_FALSE(logHas("println s:Re-calibrating high-G accelerometer..."));
+}
+
+/**
+ * #45: with the magnetic switch enabled, setup() beeps the continuity code until the magnet is
+ * sensed, and then finishes. The drivers fill only the raw magnetometer fields; the wait tested
+ * the oriented ones without orienting them, so it never ended.
+ */
+void test_magnetic_switch_wait_ends_when_the_magnet_is_sensed()
+{
+  SetupScenario s;
+  s.name = "magnetic switch";
+  s.file = sampleSettings();
+  s.file.magSwitchEnable = true;
+  s.magDetectAfter = 40;
+  startScenario(s);
+  boardInputs.magReadLimit = 100000;
+  bool ended = true;
+  try
+  {
+    setup();
+  }
+  catch (const MagReadLimit &)
+  {
+    ended = false;
+  }
+  TEST_ASSERT_TRUE_MESSAGE(ended, "setup() never ended: the magnet was not sensed");
+  TEST_ASSERT_TRUE(logHas("radioTimer.begin"));
+  // the wait ended on the first read with the magnet: the 10 reads that clear the FIFO, then
+  // one per beep and one per round of the code
+  TEST_ASSERT_TRUE(sensorFeed.mag > 40);
+}
+
+/**
+ * #44: in test mode a bump that ends inside the false-liftoff check is reset. The bench
+ * overrides cleared the rail (20 ms) only after the check had ended (10 ms), so no reset could
+ * fire; a bump that outlasts the check is still a liftoff.
+ */
+void test_bench_mode_resets_a_short_bump()
+{
+  const BumpRun shortBump = runBenchBump(0.005F);
+  char message[128];
+  snprintf(message, sizeof(message), "5 ms bump: %d liftoffs, %d resets", shortBump.liftoffs, shortBump.resets);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, shortBump.liftoffs, message);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, shortBump.resets, message);
+  TEST_ASSERT_FALSE_MESSAGE(shortBump.inFlightAtEnd, message);
+  TEST_ASSERT_TRUE(clearRailTime <= fltTime.detectLiftoffTime);
+
+  const BumpRun longBump = runBenchBump(0.015F);
+  snprintf(message, sizeof(message), "15 ms bump: %d liftoffs, %d resets", longBump.liftoffs, longBump.resets);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, longBump.liftoffs, message);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(0, longBump.resets, message);
+  TEST_ASSERT_TRUE_MESSAGE(longBump.inFlightAtEnd, message);
+}
+
 void setUp() {}
 void tearDown() {}
 
@@ -728,6 +927,10 @@ int main()
   RUN_TEST(test_other_devices);
   RUN_TEST(test_retired_settings_copy);
   RUN_TEST(test_set_poly_morphs_every_id);
+  RUN_TEST(test_unsupported_gnss_bus_is_reported_and_skipped);
+  RUN_TEST(test_bench_mode_resets_a_short_bump);
+  RUN_TEST(test_magnetic_switch_wait_ends_when_the_magnet_is_sensed);
+  RUN_TEST(test_no_high_g_accelerometer);
   printf("  setup scenarios compared: %d\n", scenariosRun);
   return UNITY_END();
 }

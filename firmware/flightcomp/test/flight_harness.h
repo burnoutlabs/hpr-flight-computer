@@ -121,7 +121,7 @@ inline void applyTestModeOverrides()
   maxVelocity = 202 / unitConvert;
   pktInterval.postFlight = 1000000UL;
   thresholdVel = 15.5F;
-  clearRailTime = 20000UL;
+  clearRailTime = 5000UL;
 }
 
 //-----------------------------------------

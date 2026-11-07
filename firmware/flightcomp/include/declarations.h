@@ -485,7 +485,7 @@ extern uint16_t sampNum;
 extern uint8_t packetSamples;
 extern bool gpsTransmit;
 extern bool TX;
-extern bool SDradioTX;
+extern bool sdRadioTx;
 extern uint8_t radioMode;
 extern volatile boolean clearTX;
 extern volatile boolean buildPkt;
@@ -674,15 +674,15 @@ extern uint32_t writeThreshold;
 extern uint32_t writeThreshCount;
 extern bool syncApogee;
 extern bool syncMains;
-const byte decPts = 2;
-const byte base = 10;
+const byte DECIMAL_PLACES = 2;
+const byte DECIMAL_BASE = 10;
 // strPosn and dataString, the SD card line buffer, are declared in SD_Card.h
 alignas(4) extern uint8_t maxAltDigits[6];
 alignas(4) extern uint8_t maxVelDigits[4];
 alignas(4) extern uint8_t voltageDigits[2];
 extern uint8_t altDigits;
 extern uint8_t velDigits;
-extern uint8_t n;
+extern uint8_t fileNum;
 extern float voltage;
 extern bool writeVolt;
 extern unsigned long voltRate;
@@ -690,7 +690,7 @@ extern uint16_t voltReading;
 extern unsigned long lastVolt;
 extern bool reportMaxAlt; // true = report max altitude, false = report max velocity
 extern uint8_t postFlightCode;
-const char cs = ',';
+const char CSV_SEPARATOR = ',';
 //-----------------------------------------
 // GNSS Variables
 //-----------------------------------------
@@ -728,7 +728,7 @@ struct GnssData
   uint8_t fix = 0;
   uint16_t fixCount = 0;
   unsigned long timeLastFix = 0UL;
-  bool SDwrite = false;
+  bool sdWrite = false;
   bool configDefaults = false;
   bool configFlight = false;
   bool configPwrSave = false;

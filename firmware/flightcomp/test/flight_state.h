@@ -18,7 +18,7 @@
   X(sensors) X(settings) X(accel) X(mag) X(gyro) X(highG) X(pyros) \
   X(events) X(resetEvents) X(fltTime) X(resetFltTime) X(pins) X(dataPacket) X(liftoffSync) \
   X(TXstartTime) X(implicitHdr) X(syncFreq) X(pktPosn) X(pktSize) X(sampNum) X(packetSamples) \
-  X(gpsTransmit) X(TX) X(SDradioTX) X(radioMode) X(clearTX) X(buildPkt) X(syncFlag) X(sendPkt) \
+  X(gpsTransmit) X(TX) X(sdRadioTx) X(radioMode) X(clearTX) X(buildPkt) X(syncFlag) X(sendPkt) \
   X(pktInterval) X(radio) X(cont) X(rotnOk) X(altOk) X(beep) X(pyroFire) X(fileClose) \
   X(boosterBurpTime) X(unitConvert) X(accel1G) X(accelNow) X(maxG) X(gTrigger) X(high1G) X(filterFull) \
   X(highGSum) X(highGFilter) X(sizeHighGFilter) X(filterPosn) X(highGSmooth) X(adcConvert) \
@@ -30,7 +30,7 @@
   X(beepCounter) X(beepPosn) X(beepDelay) X(beepCode) X(beepLen) X(timeBeepStart) \
   X(timeLastBeepEnd) X(beepAlt) X(beepVel) X(beepCont) X(beepAlarm) X(livePyroAlarm) \
   X(writeStart) X(writeTime) X(maxWriteTime) X(writeThreshold) X(writeThreshCount) X(syncApogee) \
-  X(syncMains) X(maxAltDigits) X(maxVelDigits) X(voltageDigits) X(altDigits) X(velDigits) X(n) \
+  X(syncMains) X(maxAltDigits) X(maxVelDigits) X(voltageDigits) X(altDigits) X(velDigits) X(fileNum) \
   X(voltage) X(writeVolt) X(voltRate) X(voltReading) X(lastVolt) X(reportMaxAlt) X(postFlightCode) \
   X(gnss) X(ulongUnion) X(intUnion) X(floatUnion) X(userInput) X(servoTrim) \
   X(timeLastControl) X(kp) X(ki) X(kd) X(gpsEcho) X(radioDebug) X(txDataFile) X(cyclesBtwn) \

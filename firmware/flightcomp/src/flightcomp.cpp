@@ -143,7 +143,7 @@ IntervalTimer syncTimer;
 #endif
 
 // any routines called in the main flight loop need to be as fast as possible, so flightStep()
-// (FlightStep.h) and writeSDflightData() (SD_Card.h) are defined "always inline" in their headers
+// (FlightStep.h) and writeSdFlightData() (SD_Card.h) are defined "always inline" in their headers
 
 // The board I/O that the flight step's actions drive (performFlightActions() in FlightStep.h)
 struct BoardIo
@@ -152,7 +152,7 @@ struct BoardIo
   static inline __attribute__((always_inline)) void eepromUpdate(int address, uint8_t value) { EEPROM.update(address, value); }
   static inline __attribute__((always_inline)) void radioTimerEnd() { radioTimer.end(); }
   static inline __attribute__((always_inline)) void radioTimerBegin(uint32_t microseconds) { radioTimer.begin(timerBuildPkt, microseconds); }
-  static inline __attribute__((always_inline)) void syncSd() { syncSD(); }
+  static inline __attribute__((always_inline)) void syncSd() { ::syncSd(); }
   static inline __attribute__((always_inline)) void println(const char *text) { Serial.println(text); }
 };
 
@@ -165,11 +165,11 @@ struct BoardIo
  *
  * The new name is YYYYMMDDHHMM (UTC) followed by a space and the rocket name, with a
  * .csv extension, for example "202611061530 MyRocket.csv". The rename is by path, so it is called
- * after writeSDfooterClose() has closed the file. Without a GNSS date at liftoff the file keeps
+ * after writeSdFooterClose() has closed the file. Without a GNSS date at liftoff the file keeps
  * its FLIGHTnn.txt name, and if the rename fails (the name exists, or the rocket name holds a
  * character the card's file system rejects) the file is left as it was.
  */
-void renameFileSD()
+void renameFileSd()
 {
   // month is 0 when no GNSS date was captured at liftoff
   if (gnss.liftoff.month == 0)
@@ -343,22 +343,22 @@ void loop(void)
     }
 
     // Write the data to a string if we have a new sample
-    if (accel.newSamp || gyro.newSamp || highG.newSamp || mag.newSamp || baro.newSamp || baro.newTemp || gnss.SDwrite || writeVolt || SDradioTX)
+    if (accel.newSamp || gyro.newSamp || highG.newSamp || mag.newSamp || baro.newSamp || baro.newTemp || gnss.sdWrite || writeVolt || sdRadioTx)
     {
-      writeSDflightData();
+      writeSdFlightData();
     }
 
     // Close file at Touchdown or Timeout
     if (events.timeOut || events.touchdown)
     {
       // write the final footer data to SD card and close
-      writeSDfooterClose();
+      writeSdFooterClose();
       fileClose = true;
       events.liftoff = false;
       // rename the file using the timestamp and rocket name
       if (!settings.testMode)
       {
-        renameFileSD();
+        renameFileSd();
       }
       // shutoff all pyro outputs
       for (uint8_t i = 0; i < 4; i++)
@@ -623,7 +623,7 @@ void loop(void)
     GPS.encode(c);
     if (settings.gpsLog && !fileClose)
     {
-      updateGPSlogSD(c);
+      updateGpsLogSd(c);
     }
     if (settings.testMode && gpsEcho && !events.liftoff)
     {
@@ -651,7 +651,7 @@ void loop(void)
     gnss.timeLastFix = micros();
     gnss.fixCount++;
     gnss.fix = 1;
-    gnss.SDwrite = true;
+    gnss.sdWrite = true;
     gnss.alt = (GPS.altitude.meters() - baro.baseAlt);
     radio.GPSalt = (int16_t)gnss.alt;
     // capture max GPS alt

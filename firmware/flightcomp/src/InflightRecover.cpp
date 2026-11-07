@@ -104,8 +104,8 @@ bool rapidReset(uint8_t lastEvent)
   setPinModes();
   beginGnssSerial();
   setAnalogResolution();
-  restartSD();
-  readFlightSettingsSD();
+  restartSd();
+  readFlightSettingsSd();
   limitSettings();
   beginSensors();
   scaleSensorGains();
@@ -178,7 +178,7 @@ bool rapidReset(uint8_t lastEvent)
   fusionVel = accelVel = baro.vel;
   fusionAlt = accelAlt = baro.smoothAlt;
 
-  reOpenSD();
+  reopenSd();
   radio.event = (settings.fltProfile == 'B') ? BOOSTER_POWER_LOSS : POWER_LOSS_RESTART;
   if (settings.txEnable)
   {

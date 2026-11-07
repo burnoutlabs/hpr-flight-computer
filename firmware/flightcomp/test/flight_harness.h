@@ -45,7 +45,7 @@ struct RecordingIo
   static void eepromUpdate(int address, uint8_t value) { logIo("eeprom " + std::to_string(address) + " " + std::to_string(value)); }
   static void radioTimerEnd() { logIo("radioTimer.end"); }
   static void radioTimerBegin(uint32_t microseconds) { logIo("radioTimer.begin " + std::to_string(microseconds)); }
-  static void syncSd() { logIo("syncSD"); }
+  static void syncSd() { logIo("syncSd"); }
   static void println(const char *text) { logIo(std::string("println ") + text); }
 };
 
@@ -273,7 +273,7 @@ inline void finishPass(bool inFlight)
   {
     return;
   }
-  // writeSDflightData() clears the new-sample flags
+  // writeSdFlightData() clears the new-sample flags
   accel.newSamp = gyro.newSamp = highG.newSamp = false;
   baro.newSamp = false;
   baro.newTemp = false;

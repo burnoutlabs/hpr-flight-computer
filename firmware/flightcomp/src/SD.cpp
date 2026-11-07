@@ -8,14 +8,14 @@
  * to the SD card. Additional functions include helper routines for data conversion and parsing.
  *
  * @section functions Function List
- * - beginSD(): Starts the SD card.
- * - restartSD(): Restarts the SD card after a power loss.
- * - parseEEPROMsettingsSD(): If an EEPROM settings file exists, reads it and updates EEPROM.
- * - createNextFileSD(): Finds the last filename in the list and opens a new file, writes header.
- * - reOpenSD(): Reopens the last file on the SD card.
- * - syncSD(): Syncs the SD card in case of a power loss or other event.
- * - readFlightSettingsSD(): Reads the user settings from the SD card.
- * - writeSDflightData(): Primary routine to capture flight data in ASCII text on the SD card.
+ * - beginSd(): Starts the SD card.
+ * - restartSd(): Restarts the SD card after a power loss.
+ * - parseEepromSettingsSd(): If an EEPROM settings file exists, reads it and updates EEPROM.
+ * - createNextFileSd(): Finds the last filename in the list and opens a new file, writes header.
+ * - reopenSd(): Reopens the last file on the SD card.
+ * - syncSd(): Syncs the SD card in case of a power loss or other event.
+ * - readFlightSettingsSd(): Reads the user settings from the SD card.
+ * - writeSdFlightData(): Primary routine to capture flight data in ASCII text on the SD card.
  * - writeSDfooter(): Writes the post-flight footer to the SD card once touchdown or timeout is detected.
  * - writeNMEA(): Writes the NMEA GPS data to a separate file.
  *
@@ -24,7 +24,7 @@
  * - writeFloatData(): Converts floats to a char array, with a limit of 4 decimal places.
  * - writeFloatData2(): Converts floats to a char array with no decimal limit.
  * - writeLongData(): Converts long to a char array.
- * - writeULongData(): Converts unsigned long to a char array.
+ * - writeUlongData(): Converts unsigned long to a char array.
  * - writeBoolData(): Converts a boolean to a char array.
  * - updateStrPosn(): Helper function to keep track of the position within the char array.
  * - parseNextVariable(): Reads data from the SD card and places it in the dataString char array.
@@ -72,18 +72,18 @@ int strPosn = 0;
 alignas(4) char dataString[1024];
 
 // GPS log variable
-char GPSlog[1024];
+char gpsLogBuffer[1024];
 
-// name of the open flight data file, for renameFileSD()
+// name of the open flight data file, for renameFileSd()
 char outputFileName[20] = "";
 
-// name of the last flight data file, for reOpenSD()
+// name of the last flight data file, for reopenSd()
 char fileName[20] = "FLIGHT01.txt";
 
 /**
  * @brief Initializes the SD card.
  */
-void beginSD()
+void beginSd()
 {
 
 // Built-in SDIO on Teensy3.5 or 3.6 or Teensy4.1
@@ -116,12 +116,12 @@ void beginSD()
   }
 
 #endif
-} // end beginSD
+} // end beginSd
 
 /**
  * @brief Restarts the SD card after a power loss.
  */
-void restartSD()
+void restartSd()
 {
 
 // Teensy with built-in SDIO
@@ -145,12 +145,12 @@ void restartSD()
   }
 
 #endif
-} // end restartSD
+} // end restartSd
 
 /**
  * @brief Parses EEPROM settings from the SD card and updates EEPROM.
  */
-void parseEEPROMsettingsSD()
+void parseEepromSettingsSd()
 {
 
   // If an EEPROM settings file exists, open it and copy the values into EEPROM
@@ -502,12 +502,12 @@ void parseEEPROMsettingsSD()
     SD.remove("EEPROMsettings.txt");
     Serial.println(F("Complete!"));
   }
-} // end parseEEPROMsettingsSD
+} // end parseEepromSettingsSd
 
 /**
  * @brief Creates a new file on the SD card with a unique name, writes a header.
  */
-void createNextFileSD()
+void createNextFileSd()
 {
 
   char fileName[20] = "FLIGHT01.txt";
@@ -516,17 +516,17 @@ void createNextFileSD()
   {
     Serial.print(F("Creating new SD card file: FLIGHT"));
   }
-  n = 0;
+  fileNum = 0;
   while (SD.exists(fileName))
   {
-    n++;
-    if (n < 10)
+    fileNum++;
+    if (fileNum < 10)
     {
-      itoa(n, fileName + 7, 10);
+      itoa(fileNum, fileName + 7, 10);
     }
     else
     {
-      itoa(n, fileName + 6, 10);
+      itoa(fileNum, fileName + 6, 10);
     }
     fileName[8] = '.';
   }
@@ -562,62 +562,62 @@ void createNextFileSD()
 
   if (settings.testMode)
   {
-    if (n < 10)
+    if (fileNum < 10)
     {
       Serial.print('0');
-      Serial.println(n);
+      Serial.println(fileNum);
     }
     else
     {
-      Serial.println(n);
+      Serial.println(fileNum);
     }
   }
-} // end createNextFileSD
+} // end createNextFileSd
 
 /**
  * @brief Reopens the most recent file on the SD card.
  */
-void reOpenSD()
+void reopenSd()
 {
-  n = 1;
+  fileNum = 1;
   while (SD.exists(fileName))
   {
-    n++;
-    if (n < 10)
+    fileNum++;
+    if (fileNum < 10)
     {
-      itoa(n, fileName + 7, 10);
+      itoa(fileNum, fileName + 7, 10);
     }
     else
     {
-      itoa(n, fileName + 6, 10);
+      itoa(fileNum, fileName + 6, 10);
     }
     fileName[8] = '.';
   }
-  n--;
-  if (n < 10)
+  fileNum--;
+  if (fileNum < 10)
   {
-    itoa(n, fileName + 7, 10);
+    itoa(fileNum, fileName + 7, 10);
   }
   else
   {
-    itoa(n, fileName + 6, 10);
+    itoa(fileNum, fileName + 6, 10);
   }
   fileName[8] = '.';
   // outputFile = SD.open(dataString, FILE_WRITE | O_AT_END);
   outputFile = SD.open(fileName, FILE_WRITE);
   strcpy(outputFileName, fileName);
-} // end reOpenSD
+} // end reopenSd
 
-void syncSD()
+void syncSd()
 {
   outputFile.flush();
   if (settings.gpsLog)
   {
     gpsFile.flush();
   }
-} // end syncSD
+} // end syncSd
 
-void readFlightSettingsSD()
+void readFlightSettingsSd()
 {
   if (settings.testMode)
   {
@@ -628,15 +628,15 @@ void readFlightSettingsSD()
 
   // Read in the user defined variables
   parseNextVariable(false);
-  n = 0;
+  fileNum = 0;
   // Rocket name
-  while (dataString[n] != '\0')
+  while (dataString[fileNum] != '\0')
   {
-    settings.rocketName[n] = dataString[n];
-    n++;
+    settings.rocketName[fileNum] = dataString[fileNum];
+    fileNum++;
   }
-  settings.rocketName[n] = '\0';
-  n = 0;
+  settings.rocketName[fileNum] = '\0';
+  fileNum = 0;
   parseNextVariable(false);
   settings.fltProfile = dataString[0];
   parseNextVariable(false);
@@ -688,19 +688,19 @@ void readFlightSettingsSD()
   settings.serialDebug = (byte)parseNextVariable(true);
   // close the settings file
   settingsFile.close();
-} // end readFlightSettingsSD
+} // end readFlightSettingsSd
 
 /**
  * @brief Writes the footer information to the SD card after flight, then closes
  * the flight data file (and the GNSS log file, if enabled).
  */
-void writeSDfooterClose()
+void writeSdFooterClose()
 {
   // Print the initial conditions
   outputFile.println(F("Max Baro Alt,Max GPS Alt,Max Speed,Max Gs,baseAlt,padTime,initial Y ang,initial X ang,accelX0,accelY0,accelZ0,highGz0,magX0,magY0,magZ0,gyroBiasX,gyroBiasY,gyroBiasZ,accelBiasX,accelBiasY,accelBiasZ,highGbiasX,highGbiasY,highGbiasZ,magBiasX,magBiasY,magBiasZ,baroPressureOffset,baroTempOffset"));
-  writeULongData((uint32_t)(baro.maxAlt * unitConvert));
-  writeULongData((uint32_t)(gnss.maxAlt * unitConvert));
-  writeULongData((uint32_t)(maxVelocity * unitConvert));
+  writeUlongData((uint32_t)(baro.maxAlt * unitConvert));
+  writeUlongData((uint32_t)(gnss.maxAlt * unitConvert));
+  writeUlongData((uint32_t)(maxVelocity * unitConvert));
   writeFloatData(maxG / 9.80665, 2);
   writeFloatData(baro.baseAlt, 2);
   writeFloatData(((float)fltTime.padTime / (float)1000000), 2);
@@ -807,27 +807,27 @@ void writeSDfooterClose()
     outputFile.println(' ');
   }
   outputFile.print(settings.rocketName);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.callSign);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.hwId);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(CODE_VERSION, 2);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print((char)settings.fltProfile);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.units);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.inflightRecover);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.pyro4Func);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.pyro3Func);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.pyro2Func);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   outputFile.print(settings.pyro1Func);
-  outputFile.print(cs);
+  outputFile.print(CSV_SEPARATOR);
   strPosn = 0;
   writeFloatData(((float)settings.apogeeDelay) * MILLIONTH, 1);
   writeFloatData(((float)settings.mainDeployAlt) * unitConvert, 0);
@@ -835,12 +835,12 @@ void writeSDfooterClose()
   writeFloatData(settings.rcdTime * MILLIONTH, 0);
   writeFloatData(settings.fireTime * MILLIONTH, 1);
   writeBoolData(settings.txEnable);
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
   writeIntData(settings.txPwr);
   writeFloatData(settings.txFreq, 3);
   writeBoolData(settings.fhss);
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
   writeFloatData(baro.seaLevelPressure, 2);
   if (settings.fltProfile == '2')
@@ -885,12 +885,12 @@ void writeSDfooterClose()
  */
 void writeIntData(int dataValue)
 {
-  itoa(dataValue, dataString + strPosn, base);
+  itoa(dataValue, dataString + strPosn, DECIMAL_BASE);
   while (dataString[strPosn] != '\0')
   {
     strPosn++;
   }
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
 } // end writeIntData
 
@@ -899,16 +899,16 @@ void writeIntData(int dataValue)
  *
  * @param dataValue Unsigned long value to be converted.
  */
-void writeULongData(unsigned long dataValue)
+void writeUlongData(unsigned long dataValue)
 {
-  ultoa(dataValue, dataString + strPosn, base);
+  ultoa(dataValue, dataString + strPosn, DECIMAL_BASE);
   while (dataString[strPosn] != '\0')
   {
     strPosn++;
   }
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
-} // end writeULongData
+} // end writeUlongData
 
 /**
  * @brief Converts a long to a char array and appends to the data string.
@@ -917,12 +917,12 @@ void writeULongData(unsigned long dataValue)
  */
 void writeLongData(long dataValue)
 {
-  ltoa(dataValue, dataString + strPosn, base);
+  ltoa(dataValue, dataString + strPosn, DECIMAL_BASE);
   while (dataString[strPosn] != '\0')
   {
     strPosn++;
   }
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
 } // end writeLongData
 
@@ -958,7 +958,7 @@ void writeFloatData(float dataValue, uint8_t decimals)
   }
 
   // integer portion
-  itoa((int16_t)dataValue, dataString + strPosn, base);
+  itoa((int16_t)dataValue, dataString + strPosn, DECIMAL_BASE);
   while (dataString[strPosn] != '\0')
   {
     strPosn++;
@@ -973,7 +973,7 @@ void writeFloatData(float dataValue, uint8_t decimals)
   {
     dataString[strPosn] = '0';
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
   }
   else
@@ -985,7 +985,7 @@ void writeFloatData(float dataValue, uint8_t decimals)
       strPosn++;
       decimals--;
     }
-    ltoa(fracInt, dataString + strPosn, base);
+    ltoa(fracInt, dataString + strPosn, DECIMAL_BASE);
     while (dataString[strPosn] != '\0')
     {
       strPosn++;
@@ -1003,28 +1003,28 @@ void writeFloatData(float dataValue, uint8_t decimals)
  */
 float parseNextVariable(bool flag)
 {
-  uint8_t n = 0;
+  uint8_t charPosn = 0;
   float dataValue;
   char c;
-  n = 0;
+  charPosn = 0;
   c = '\0';
   while (c != '=')
   {
     c = settingsFile.read();
   }
   c = settingsFile.read();
-  while (c != '\n' && c != '\r' && n < sizeof(dataString))
+  while (c != '\n' && c != '\r' && charPosn < sizeof(dataString))
   {
     c = settingsFile.read();
     if (c != '\n' && c != '\r')
     {
-      dataString[n] = c;
+      dataString[charPosn] = c;
     }
     else
     {
-      dataString[n] = '\0';
+      dataString[charPosn] = '\0';
     }
-    n++;
+    charPosn++;
   }
   if (flag)
   {
@@ -1042,20 +1042,20 @@ float parseNextVariable(bool flag)
  *
  * @param c Character to be added to the GPS log.
  */
-void updateGPSlogSD(char c)
+void updateGpsLogSd(char c)
 {
 
   static uint16_t logPosn = 0;
 
-  if (logPosn < sizeof(GPSlog))
+  if (logPosn < sizeof(gpsLogBuffer))
   {
-    GPSlog[logPosn] = c;
+    gpsLogBuffer[logPosn] = c;
     logPosn++;
   }
   else
   {
-    gpsFile.write(GPSlog, logPosn);
+    gpsFile.write(gpsLogBuffer, logPosn);
     logPosn = 0;
-    GPSlog[logPosn] = c;
+    gpsLogBuffer[logPosn] = c;
   }
-} // end updateGPSlogSD
+} // end updateGpsLogSd

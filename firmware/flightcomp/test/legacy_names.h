@@ -26,6 +26,7 @@
 #define baroID baroId
 #define beep_counter beepCounter
 #define beep_delay beepDelay
+#define beginSD beginSd
 #define Booster_Apogee BOOSTER_APOGEE
 #define Booster_Burnout BOOSTER_BURNOUT
 #define Booster_Preflight BOOSTER_PREFLIGHT
@@ -34,6 +35,7 @@
 #define Booster_Touchdown BOOSTER_TOUCHDOWN
 #define Booster_Under_Chute BOOSTER_UNDER_CHUTE
 #define Byte bytes
+#define createNextFileSD createNextFileSd
 #define dx gyroDeltaX
 #define dy gyroDeltaY
 #define dz gyroDeltaZ
@@ -77,6 +79,7 @@
 #define NoFire_Alt_Limit NO_FIRE_ALT_LIMIT
 #define NoFire_Rotn_Limit NO_FIRE_ROTN_LIMIT
 #define NoFire_RotnAlt_Limit NO_FIRE_ROTN_ALT_LIMIT
+#define parseEEPROMsettingsSD parseEepromSettingsSd
 #define Preflight PREFLIGHT
 #define pyroPWM pyroPwm
 #define radioCS radioCs
@@ -86,6 +89,7 @@
 #define radioIRQ radioIrq
 #define radioIRQpin radioIrqPin
 #define radioRST radioRst
+#define readFlightSettingsSD readFlightSettingsSd
 #define rotnOK rotnOk
 #define SD_CS sdCs
 #define sdCSpin sdCsPin
@@ -106,6 +110,7 @@
 #define sizeHighGfilter sizeHighGFilter
 #define Sustainer_Burnout SUSTAINER_BURNOUT
 #define Sustainer_Ignition SUSTAINER_IGNITION
+#define syncSD syncSd
 #define testModeRdPin testModeReadPin
 #define Time_Limit TIME_LIMIT
 #define Touchdown TOUCHDOWN

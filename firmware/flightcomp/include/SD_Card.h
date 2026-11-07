@@ -18,25 +18,25 @@ alignas(4) extern char dataString[1024];
 // name of the open flight data file (defined in SD.cpp)
 extern char outputFileName[20];
 
-void beginSD();
-void restartSD();
-void parseEEPROMsettingsSD();
-void createNextFileSD();
-void reOpenSD();
-void syncSD();
-void readFlightSettingsSD();
-void writeSDfooterClose();
+void beginSd();
+void restartSd();
+void parseEepromSettingsSd();
+void createNextFileSd();
+void reopenSd();
+void syncSd();
+void readFlightSettingsSd();
+void writeSdFooterClose();
 // defined in flightcomp.cpp, beside loop(), its only caller
-void renameFileSD();
+void renameFileSd();
 void writeIntData(int dataValue);
-void writeULongData(unsigned long dataValue);
+void writeUlongData(unsigned long dataValue);
 void writeLongData(long dataValue);
 void writeFloatData2(float dataValue, uint8_t decimals);
 void writeFloatData(float dataValue, uint8_t decimals);
 float parseNextVariable(bool flag);
-void updateGPSlogSD(char c);
+void updateGpsLogSd(char c);
 
-// The flight loop writes a line of flight data on every pass, so writeSDflightData() and
+// The flight loop writes a line of flight data on every pass, so writeSdFlightData() and
 // writeBoolData(), which it calls for every flag, are defined here, inline, for loop() in
 // flightcomp.cpp to inline them. updateStrPosn() is always inline as well.
 
@@ -60,17 +60,17 @@ inline __attribute__((always_inline)) void updateStrPosn()
   {
     strPosn++;
   }
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
 } // end updateStrPosn
 
 /**
  * @brief Writes flight data to the SD card in ASCII text format.
  */
-inline __attribute__((always_inline)) void writeSDflightData()
+inline __attribute__((always_inline)) void writeSdFlightData()
 {
   // Timestamp
-  writeULongData(fltTime.timeCurrent);
+  writeUlongData(fltTime.timeCurrent);
   // Accel Data
   writeIntData(accel.x);
   writeIntData(accel.y);
@@ -93,13 +93,13 @@ inline __attribute__((always_inline)) void writeSDflightData()
     writeBoolData(mag.newSamp);
     writeBoolData(baro.newSamp);
     writeBoolData(baro.newTemp);
-    writeBoolData(SDradioTX);
-    writeBoolData(gnss.SDwrite);
+    writeBoolData(sdRadioTx);
+    writeBoolData(gnss.sdWrite);
     writeBoolData(writeVolt);
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    writeULongData(sampleTime);
-    writeULongData(writeTime);
+    writeUlongData(sampleTime);
+    writeUlongData(writeTime);
     cyclesBtwn = 0;
   }
   // reset write flags
@@ -145,7 +145,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   writeBoolData(events.mainDeploy);
   writeBoolData(events.touchdown);
   writeBoolData(events.timeOut);
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
   writeIntData(radio.event);
   // Continuity Data
@@ -155,7 +155,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   {
     writeBoolData(pyros[i].contStatus);
   }
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
   // Pyro Firing Data
   dataString[strPosn] = 'F';
@@ -164,7 +164,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   {
     writeBoolData(pyros[i].fireStatus);
   }
-  dataString[strPosn] = cs;
+  dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
   writeIntData(pins.firePin);
   // Barometer
@@ -180,7 +180,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   {
     for (byte i = 0; i < 4; i++)
     {
-      dataString[strPosn] = cs;
+      dataString[strPosn] = CSV_SEPARATOR;
       strPosn++;
     }
   }
@@ -192,7 +192,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   }
   else
   {
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
   }
   // Battery Voltage
@@ -203,7 +203,7 @@ inline __attribute__((always_inline)) void writeSDflightData()
   }
   else
   {
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
   }
   // Magnetometer Data
@@ -216,15 +216,15 @@ inline __attribute__((always_inline)) void writeSDflightData()
   }
   else
   {
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
   }
   // GPS Data
-  if (gnss.SDwrite)
+  if (gnss.sdWrite)
   {
     writeFloatData(gnss.latitude, 6);
     writeFloatData(gnss.longitude, 6);
@@ -232,32 +232,32 @@ inline __attribute__((always_inline)) void writeSDflightData()
     writeFloatData2(gnss.alt, 2);
     writeFloatData((float)GPS.course.deg(), 2);
     writeIntData(radio.satNum);
-    gnss.SDwrite = false;
+    gnss.sdWrite = false;
   }
   else
   {
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
   }
   // update the radio packet number
-  if (SDradioTX)
+  if (sdRadioTx)
   {
     writeIntData(radio.packetnum);
-    SDradioTX = false;
+    sdRadioTx = false;
   }
   else
   {
-    dataString[strPosn] = cs;
+    dataString[strPosn] = CSV_SEPARATOR;
     strPosn++;
   }
   // end of sample - carriage return, newline, and null value
@@ -285,4 +285,4 @@ inline __attribute__((always_inline)) void writeSDflightData()
     }
   }
   strPosn = 0;
-} // end writeSDflightData
+} // end writeSdFlightData

@@ -30,16 +30,20 @@ across firmware updates, so an address cannot move without the stored value movi
 The order of the IDs (127-134) is not the order `EEPROMsettings.txt` lists them in; the parser
 writes each to its own address.
 
-## Flight settings copy (144-227)
+## Retired: flight settings copy (144-227)
 
-`setup()` writes a copy of the flight settings here (`writeSettingsEeprom()`, `Startup.cpp`), after
-reading `Settings.txt` and applying `limitSettings()`. It was meant for in-flight recovery; since
-#28, in-flight recovery reads `Settings.txt` as a normal start does. Of this block only
-`inflightRecover` (186) is read: `setup()` reads it first thing, before the SD card is started, to
-decide whether to try an in-flight recovery.
+Firmware before the fix for #25 wrote a copy of the flight settings here from `setup()`, after reading
+`Settings.txt`. The copy is retired: `setup()` no longer writes it, and nothing reads it (since
+#28, in-flight recovery reads `Settings.txt` as a normal start does). The addresses stay reserved
+and are not reused, because a board that ran the older firmware still holds what it wrote there.
 
-The addresses overlap. The writes happen in this order, and a later write replaces an earlier
-one's bytes:
+The one address of the block still in use is **186, `inflightRecover`**: `setup()` writes it
+after reading `Settings.txt` (`writeInflightRecoverEeprom()`, `Startup.cpp`) and reads it first
+thing on the next start, before the SD card is started, to decide whether to try an in-flight
+recovery.
+
+The copy's fields overlapped, so what the older firmware left in 164-223 is garbage, not a copy
+of the settings. It wrote the fields in this order, a later write replacing an earlier one's bytes:
 
 | Field | Address | Bytes written | Overwritten by |
 | ----- | ------- | ------------- | -------------- |
@@ -61,12 +65,10 @@ one's bytes:
 | `maxAngle` | 221-222 | 2 | `stableRotn` at 222 |
 | `stableRotn`, `stableVert` | 222, 223 | 1 each | |
 
-So reading the copy back gives wrong values for `mainDeployAlt`, `apogeeDelay` (its upper three bytes
-are `silentMode`, `magSwitchEnable` and `inflightRecover`; with those 0, 0 and 1 it reads
-16777216 µs more than its low byte),
-`airStart2Delay` and `maxAngle`. Fields in the map that nothing writes: `rocketName` (144-163),
-`gTrigger` (171-172), `detectLiftoffTime` (173-176), `fhss` (202, reads 255 on an erased part),
-`flyback` (224), `serialDebug` (225), `lastFile` (226-227).
+Read back, `mainDeployAlt`, `apogeeDelay` (its upper three bytes are `silentMode`,
+`magSwitchEnable` and `inflightRecover`), `airStart2Delay` and `maxAngle` came out wrong. Fields in
+the map that no firmware wrote: `rocketName` (144-163), `gTrigger` (171-172), `detectLiftoffTime`
+(173-176), `fhss` (202), `flyback` (224), `serialDebug` (225), `lastFile` (226-227).
 
 ## Flight state and stabilization
 

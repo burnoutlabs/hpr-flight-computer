@@ -338,89 +338,13 @@ void limitSettings()
 }
 
 /**
- * @brief Store the user settings in EEPROM.
+ * @brief Store the in-flight recovery setting in EEPROM, where setup() reads it on the next start
+ * before the SD card is started.
+ *
+ * @details The rest of the flight settings are no longer stored: their EEPROM copy overlapped
+ * (docs/eeprom-map.md) and nothing read it.
  */
-static void writeSettingsEeprom()
-{
-  // Update the EEPROM with the new settings
-  EEPROM.update(eeprom.fltProfile, settings.fltProfile);
-  EEPROM.update(eeprom.units, settings.units);
-  EEPROM.update(eeprom.reportStyle, settings.reportStyle);
-  ulongUnion.val = settings.setupTime;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.setupTime + i, ulongUnion.bytes[i]);
-  }
-  floatUnion.val = settings.mainDeployAlt;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.mainDeployAlt + i, floatUnion.bytes[i]);
-  }
-  ulongUnion.val = settings.apogeeDelay;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.apogeeDelay + i, ulongUnion.bytes[i]);
-  }
-  ulongUnion.val = settings.rcdTime;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.rcdTime + i, ulongUnion.bytes[i]);
-  }
-  EEPROM.update(eeprom.silentMode, settings.silentMode);
-  EEPROM.update(eeprom.magSwitchEnable, settings.magSwitchEnable);
-  EEPROM.update(eeprom.inflightRecover, settings.inflightRecover);
-  EEPROM.update(eeprom.gpsLogFile, settings.gpsLog);
-  ulongUnion.val = settings.fireTime;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.fireTime + i, ulongUnion.bytes[i]);
-  }
-  EEPROM.update(eeprom.pyro1Func, settings.pyro1Func);
-  EEPROM.update(eeprom.pyro2Func, settings.pyro2Func);
-  EEPROM.update(eeprom.pyro3Func, settings.pyro3Func);
-  EEPROM.update(eeprom.pyro4Func, settings.pyro4Func);
-  EEPROM.update(eeprom.txEnable, settings.txEnable);
-  EEPROM.update(eeprom.txPwr, settings.txPwr);
-  floatUnion.val = settings.txFreq;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.txFreq + i, floatUnion.bytes[i]);
-  }
-  ulongUnion.val = settings.boosterSeparationDelay;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.boosterSeparationDelay + i, ulongUnion.bytes[i]);
-  }
-  ulongUnion.val = settings.sustainerFireDelay;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.sustainerFireDelay + i, ulongUnion.bytes[i]);
-  }
-  EEPROM.update(eeprom.airStart1Event, settings.airStart1Event);
-  ulongUnion.val = settings.airStart1Delay;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.airStart1Delay + i, ulongUnion.bytes[i]);
-  }
-  EEPROM.update(eeprom.airStart2Event, settings.airStart2Event);
-  ulongUnion.val = settings.airStart2Delay;
-  for (byte i = 0; i < 4; i++)
-  {
-    EEPROM.update(eeprom.airStart2Delay + i, ulongUnion.bytes[i]);
-  }
-  intUnion.val = settings.altThreshold;
-  for (byte i = 0; i < 2; i++)
-  {
-    EEPROM.update(eeprom.altThreshold + i, intUnion.bytes[i]);
-  }
-  intUnion.val = settings.maxAngle;
-  for (byte i = 0; i < 2; i++)
-  {
-    EEPROM.update(eeprom.maxAngle + i, intUnion.bytes[i]);
-  }
-  EEPROM.update(eeprom.stableRotn, settings.stableRotn);
-  EEPROM.update(eeprom.stableVert, settings.stableVert);
-}
+static void writeInflightRecoverEeprom() { EEPROM.update(eeprom.inflightRecover, settings.inflightRecover); }
 
 /**
  * @brief Give each pyro channel its function and pins, not firing.
@@ -1313,7 +1237,7 @@ void setup(void)
 
   limitSettings();
 
-  writeSettingsEeprom();
+  writeInflightRecoverEeprom();
 
   configurePyroChannels();
 

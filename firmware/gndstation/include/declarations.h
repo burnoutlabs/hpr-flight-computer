@@ -100,7 +100,6 @@ extern boolean sustainerFileOpen;
 extern boolean boosterFileOpen;
 extern boolean sustainerFileCreated;
 extern boolean boosterFileCreated;
-extern byte n;
 extern byte fileNum;
 extern byte pktPosn;
 extern int16_t lastPacketNum;
@@ -134,7 +133,6 @@ extern boolean sustainerPostFlightWrite;
 extern boolean boosterPostFlightWrite;
 extern boolean boosterFileReady;
 extern unsigned long lostSignalTime;
-extern byte j;
 //---------------------------
 // preflight output variables
 //---------------------------

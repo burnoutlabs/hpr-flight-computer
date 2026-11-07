@@ -46,7 +46,6 @@ boolean sustainerFileOpen = false;
 boolean boosterFileOpen = false;
 boolean sustainerFileCreated = false;
 boolean boosterFileCreated = false;
-byte n = 0;
 byte fileNum = 1;
 byte pktPosn = 0;
 int16_t lastPacketNum = 0;
@@ -80,7 +79,6 @@ boolean sustainerPostFlightWrite = true;
 boolean boosterPostFlightWrite = true;
 boolean boosterFileReady = false;
 unsigned long lostSignalTime = 2000000UL;
-byte j = 0;
 //---------------------------
 // preflight output variables
 //---------------------------

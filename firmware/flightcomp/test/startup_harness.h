@@ -92,6 +92,17 @@ struct BoardInputs
   size_t serialPosn = 0;
   // getMag() calls before the magnet is sensed (magnetic switch)
   int magDetectAfter = 1000000;
+  // getMag() also fills the oriented fields (mag.x, y, z), which the drivers do not: the
+  // reference setup()'s magnetic switch wait reads them without calling orientMag() (#45), so it
+  // never ends without this
+  bool magFillsOriented = false;
+  // getMag() calls after which a run is taken to hang, and ends with MagReadLimit; 0 for none
+  int magReadLimit = 0;
+};
+
+/** Thrown by getMag() past boardInputs.magReadLimit. */
+struct MagReadLimit
+{
 };
 inline BoardInputs boardInputs;
 
@@ -287,16 +298,20 @@ inline void feedGyro()
 inline void feedMag()
 {
   const int32_t n = (int32_t)sensorFeed.mag++;
+  if (boardInputs.magReadLimit > 0 && n >= boardInputs.magReadLimit)
+  {
+    throw MagReadLimit();
+  }
   const int16_t big = (n >= boardInputs.magDetectAfter) ? 4000 : 0;
   mag.rawX = (int16_t)(150 + n % 9 + big);
   mag.rawY = (int16_t)(-90 + n % 4);
   mag.rawZ = (int16_t)(300 + n % 6);
-  // The magnetic switch wait in setup() tests mag.x, y and z after getMag(), but the drivers
-  // fill only the raw fields and nothing in that wait calls orientMag(), so on a board the wait
-  // never ends. Filling the oriented fields here lets the scenario run through that code.
-  mag.x = mag.rawX;
-  mag.y = mag.rawY;
-  mag.z = mag.rawZ;
+  if (boardInputs.magFillsOriented)
+  {
+    mag.x = mag.rawX;
+    mag.y = mag.rawY;
+    mag.z = mag.rawZ;
+  }
 }
 inline void feedHighG()
 {
@@ -528,6 +543,7 @@ void readOrientation()
     s->ptrXSign = &s->dirX;
     s->ptrYSign = &s->dirY;
     s->ptrZSign = &s->dirZ;
+    s->dirX = s->dirY = s->dirZ = 1;
   }
 }
 

@@ -27,7 +27,10 @@
  * (retiredSettingsAddresses() below; test_retired_settings_copy shows the difference). The
  * byte-copy unions it used as scratch are cleared in both runs (clearScratchUnions()). In test
  * mode the reference's rail-clear time (20 ms) is replaced with setup()'s 5 ms (#44,
- * takeOutBenchClearRailTime()).
+ * takeOutBenchClearRailTime()). The reference's magnetic switch wait tests the oriented
+ * magnetometer fields without calling orientMag(), so on a board it never ends (#45); its run
+ * here has the magnetometer stand-in fill those fields (BoardInputs::magFillsOriented), and
+ * setup()'s run does not.
  * The scenarios between them take every branch of setup() that returns; the ones that never do
  * (uninitialized EEPROM, a failed sensor) are not run. Nor is a board with no high-G
  * accelerometer: setup() then divides by a zero sample count, which the Teensy's divide
@@ -416,6 +419,8 @@ static void runSideBySide(const SetupScenario &s)
   startScenario(s);
   uint8_t eepromBefore[ShimEEPROM::size];
   memcpy(eepromBefore, shimEeprom.bytes, sizeof(eepromBefore));
+  // the reference's magnetic switch wait needs the oriented fields filled to end (#45)
+  boardInputs.magFillsOriented = true;
   legacy::setup();
   std::vector<std::string> referenceLog = ioLog;
   const size_t retiredWrites = removeRetiredWrites(referenceLog, eepromBefore);
@@ -425,7 +430,17 @@ static void runSideBySide(const SetupScenario &s)
   const bool reached = s.reached == nullptr || s.reached();
 
   startScenario(s);
-  setup();
+  boardInputs.magReadLimit = 100000;
+  try
+  {
+    setup();
+  }
+  catch (const MagReadLimit &)
+  {
+    char hung[160];
+    snprintf(hung, sizeof(hung), "%s: setup() never ended (%d magnetometer reads)", s.name, boardInputs.magReadLimit);
+    TEST_FAIL_MESSAGE(hung);
+  }
   clearScratchUnions();
   const std::vector<uint8_t> state = saveStartupState();
   const std::vector<std::string> &log = ioLog;
@@ -810,6 +825,36 @@ static BumpRun runBenchBump(float seconds)
 }
 
 /**
+ * #45: with the magnetic switch enabled, setup() beeps the continuity code until the magnet is
+ * sensed, and then finishes. The drivers fill only the raw magnetometer fields; the wait tested
+ * the oriented ones without orienting them, so it never ended.
+ */
+void test_magnetic_switch_wait_ends_when_the_magnet_is_sensed()
+{
+  SetupScenario s;
+  s.name = "magnetic switch";
+  s.file = sampleSettings();
+  s.file.magSwitchEnable = true;
+  s.magDetectAfter = 40;
+  startScenario(s);
+  boardInputs.magReadLimit = 100000;
+  bool ended = true;
+  try
+  {
+    setup();
+  }
+  catch (const MagReadLimit &)
+  {
+    ended = false;
+  }
+  TEST_ASSERT_TRUE_MESSAGE(ended, "setup() never ended: the magnet was not sensed");
+  TEST_ASSERT_TRUE(logHas("radioTimer.begin"));
+  // the wait ended on the first read with the magnet: the 10 reads that clear the FIFO, then
+  // one per beep and one per round of the code
+  TEST_ASSERT_TRUE(sensorFeed.mag > 40);
+}
+
+/**
  * #44: in test mode a bump that ends inside the false-liftoff check is reset. The bench
  * overrides cleared the rail (20 ms) only after the check had ended (10 ms), so no reset could
  * fire; a bump that outlasts the check is still a liftoff.
@@ -852,6 +897,7 @@ int main()
   RUN_TEST(test_set_poly_morphs_every_id);
   RUN_TEST(test_unsupported_gnss_bus_is_reported_and_skipped);
   RUN_TEST(test_bench_mode_resets_a_short_bump);
+  RUN_TEST(test_magnetic_switch_wait_ends_when_the_magnet_is_sensed);
   printf("  setup scenarios compared: %d\n", scenariosRun);
   return UNITY_END();
 }

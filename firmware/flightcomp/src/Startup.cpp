@@ -639,6 +639,8 @@ static void applyBenchTestOverrides()
 
 /**
  * @brief Beep the continuity code until the magnet is sensed.
+ *
+ * The magnet is sensed on the oriented, bias-corrected field (orientMag()), as loop() senses it.
  */
 static void waitForMagneticSwitch()
 {
@@ -674,6 +676,7 @@ static void waitForMagneticSwitch()
       digitalWrite(pins.beep, LOW);
       delay(250);
       getMag();
+      orientMag();
       if (abs(mag.x) > magTrigger || abs(mag.y) > magTrigger || abs(mag.z) > magTrigger)
       {
         magDetect = true;
@@ -682,6 +685,7 @@ static void waitForMagneticSwitch()
     } // end inner loop
     ii = 0;
     getMag();
+    orientMag();
     checkPyroContinuity();
     if (abs(mag.x) > magTrigger || abs(mag.y) > magTrigger || abs(mag.z) > magTrigger)
     {

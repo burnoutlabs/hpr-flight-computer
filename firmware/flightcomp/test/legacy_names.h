@@ -26,7 +26,9 @@
 #define baroID baroId
 #define beep_counter beepCounter
 #define beep_delay beepDelay
+#define beginRFD900 beginRfd900
 #define beginSD beginSd
+#define beginSX127X beginSx127x
 #define Booster_Apogee BOOSTER_APOGEE
 #define Booster_Burnout BOOSTER_BURNOUT
 #define Booster_Preflight BOOSTER_PREFLIGHT
@@ -79,6 +81,7 @@
 #define NoFire_Alt_Limit NO_FIRE_ALT_LIMIT
 #define NoFire_Rotn_Limit NO_FIRE_ROTN_LIMIT
 #define NoFire_RotnAlt_Limit NO_FIRE_ROTN_ALT_LIMIT
+#define packetnum packetNum
 #define parseEEPROMsettingsSD parseEepromSettingsSd
 #define Preflight PREFLIGHT
 #define pyroPWM pyroPwm
@@ -93,6 +96,8 @@
 #define rotnOK rotnOk
 #define SD_CS sdCs
 #define sdCSpin sdCsPin
+#define sendPktRFD900 sendPktRfd900
+#define sendPktSX127X sendPktSx127x
 #define sensorsOK sensorsOk
 #define Separation SEPARATION
 #define servo1pin servo1Pin
@@ -107,7 +112,11 @@
 #define servo6pin servo6Pin
 #define servo7pin servo7Pin
 #define servo8pin servo8Pin
+#define setFreqSX127X setFreqSx127x
+#define setPwrSX127X setPwrSx127x
+#define setRadioPWR setRadioPwr
 #define sizeHighGfilter sizeHighGFilter
+#define sleepSX127X sleepSx127x
 #define Sustainer_Burnout SUSTAINER_BURNOUT
 #define Sustainer_Ignition SUSTAINER_IGNITION
 #define syncSD syncSd

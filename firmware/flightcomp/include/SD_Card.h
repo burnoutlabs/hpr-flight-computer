@@ -147,7 +147,7 @@ inline __attribute__((always_inline)) void writeSdFlightData()
   writeBoolData(events.timeOut);
   dataString[strPosn] = CSV_SEPARATOR;
   strPosn++;
-  writeIntData(radio.event);
+  writeIntData(radioTelemetry.event);
   // Continuity Data
   dataString[strPosn] = 'C';
   strPosn++;
@@ -231,7 +231,7 @@ inline __attribute__((always_inline)) void writeSdFlightData()
     writeFloatData((float)GPS.speed.mph(), 2);
     writeFloatData2(gnss.alt, 2);
     writeFloatData((float)GPS.course.deg(), 2);
-    writeIntData(radio.satNum);
+    writeIntData(radioTelemetry.satNum);
     gnss.sdWrite = false;
   }
   else
@@ -252,7 +252,7 @@ inline __attribute__((always_inline)) void writeSdFlightData()
   // update the radio packet number
   if (sdRadioTx)
   {
-    writeIntData(radio.packetnum);
+    writeIntData(radioTelemetry.packetNum);
     sdRadioTx = false;
   }
   else

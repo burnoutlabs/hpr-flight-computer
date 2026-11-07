@@ -146,14 +146,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     events.timeOut = true;
     events.postFlight = true;
     events.inFlight = false;
-    radio.event = TIME_LIMIT;
+    radioTelemetry.event = TIME_LIMIT;
     if (settings.fltProfile == 'B')
     {
-      radio.event = BOOSTER_TIME_LIMIT;
+      radioTelemetry.event = BOOSTER_TIME_LIMIT;
     }
     if (settings.inflightRecover != 0)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
     pushFlightAction(actions, FlightAction::RADIO_POSTFLIGHT);
     fltTime.touchdown = fltTime.timeCurrent;
@@ -187,14 +187,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       // reset the key triggers
       events = resetEvents;
       fltTime.timeCurrent = 0UL;
-      radio.fltTime = 0;
-      radio.event = PREFLIGHT;
+      radioTelemetry.fltTime = 0;
+      radioTelemetry.event = PREFLIGHT;
       if (settings.fltProfile == 'B')
       {
-        radio.event = BOOSTER_PREFLIGHT;
+        radioTelemetry.event = BOOSTER_PREFLIGHT;
       }
       pktPosn = 0;
-      radio.packetnum = 0;
+      radioTelemetry.packetNum = 0;
       sampNum = 0;
       pushFlightAction(actions, FlightAction::RADIO_PRELIFTOFF);
       // reset the high-g filter
@@ -217,10 +217,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   if (!events.boosterBurnout && events.liftoff && accel.z <= 0)
   {
     events.boosterBurnout = true;
-    radio.event = BOOSTER_BURNOUT;
+    radioTelemetry.event = BOOSTER_BURNOUT;
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
     events.boosterBurnoutCheck = true;
     fltTime.boosterBurnout = fltTime.timeCurrent;
@@ -237,7 +237,7 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       events.boosterBurnout = false;
       events.boosterBurnoutCheck = false;
-      radio.event = LIFTOFF;
+      radioTelemetry.event = LIFTOFF;
     }
   }
 
@@ -251,10 +251,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       events.boosterSeparation = true;
       fltTime.boosterSeparation = fltTime.timeCurrent;
       firePyros('B', actions);
-      radio.event = EJECT_BOOSTER;
+      radioTelemetry.event = EJECT_BOOSTER;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
       }
     }
 
@@ -269,36 +269,36 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       {
         events.sustainerFire = true;
         firePyros('I', actions);
-        radio.event = FIRE_SUSTAINER;
+        radioTelemetry.event = FIRE_SUSTAINER;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_ALT_LIMIT;
       }
       else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NO_FIRE_ROTN_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_LIMIT;
       }
       else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NO_FIRE_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ALT_LIMIT;
       }
     }
 
     // Check for sustainer ignition
     if (!events.apogee && !events.sustainerIgnition && events.sustainerFire && accelNow > IGNITION_ACCEL_MPS2)
     {
-      radio.event = SUSTAINER_IGNITION;
+      radioTelemetry.event = SUSTAINER_IGNITION;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
       }
       events.sustainerIgnition = true;
       fltTime.sustainerIgnition = fltTime.timeCurrent;
@@ -307,10 +307,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     // Check for sustainer burnout
     if (!events.apogee && !events.sustainerBurnout && events.sustainerIgnition && accelNow < 0.0 && fltTime.timeCurrent - fltTime.sustainerIgnition > SUSTAINER_BURN_MIN_US)
     {
-      radio.event = SUSTAINER_BURNOUT;
+      radioTelemetry.event = SUSTAINER_BURNOUT;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
       }
       events.sustainerBurnout = true;
       fltTime.sustainerBurnout = fltTime.timeCurrent;
@@ -334,37 +334,37 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
         events.airStart1Fire = true;
         fltTime.airStart1Fire = fltTime.timeCurrent;
         firePyros('1', actions);
-        radio.event = FIRE_AIRSTART1;
+        radioTelemetry.event = FIRE_AIRSTART1;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk)
       {
         postFlightCode = NO_FIRE_ROTN_LIMIT;
-        radio.event = 18;
+        radioTelemetry.event = 18;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NO_FIRE_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
     }
@@ -381,37 +381,37 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
         events.airStart1Fire = true;
         fltTime.airStart1Fire = fltTime.timeCurrent;
         firePyros('1', actions);
-        radio.event = FIRE_AIRSTART1;
+        radioTelemetry.event = FIRE_AIRSTART1;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NO_FIRE_ROTN_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NO_FIRE_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
     }
@@ -421,10 +421,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       events.airStart1Ignition = true;
       fltTime.airStart1Ignition = fltTime.timeCurrent;
-      radio.event = AIRSTART1_IGNITION;
+      radioTelemetry.event = AIRSTART1_IGNITION;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
       }
     }
 
@@ -444,10 +444,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       {
         events.airStart1BurnoutCheck = false;
         events.airStart1Burnout = true;
-        radio.event = AIRSTART1_BURNOUT;
+        radioTelemetry.event = AIRSTART1_BURNOUT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
     }
@@ -464,37 +464,37 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
         events.airStart2Fire = true;
         fltTime.airStart2Fire = fltTime.timeCurrent;
         firePyros('2', actions);
-        radio.event = FIRE_AIRSTART2;
+        radioTelemetry.event = FIRE_AIRSTART2;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NO_FIRE_ROTN_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NO_FIRE_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
     }
@@ -511,37 +511,37 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
         events.airStart2Fire = true;
         fltTime.airStart2Fire = fltTime.timeCurrent;
         firePyros('2', actions);
-        radio.event = FIRE_AIRSTART2;
+        radioTelemetry.event = FIRE_AIRSTART2;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk && !altOk)
       {
         postFlightCode = 4;
-        radio.event = NO_FIRE_ROTN_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!rotnOk)
       {
         postFlightCode = 3;
-        radio.event = NO_FIRE_ROTN_LIMIT;
+        radioTelemetry.event = NO_FIRE_ROTN_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
       else if (!altOk)
       {
         postFlightCode = 2;
-        radio.event = NO_FIRE_ALT_LIMIT;
+        radioTelemetry.event = NO_FIRE_ALT_LIMIT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
     }
@@ -551,10 +551,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     {
       events.airStart2Ignition = true;
       fltTime.airStart2Ignition = fltTime.timeCurrent;
-      radio.event = AIRSTART2_IGNITION;
+      radioTelemetry.event = AIRSTART2_IGNITION;
       if (settings.inflightRecover != 0 && !settings.testMode)
       {
-        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+        pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
       }
     }
 
@@ -574,10 +574,10 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
       {
         events.airStart2BurnoutCheck = false;
         events.airStart2Burnout = true;
-        radio.event = AIRSTART2_BURNOUT;
+        radioTelemetry.event = AIRSTART2_BURNOUT;
         if (settings.inflightRecover != 0 && !settings.testMode)
         {
-          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+          pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
         }
       }
     }
@@ -592,14 +592,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   {
     events.apogee = true;
     fltTime.apogee = fltTime.timeCurrent;
-    radio.event = APOGEE;
+    radioTelemetry.event = APOGEE;
     if (settings.fltProfile == 'B')
     {
-      radio.event = BOOSTER_APOGEE;
+      radioTelemetry.event = BOOSTER_APOGEE;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
   }
 
@@ -609,14 +609,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     events.apogeeFire = true;
     fltTime.apogeeFire = fltTime.timeCurrent;
     firePyros('A', actions);
-    radio.event = FIRE_APOGEE;
+    radioTelemetry.event = FIRE_APOGEE;
     if (settings.fltProfile == 'B')
     {
-      radio.event = FIRE_BOOSTER_APOGEE;
+      radioTelemetry.event = FIRE_BOOSTER_APOGEE;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
   }
 
@@ -632,14 +632,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
   {
     events.apogeeSeparation = true;
     fltTime.apogeeSeparation = fltTime.timeCurrent;
-    radio.event = SEPARATION;
+    radioTelemetry.event = SEPARATION;
     if (settings.fltProfile == 'B')
     {
-      radio.event = BOOSTER_SEPARATION;
+      radioTelemetry.event = BOOSTER_SEPARATION;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
   }
 
@@ -649,28 +649,28 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     events.mainDeploy = true;
     fltTime.mainDeploy = fltTime.timeCurrent;
     firePyros('M', actions);
-    radio.event = FIRE_MAINS;
+    radioTelemetry.event = FIRE_MAINS;
     if (settings.fltProfile == 'B')
     {
-      radio.event = FIRE_BOOSTER_MAINS;
+      radioTelemetry.event = FIRE_BOOSTER_MAINS;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
   }
 
   // Detect deployment of the mains
   if (events.mainDeploy && fltTime.timeCurrent - fltTime.mainDeploy > CHUTE_CHECK_START_US && fltTime.timeCurrent - fltTime.mainDeploy < CHUTE_CHECK_END_US && accelNow > CHUTE_OPEN_ACCEL_MPS2)
   {
-    radio.event = UNDER_CHUTE;
+    radioTelemetry.event = UNDER_CHUTE;
     if (settings.fltProfile == 'B')
     {
-      radio.event = BOOSTER_UNDER_CHUTE;
+      radioTelemetry.event = BOOSTER_UNDER_CHUTE;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
   }
 
@@ -713,14 +713,14 @@ inline __attribute__((always_inline)) void checkEvents(FlightActions &actions)
     events.inFlight = false;
     events.postFlight = true;
     fltTime.touchdown = fltTime.timeCurrent;
-    radio.event = TOUCHDOWN;
+    radioTelemetry.event = TOUCHDOWN;
     if (settings.fltProfile == 'B')
     {
-      radio.event = BOOSTER_TOUCHDOWN;
+      radioTelemetry.event = BOOSTER_TOUCHDOWN;
     }
     if (settings.inflightRecover != 0 && !settings.testMode)
     {
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
     pushFlightAction(actions, FlightAction::GNSS_TOUCHDOWN_TIME);
   }
@@ -754,8 +754,8 @@ inline __attribute__((always_inline)) FlightActions flightStep()
     events.liftoff = true;
     events.inFlight = true;
     // set radio variables
-    radio.event = LIFTOFF;
-    radio.alt = 0;
+    radioTelemetry.event = LIFTOFF;
+    radioTelemetry.alt = 0;
     pushFlightAction(actions, FlightAction::RADIO_INFLIGHT);
     // set GNSS liftoff values
     pushFlightAction(actions, FlightAction::GNSS_LIFTOFF_TIME);
@@ -771,7 +771,7 @@ inline __attribute__((always_inline)) FlightActions flightStep()
     if (settings.inflightRecover != 0)
     {
       pushFlightAction(actions, FlightAction::EEPROM_BASE_ALT);
-      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radio.event);
+      pushFlightAction(actions, FlightAction::EEPROM_LAST_EVENT, radioTelemetry.event);
     }
   }
 
@@ -853,7 +853,7 @@ inline __attribute__((always_inline)) FlightActions flightStep()
         fusionVel *= FUSION_VEL_KEEP;
         fusionVel += FUSION_VEL_BARO_WEIGHT * baro.vel;
       }
-      radio.vel = (int16_t)fusionVel;
+      radioTelemetry.vel = (int16_t)fusionVel;
 
       // update maximum velocity if it exceeds the previous value
       if (fusionVel > maxVelocity)
@@ -872,7 +872,7 @@ inline __attribute__((always_inline)) FlightActions flightStep()
       {
         altOk = true;
       }
-      radio.alt = (int16_t)fusionAlt;
+      radioTelemetry.alt = (int16_t)fusionAlt;
 
     } // end if !apogee
 

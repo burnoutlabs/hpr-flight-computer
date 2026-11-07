@@ -51,10 +51,10 @@ const uint8_t FHSS_CHANNELS = 130;
 const uint16_t HOP_SEQUENCE_LENGTH = 2000;
 
 /// Channel frequencies in MHz: 902.1 to 927.9 in 200kHz steps. Index n is a channel number.
-extern const float fhssChannelMHz[FHSS_CHANNELS];
+extern const float FHSS_CHANNEL_MHZ[FHSS_CHANNELS];
 
 /// Pseudo-random order in which data packets visit the channels.
-extern const uint8_t hopSequence[HOP_SEQUENCE_LENGTH];
+extern const uint8_t HOP_SEQUENCE[HOP_SEQUENCE_LENGTH];
 
 struct PreflightPacket
 {
@@ -127,9 +127,9 @@ bool decodeInflight(const uint8_t *pkt, uint8_t len, InflightPacket &out);
 bool decodePostflight(const uint8_t *pkt, uint8_t len, PostflightPacket &out);
 bool decodeSync(const uint8_t *pkt, uint8_t len, SyncPacket &out);
 
-/// The FHSS hailing channel for a configured frequency in MHz: the channel in fhssChannelMHz
+/// The FHSS hailing channel for a configured frequency in MHz: the channel in FHSS_CHANNEL_MHZ
 /// nearest to it, so a frequency on the list maps to its own channel.
-uint8_t hailChannel(float freqMHz);
+uint8_t hailChannel(float freqMhz);
 /// The hop-sequence index after `hop`, wrapping at the end and skipping one entry that is
 /// the hailing channel, so data packets never go out on it.
 int16_t nextHopIndex(int16_t hop, uint8_t hailChnl);

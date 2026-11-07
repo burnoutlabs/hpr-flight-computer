@@ -468,7 +468,7 @@ void configureRadio()
     }
     // Set the radio output power & frequency
     setRadioFreq(settings.txFreq);
-    setRadioPWR(settings.txPwr); // 23 max setting; 20mW=13dBm, 30mW=15dBm, 50mW=17dBm, 100mW=20dBm
+    setRadioPwr(settings.txPwr); // 23 max setting; 20mW=13dBm, 30mW=15dBm, 50mW=17dBm, 100mW=20dBm
     if (settings.testMode)
     {
       Serial.print("Radio Freq: ");
@@ -680,7 +680,7 @@ static void applyBenchTestOverrides()
   if (settings.txEnable)
   {
     settings.txPwr = 2;
-    setRadioPWR(settings.txPwr); // lowest power setting
+    setRadioPwr(settings.txPwr); // lowest power setting
     Serial.print(F("Radio Power Reduced for Bench Test Mode: "));
     Serial.println(settings.txPwr);
   }
@@ -1633,7 +1633,7 @@ void setup(void)
   radioTimer.begin(timerBuildPkt, pktInterval.preLiftoff);
   if (settings.fltProfile == 'B')
   {
-    radio.event = BOOSTER_PREFLIGHT;
+    radioTelemetry.event = BOOSTER_PREFLIGHT;
   }
   Serial.println("End Setup");
 } // end setup

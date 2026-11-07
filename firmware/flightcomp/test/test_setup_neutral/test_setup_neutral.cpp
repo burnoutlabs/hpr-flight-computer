@@ -61,6 +61,9 @@ static int8_t &servo1Trim = servoTrim[0];
 static int8_t &servo2Trim = servoTrim[1];
 static int8_t &servo3Trim = servoTrim[2];
 static int8_t &servo4Trim = servoTrim[3];
+// The reference's name for the telemetry values, radioTelemetry now (it also uses sensors.radio,
+// so a macro in legacy_names.h cannot map it)
+static RadioTelemetry &radio = radioTelemetry;
 
 #include "../legacy_names.h"
 
@@ -350,7 +353,7 @@ void test_test_mode_with_servos_uncalibrated_first_use()
   s.calibrated = false;
   s.initialUse = true;
   s.testButton = {{2, LOW}, {1, HIGH}};
-  s.reached = [] { return settings.testMode && !settings.calibrationMode && servos[0].pin == 3 && settings.txPwr == 2 && radio.event == BOOSTER_PREFLIGHT; };
+  s.reached = [] { return settings.testMode && !settings.calibrationMode && servos[0].pin == 3 && settings.txPwr == 2 && radioTelemetry.event == BOOSTER_PREFLIGHT; };
   runSideBySide(s);
 }
 

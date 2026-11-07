@@ -458,7 +458,7 @@ void hopFreq()
   {
     hopChnl = activeRadio->nextChnl;
     activeRadio->nextHop = telemetry::nextHopIndex(activeRadio->nextHop, activeRadio->hailChnl);
-    activeRadio->nextChnl = telemetry::hopSequence[activeRadio->nextHop];
+    activeRadio->nextChnl = telemetry::HOP_SEQUENCE[activeRadio->nextHop];
     if (debugSerial)
     {
       Serial.print("Hopping to Channel: ");
@@ -500,7 +500,7 @@ void syncPkt(byte rxPacket[])
   }
   activeRadio->chnl1 = pkt.currentChannel;
   activeRadio->nextHop = pkt.nextHop;
-  activeRadio->nextChnl = telemetry::hopSequence[pkt.nextHop];
+  activeRadio->nextChnl = telemetry::HOP_SEQUENCE[pkt.nextHop];
   activeRadio->chnlUsed = 0;
   hopFreq();
   if (debugSerial)
@@ -547,7 +547,7 @@ float getFreq(byte chnl)
     {
       chnl = telemetry::FHSS_CHANNELS - 1;
     }
-    frq = telemetry::fhssChannelMHz[chnl];
+    frq = telemetry::FHSS_CHANNEL_MHZ[chnl];
   }
 
   return frq;

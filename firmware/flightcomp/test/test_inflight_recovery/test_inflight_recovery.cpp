@@ -149,7 +149,7 @@ struct RecoveryRun
   uint8_t accelBusNum = 255;       // as setup() left it
   bool beginAccelSet = false;      // beginAccel pointed at the LSM6DSOX driver
   bool telemetryBegun = false;     // beginTelemetry() was called
-  uint8_t radioEvent = 0;          // radio.event after setup()
+  uint8_t radioEvent = 0;          // radioTelemetry.event after setup()
   uint8_t lastEventAfterSetup = 0; // eeprom.lastEvent after setup()
   float resumeAt = -1.0F;          // s, when setup() returned
   float apogeeFireAt = -1.0F;      // s, pin 21 high after the reset (-1: never)
@@ -277,7 +277,7 @@ static RecoveryRun flyWithReset(uint8_t inflightRecover, uint32_t apogeeDelay, b
       run.accelBusNum = sensors.accelBusNum;
       run.beginAccelSet = beginAccel == beginLSM6DSOX;
       run.telemetryBegun = std::find(ioLog.begin(), ioLog.end(), "beginTelemetry") != ioLog.end();
-      run.radioEvent = radio.event;
+      run.radioEvent = radioTelemetry.event;
       run.lastEventAfterSetup = shimEeprom.bytes[eeprom.lastEvent];
       run.resumeAt = now * 1e-6F;
       if (!run.recovered)

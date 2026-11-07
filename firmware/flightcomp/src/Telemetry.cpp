@@ -16,9 +16,9 @@
  * @section List of Functions & Routines
  *
  * - beginTelemetry(): Sets the FHSS hailing channel and writes the callsign into the packet header.
- * - buildTelmetryPkt(): Builds the pre-flight, in-flight, or post-flight telemetry packet.
+ * - buildTelemetryPkt(): Builds the pre-flight, in-flight, or post-flight telemetry packet.
  * - sendTelemetryPkt(): Transmits the built packet to the radio.
- * - hopTXfreq(): Hops to the next channel in the hop sequence when FHSS is active.
+ * - hopTxFreq(): Hops to the next channel in the hop sequence when FHSS is active.
  * - syncPkt(): Sends a sync packet on the FHSS hailing frequency.
  *
  * The packet layout, the encoders, the channel list, the hop sequence and the hailing-channel
@@ -33,7 +33,7 @@
  * Telemetry calls them through the function pointers declared in declarations.h, which
  * setPolyMorphs() (Device_Mgmt.cpp) points at the driver for the configured radio:
  * - beginRadio(): Starts the radio and checks that it responds.
- * - setRadioPWR(int8_t pwr): Sets output power (dBm).
+ * - setRadioPwr(int8_t pwr): Sets output power (dBm).
  * - setRadioFreq(float freq): Sets the radio frequency (expressed in MHz, e.g., 434.250).
  * - radioSendPkt(uint8_t* data, uint8_t len): Sends a radio packet from a byte array with a specified length.
  * - radioSleep(): Puts the radio to sleep.
@@ -82,8 +82,8 @@
  * the same TelemetryProtocol library.
  */
 
-using telemetry::fhssChannelMHz;
-using telemetry::hopSequence;
+using telemetry::FHSS_CHANNEL_MHZ;
+using telemetry::HOP_SEQUENCE;
 
 struct
 {
@@ -95,7 +95,7 @@ struct
   int16_t pktNum = 0;
   int16_t gndPktNum = 0;
   uint8_t hailChnl = 0;
-} FHSS;
+} fhssState;
 float freq;
 union
 {
@@ -109,16 +109,16 @@ void beginTelemetry()
   // set the hailing frequency channel
   if (settings.fhss)
   {
-    FHSS.hailChnl = telemetry::hailChannel(settings.txFreq);
+    fhssState.hailChnl = telemetry::hailChannel(settings.txFreq);
     // we need to reset the user defined frequency to be the closest LoRa channel
-    settings.txFreq = fhssChannelMHz[FHSS.hailChnl];
+    settings.txFreq = FHSS_CHANNEL_MHZ[fhssState.hailChnl];
   }
 
   // set the packet header to the callsign
   telemetry::writeCallsign(dataPacket, settings.callSign);
 }
 
-void buildTelmetryPkt()
+void buildTelemetryPkt()
 {
 
   //------------------------------------------------------------------
@@ -131,20 +131,20 @@ void buildTelmetryPkt()
     // hop frequency
     if (settings.fhss)
     {
-      hopTXfreq();
+      hopTxFreq();
     }
 
     // build the data packet after the static callsign header
     telemetry::PreflightPacket pkt;
-    pkt.event = radio.event;
+    pkt.event = radioTelemetry.event;
     pkt.gnssFix = gnss.fix;
     pkt.contCode = cont.reportCode;
     memcpy(pkt.rocketName, settings.rocketName, sizeof(pkt.rocketName));
-    pkt.baseAlt = radio.baseAlt;
-    pkt.gpsAlt = radio.GPSalt;
+    pkt.baseAlt = radioTelemetry.baseAlt;
+    pkt.gpsAlt = radioTelemetry.gpsAlt;
     pkt.latitude = GPS.location.lat();
     pkt.longitude = GPS.location.lng();
-    pkt.satNum = radio.satNum;
+    pkt.satNum = radioTelemetry.satNum;
 
     // send the packet
     sendPkt = true;
@@ -161,11 +161,11 @@ void buildTelmetryPkt()
     // set the FHSS flags
     if (settings.fhss)
     {
-      FHSS.gndPktNum++;
-      if (FHSS.gndPktNum % 4 == 0)
+      fhssState.gndPktNum++;
+      if (fhssState.gndPktNum % 4 == 0)
       {
         syncFreq = true;
-        FHSS.gndPktNum = 0;
+        fhssState.gndPktNum = 0;
       }
     }
   }
@@ -182,37 +182,37 @@ void buildTelmetryPkt()
     // check to see if an SD card latency made us miss a sample
     uint32_t sampleTime = 0UL;
     sampleTime = micros();
-    if (sampNum > 0 && sampleTime - radio.lastSampTime > 100000UL)
+    if (sampNum > 0 && sampleTime - radioTelemetry.lastSampTime > 100000UL)
     {
       Serial.println("Sample Missed");
     }
 
-    radio.lastSampTime = sampleTime;
+    radioTelemetry.lastSampTime = sampleTime;
 
     // update sample number
     sampNum++;
     pktPosn = (sampNum - 1) * 11 + 6;
 
     // hop frequency if needed
-    if (settings.fhss && FHSS.hopNow && sampNum >= packetSamples)
+    if (settings.fhss && fhssState.hopNow && sampNum >= packetSamples)
     {
-      hopTXfreq();
+      hopTxFreq();
     }
 
     // Roll and off vertical data
-    radio.roll = rollZ;
-    radio.offVert = offVert;
+    radioTelemetry.roll = rollZ;
+    radioTelemetry.offVert = offVert;
     // Acceleration
-    radio.accel = (int16_t)(accelNow * 33.41406087); // 33.41406087 = 32768 / 9.80665 / 100
+    radioTelemetry.accel = (int16_t)(accelNow * 33.41406087); // 33.41406087 = 32768 / 9.80665 / 100
 
     // write the sample into the packet
     telemetry::InflightSample sample;
-    sample.event = radio.event;
-    sample.velocity = radio.vel;
-    sample.altitude = radio.alt;
-    sample.roll = radio.roll;
-    sample.offVert = radio.offVert;
-    sample.accel = radio.accel;
+    sample.event = radioTelemetry.event;
+    sample.velocity = radioTelemetry.vel;
+    sample.altitude = radioTelemetry.alt;
+    sample.roll = radioTelemetry.roll;
+    sample.offVert = radioTelemetry.offVert;
+    sample.accel = radioTelemetry.accel;
     telemetry::encodeInflightSample(dataPacket, sampNum - 1, sample);
 
     // GPS & packet data collected once per packet at 12 bytes
@@ -223,9 +223,9 @@ void buildTelmetryPkt()
       sampNum = 0;
 
       // update packet number
-      radio.packetnum++;
+      radioTelemetry.packetNum++;
       // packet number and GPS data
-      pktSize = telemetry::encodeInflightTrailer(dataPacket, radio.packetnum, radio.GPSalt, GPS.location.lat(), GPS.location.lng());
+      pktSize = telemetry::encodeInflightTrailer(dataPacket, radioTelemetry.packetNum, radioTelemetry.gpsAlt, GPS.location.lat(), GPS.location.lng());
 
       // send packet
       sendPkt = true;
@@ -237,17 +237,17 @@ void buildTelmetryPkt()
           Serial.println("");
         }
         Serial.print(F("InFlight Packet Sent "));
-        Serial.print(radio.packetnum);
+        Serial.print(radioTelemetry.packetNum);
       }
 
       // set FHSS flags
       if (settings.fhss)
       {
-        if (radio.packetnum % 3 == 0)
+        if (radioTelemetry.packetNum % 3 == 0)
         {
-          FHSS.hopNow = true;
+          fhssState.hopNow = true;
         }
-        if (radio.packetnum % 12 == 0)
+        if (radioTelemetry.packetNum % 12 == 0)
         {
           syncFreq = true;
         }
@@ -265,17 +265,17 @@ void buildTelmetryPkt()
     // hop frequency
     if (settings.fhss)
     {
-      hopTXfreq();
+      hopTxFreq();
     }
 
     telemetry::PostflightPacket pkt;
-    pkt.event = radio.event;
-    pkt.maxAlt = radio.maxAlt;
-    pkt.maxVel = radio.maxVel;
-    pkt.maxG = radio.maxG;
-    pkt.maxGpsAlt = radio.maxGPSalt;
+    pkt.event = radioTelemetry.event;
+    pkt.maxAlt = radioTelemetry.maxAlt;
+    pkt.maxVel = radioTelemetry.maxVel;
+    pkt.maxG = radioTelemetry.maxG;
+    pkt.maxGpsAlt = radioTelemetry.maxGpsAlt;
     pkt.gnssFix = gnss.fix;
-    pkt.gpsAlt = radio.GPSalt;
+    pkt.gpsAlt = radioTelemetry.gpsAlt;
     pkt.latitude = GPS.location.lat();
     pkt.longitude = GPS.location.lng();
 
@@ -305,36 +305,36 @@ void buildTelmetryPkt()
 void sendTelemetryPkt()
 {
 
-  static uint32_t TXlastStart = 0UL;
+  static uint32_t txLastStart = 0UL;
 
-  TX = radioSendPkt(dataPacket, pktSize);
-  TXstartTime = micros();
-  if (events.liftoff && TX)
+  txInProgress = radioSendPkt(dataPacket, pktSize);
+  txStartTime = micros();
+  if (events.liftoff && txInProgress)
   {
     sdRadioTx = true;
   }
   // Serial debug
   if (radioDebug && settings.testMode)
   {
-    if (TX)
+    if (txInProgress)
     {
       Serial.print(F("...Success! Packet size "));
       Serial.print(pktSize);
     }
-    else if (!TX)
+    else if (!txInProgress)
     {
       Serial.print(F("..Failed! Packet size "));
       Serial.print(pktSize);
     }
     Serial.print(", time between packets ");
-    Serial.print(TXstartTime - TXlastStart);
+    Serial.print(txStartTime - txLastStart);
   }
-  TXlastStart = TXstartTime;
+  txLastStart = txStartTime;
   // reset the send flag
   sendPkt = false;
 }
 
-void hopTXfreq()
+void hopTxFreq()
 {
 
   // Serial debug
@@ -345,33 +345,33 @@ void hopTXfreq()
       Serial.println("");
     }
     Serial.print("Hopping Freq: ");
-    Serial.print(fhssChannelMHz[FHSS.nextChnl], 3);
+    Serial.print(FHSS_CHANNEL_MHZ[fhssState.nextChnl], 3);
     Serial.print(", HopNum: ");
-    Serial.print(FHSS.nextHop);
+    Serial.print(fhssState.nextHop);
     Serial.print(", timeStamp; ");
     Serial.print(micros());
   }
 
   // set the radio to the new frequency
-  setRadioFreq(fhssChannelMHz[FHSS.nextChnl]);
-  FHSS.currentChnl = FHSS.nextChnl;
+  setRadioFreq(FHSS_CHANNEL_MHZ[fhssState.nextChnl]);
+  fhssState.currentChnl = fhssState.nextChnl;
 
   // identify the next channel in the hop sequence, skipping the hail channel
-  FHSS.hopNum = FHSS.nextHop;
-  FHSS.nextHop = telemetry::nextHopIndex(FHSS.nextHop, FHSS.hailChnl);
+  fhssState.hopNum = fhssState.nextHop;
+  fhssState.nextHop = telemetry::nextHopIndex(fhssState.nextHop, fhssState.hailChnl);
 
   // set the next channel nunber
-  FHSS.nextChnl = hopSequence[FHSS.nextHop];
+  fhssState.nextChnl = HOP_SEQUENCE[fhssState.nextHop];
 
   // reset the flag hopFreq
-  FHSS.hopNow = false;
+  fhssState.hopNow = false;
 }
 
 void syncPkt()
 {
 
   // get the hailing frequency
-  float freq = fhssChannelMHz[FHSS.hailChnl];
+  float freq = FHSS_CHANNEL_MHZ[fhssState.hailChnl];
 
   // hop to the hailing channel
   setRadioFreq(freq);
@@ -382,17 +382,17 @@ void syncPkt()
     Serial.print("---Sending Sync Packet: ");
     Serial.println(freq, 3);
     Serial.print("---Sync nextHop: ");
-    Serial.print(FHSS.nextHop);
+    Serial.print(fhssState.nextHop);
     Serial.print(", nextChnl: ");
-    Serial.print(FHSS.nextChnl);
+    Serial.print(fhssState.nextChnl);
     Serial.print(", timeStamp; ");
     Serial.print(micros());
   }
 
   // sync marker, current channel, and the hop-sequence location of the next hop
   telemetry::SyncPacket pkt;
-  pkt.currentChannel = FHSS.currentChnl;
-  pkt.nextHop = FHSS.nextHop;
+  pkt.currentChannel = fhssState.currentChnl;
+  pkt.nextHop = fhssState.nextHop;
   uint8_t len = telemetry::encodeSync(dataPacket, pkt);
 
   // send packet if the current or next channel are not the hail channel

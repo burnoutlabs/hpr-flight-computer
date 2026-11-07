@@ -6,5 +6,5 @@
 
 #include <Arduino.h>
 
-bool beginRFD900();
-bool sendPktRFD900(uint8_t *data, uint8_t len);
+bool beginRfd900();
+bool sendPktRfd900(uint8_t *data, uint8_t len);

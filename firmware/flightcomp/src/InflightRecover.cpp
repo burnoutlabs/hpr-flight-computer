@@ -179,7 +179,7 @@ bool rapidReset(uint8_t lastEvent)
   fusionAlt = accelAlt = baro.smoothAlt;
 
   reopenSd();
-  radio.event = (settings.fltProfile == 'B') ? BOOSTER_POWER_LOSS : POWER_LOSS_RESTART;
+  radioTelemetry.event = (settings.fltProfile == 'B') ? BOOSTER_POWER_LOSS : POWER_LOSS_RESTART;
   if (settings.txEnable)
   {
     radioTimer.begin(timerBuildPkt, pktInterval.inflight / pktInterval.samplesPerPkt);

@@ -17,9 +17,9 @@
 #define FLIGHT_STATE_OBJECTS(X) \
   X(sensors) X(settings) X(accel) X(mag) X(gyro) X(highG) X(pyros) \
   X(events) X(resetEvents) X(fltTime) X(resetFltTime) X(pins) X(dataPacket) X(liftoffSync) \
-  X(TXstartTime) X(implicitHdr) X(syncFreq) X(pktPosn) X(pktSize) X(sampNum) X(packetSamples) \
-  X(gpsTransmit) X(TX) X(sdRadioTx) X(radioMode) X(clearTX) X(buildPkt) X(syncFlag) X(sendPkt) \
-  X(pktInterval) X(radio) X(cont) X(rotnOk) X(altOk) X(beep) X(pyroFire) X(fileClose) \
+  X(txStartTime) X(implicitHdr) X(syncFreq) X(pktPosn) X(pktSize) X(sampNum) X(packetSamples) \
+  X(gpsTransmit) X(txInProgress) X(sdRadioTx) X(radioMode) X(clearTx) X(buildPkt) X(syncFlag) X(sendPkt) \
+  X(pktInterval) X(radioTelemetry) X(cont) X(rotnOk) X(altOk) X(beep) X(pyroFire) X(fileClose) \
   X(boosterBurpTime) X(unitConvert) X(accel1G) X(accelNow) X(maxG) X(gTrigger) X(high1G) X(filterFull) \
   X(highGSum) X(highGFilter) X(sizeHighGFilter) X(filterPosn) X(highGSmooth) X(adcConvert) \
   X(adcMidValue) X(calUnion) X(baro) X(baroTouchdown) X(touchdownTrigger) X(pressureAvg) \
@@ -34,9 +34,9 @@
   X(voltage) X(writeVolt) X(voltRate) X(voltReading) X(lastVolt) X(reportMaxAlt) X(postFlightCode) \
   X(gnss) X(ulongUnion) X(intUnion) X(floatUnion) X(userInput) X(servoTrim) \
   X(timeLastControl) X(kp) X(ki) X(kd) X(gpsEcho) X(radioDebug) X(txDataFile) X(cyclesBtwn) \
-  X(sampleTime) X(sampleStart) X(sampleTimeCheck) X(debugTimer) X(radioFnctn) X(beginAccel) \
+  X(sampleTime) X(sampleStart) X(sampleTimeCheck) X(debugTimer) X(radioFunction) X(beginAccel) \
   X(beginGyro) X(beginMag) X(beginHighG) X(beginBaro) X(beginRadio) X(getAccel) X(getGyro) \
-  X(getMag) X(getHighG) X(getBaro) X(setRadioFreq) X(setRadioPWR) X(radioSleep) X(radioSendPkt) \
+  X(getMag) X(getHighG) X(getBaro) X(setRadioFreq) X(setRadioPwr) X(radioSleep) X(radioSendPkt) \
   X(GNSSrestorDefaults) X(GNSSconfig) X(GNSSpowerSave) X(quat) X(prevRollZ) X(quatRollZ) \
   X(fullRollZ) X(rawX) X(rawY) X(rawZ) X(cosZ) X(sinZ) \
   X(rollError) X(pitchError) X(yawError) X(rollPosn)

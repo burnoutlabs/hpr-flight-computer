@@ -211,30 +211,30 @@ void setPolyMorphs()
   switch (sensors.radio)
   {
   case 1:
-    beginRadio = beginSX127X;
-    setRadioFreq = setFreqSX127X;
-    setRadioPWR = setPwrSX127X;
-    radioSleep = sleepSX127X;
-    radioSendPkt = sendPktSX127X;
+    beginRadio = beginSx127x;
+    setRadioFreq = setFreqSx127x;
+    setRadioPwr = setPwrSx127x;
+    radioSleep = sleepSx127x;
+    radioSendPkt = sendPktSx127x;
     break;
   case 2: // the RFD900 has no frequency, power or sleep commands here
-    beginRadio = beginRFD900;
+    beginRadio = beginRfd900;
     setRadioFreq = dummyBool1;
-    setRadioPWR = dummyBool2;
+    setRadioPwr = dummyBool2;
     radioSleep = dummyVoid;
-    radioSendPkt = sendPktRFD900;
+    radioSendPkt = sendPktRfd900;
     break;
   case 3: // External Library
     beginRadio = beginExternalRadio;
     setRadioFreq = setExternalRadioFreq;
-    setRadioPWR = setExternalRadioPwr;
+    setRadioPwr = setExternalRadioPwr;
     radioSleep = externalRadioSleep;
     radioSendPkt = sendExternalRadioDataPkt;
     break;
   default: // none
     beginRadio = dummyBool;
     setRadioFreq = dummyBool1;
-    setRadioPWR = dummyBool2;
+    setRadioPwr = dummyBool2;
     radioSleep = dummyVoid;
     radioSendPkt = dummyBool3;
     break;

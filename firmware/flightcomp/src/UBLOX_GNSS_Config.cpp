@@ -379,12 +379,12 @@ void ubloxPowerSave()
 
 /*!
  * \brief Calculate checksum for a UBX message payload.
- * 
+ *
  * This function calculates the checksum for a given UBX message payload.
  * It uses two checksum values (CK_A and CK_B) calculated by iterating over
  * the payload. The calculated checksums are then appended to the end of
  * the payload.
- * 
+ *
  * \param checksumPayload Pointer to the start of the UBX message payload.
  * \param payloadSize Size of the payload in bytes.
  */
@@ -403,12 +403,11 @@ void calcChecksum(byte *checksumPayload, byte payloadSize)
   *checksumPayload = CK_B;
 }
 
-
 /*!
  * \brief Send UBX command to the GPS module.
- * 
+ *
  * This helper function sends a UBX command through the serial connection.
- * 
+ *
  * \param ubxMsg Pointer to the UBX command message.
  * \param msgLength Length of the UBX command message.
  */
@@ -426,10 +425,10 @@ void sendUbx(byte *ubxMsg, byte msgLength)
 
 /*!
  * \brief Get UBX acknowledgment for a given command.
- * 
+ *
  * This function reads the acknowledgment message from the GPS module and checks
  * if it corresponds to the command that was sent.
- * 
+ *
  * \param msgId Pointer to the expected acknowledgment ID.
  * \return Returns 10 for a successful acknowledgment, 1 for NAK, 5 for timeout.
  */
@@ -493,9 +492,9 @@ byte getUbxAck(byte *msgId)
 
 /*!
  * \brief Print data as hexadecimal representation.
- * 
+ *
  * This function prints a given byte array in hexadecimal format.
- * 
+ *
  * \param data Pointer to the byte array.
  * \param length Length of the byte array.
  */

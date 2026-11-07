@@ -4,7 +4,7 @@
 
 /**
  * @section List of Functions & Routines
- * 
+ *
  * - restoreGpsDefaults(): Overrides command settings and restores factory settings.
  * - configGps(): Sends UBX commands to update navigation, data rate, GNSS constellations, reduce NMEA sentences, set interference thresholds, and adjust baud rate.
  * - gpsPowerSaveMode(): Reduces GPS power consumption and update rate after touchdown.
@@ -15,7 +15,7 @@
 
 /**
  * @section Reference
- * 
+ *
  * UBLOX configuration modified from [UBLOX Playground on Arduino](https://playground.arduino.cc/UBlox/GPS).
  */
 

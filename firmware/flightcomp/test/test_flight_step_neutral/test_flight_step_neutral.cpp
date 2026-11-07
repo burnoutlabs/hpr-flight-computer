@@ -17,7 +17,7 @@
  * against Event_Logic.h shows only that line. Everything else is V4.7.2 as it was. Against the
  * unmodified V4.7.2 line, only the low-reading-accelerometer scenario diverges (in events, at
  * apogee): that is the behaviour #14 changes.
- * Their I/O (digitalWrite, EEPROM.update, the radio timer, syncSD, Serial) is redirected into the
+ * Their I/O (digitalWrite, EEPROM.update, the radio timer, syncSd, Serial) is redirected into the
  * same log that RecordingIo writes for the new code.
  *
  * Every loop pass of every scenario: the sensors are sampled and processBaroSamp() runs once
@@ -43,7 +43,7 @@
 // The reference's I/O, logged like RecordingIo
 //-----------------------------------------
 void digitalWrite(uint8_t pin, uint8_t level) { RecordingIo::pinWrite(pin, level); }
-void syncSD() { RecordingIo::syncSd(); }
+void syncSd() { RecordingIo::syncSd(); }
 void timerBuildPkt() { buildPkt = true; }
 
 struct LegacyEeprom
@@ -243,7 +243,7 @@ void test_single_stage_flight()
   TEST_ASSERT_TRUE(ioContains(run, "eeprom 228 "));
   TEST_ASSERT_TRUE(ioContains(run, "pin 21 1"));
   TEST_ASSERT_TRUE(ioContains(run, "pin 22 1"));
-  TEST_ASSERT_TRUE(ioContains(run, "syncSD"));
+  TEST_ASSERT_TRUE(ioContains(run, "syncSd"));
 }
 
 void test_booster_profile_flight()

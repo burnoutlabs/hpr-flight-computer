@@ -311,7 +311,7 @@ void sendTelemetryPkt()
   TXstartTime = micros();
   if (events.liftoff && TX)
   {
-    SDradioTX = true;
+    sdRadioTx = true;
   }
   // Serial debug
   if (radioDebug && settings.testMode)

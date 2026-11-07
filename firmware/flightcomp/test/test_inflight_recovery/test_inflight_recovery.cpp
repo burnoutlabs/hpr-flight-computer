@@ -272,7 +272,7 @@ static RecoveryRun flyWithReset(uint8_t inflightRecover, uint32_t apogeeDelay, b
       accelFeedHook = nullptr;
       baroFeedHook = nullptr;
       now = shimMicrosNow;
-      run.recovered = std::find(ioLog.begin(), ioLog.end(), "createNextFileSD") == ioLog.end();
+      run.recovered = std::find(ioLog.begin(), ioLog.end(), "createNextFileSd") == ioLog.end();
       run.eventsAtResume = events;
       run.accelBusNum = sensors.accelBusNum;
       run.beginAccelSet = beginAccel == beginLSM6DSOX;
@@ -409,7 +409,7 @@ void test_reset_on_the_pad_starts_normally()
     shimMicrosPerCall = 0;
     accelFeedHook = nullptr;
     baroFeedHook = nullptr;
-    r.recovered = std::find(ioLog.begin(), ioLog.end(), "createNextFileSD") == ioLog.end();
+    r.recovered = std::find(ioLog.begin(), ioLog.end(), "createNextFileSd") == ioLog.end();
     r.eventsAtResume = events;
     r.lastEventAfterSetup = shimEeprom.bytes[eeprom.lastEvent];
     return r;

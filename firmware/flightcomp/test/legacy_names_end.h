@@ -20,6 +20,7 @@
 #undef baroID
 #undef beep_counter
 #undef beep_delay
+#undef beginSD
 #undef Booster_Apogee
 #undef Booster_Burnout
 #undef Booster_Preflight
@@ -28,6 +29,7 @@
 #undef Booster_Touchdown
 #undef Booster_Under_Chute
 #undef Byte
+#undef createNextFileSD
 #undef dx
 #undef dy
 #undef dz
@@ -71,6 +73,7 @@
 #undef NoFire_Alt_Limit
 #undef NoFire_Rotn_Limit
 #undef NoFire_RotnAlt_Limit
+#undef parseEEPROMsettingsSD
 #undef Preflight
 #undef pyroPWM
 #undef radioCS
@@ -80,6 +83,7 @@
 #undef radioIRQ
 #undef radioIRQpin
 #undef radioRST
+#undef readFlightSettingsSD
 #undef rotnOK
 #undef SD_CS
 #undef sdCSpin
@@ -100,6 +104,7 @@
 #undef sizeHighGfilter
 #undef Sustainer_Burnout
 #undef Sustainer_Ignition
+#undef syncSD
 #undef testModeRdPin
 #undef Time_Limit
 #undef Touchdown

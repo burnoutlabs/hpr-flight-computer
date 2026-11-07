@@ -1246,10 +1246,10 @@ void setup(void)
   }
 
   // Start SD card
-  beginSD();
+  beginSd();
 
   // if an EEPROM settings file exists on the SD card, read it and store it into EEPROM
-  parseEEPROMsettingsSD();
+  parseEepromSettingsSd();
 
   readHardwareSettingsEeprom();
 
@@ -1284,7 +1284,7 @@ void setup(void)
   setAnalogResolution();
 
   // read the flight settings from the SD card
-  readFlightSettingsSD();
+  readFlightSettingsSd();
 
   beginSensors();
 
@@ -1575,7 +1575,7 @@ void setup(void)
   }
 
   // Create and open the next file on the SD card
-  createNextFileSD();
+  createNextFileSd();
 
   // check continuity
   checkPyroContinuity();

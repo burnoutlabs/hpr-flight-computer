@@ -14,7 +14,7 @@
  * - the device drivers that setPolyMorphs() points at: logged by name; the get functions fill
  *   the raw sensor fields with deterministic values from a per-sensor counter;
  * - the SD card, calibration, orientation and telemetry routines (SD.cpp, Calibration.cpp,
- *   Telemetry.cpp, Bus_Mgmt.cpp): logged by name. readFlightSettingsSD() copies the scenario's
+ *   Telemetry.cpp, Bus_Mgmt.cpp): logged by name. readFlightSettingsSd() copies the scenario's
  *   settings into the fields the real parser sets.
  * What setup() itself decides, and the real setPolyMorphs(), getQuatRotn() and getDcm2dRotn(),
  * run as they are.
@@ -457,24 +457,24 @@ LOGGED_VOID(externalGNSS_PSM)
 //-----------------------------------------
 // SD card, calibration, orientation, telemetry and bus stand-ins
 //-----------------------------------------
-/** The settings Settings.txt holds, which readFlightSettingsSD() copies in. */
+/** The settings Settings.txt holds, which readFlightSettingsSd() copies in. */
 inline UserSettings settingsFile_;
 
-LOGGED_VOID(beginSD)
-LOGGED_VOID(restartSD)
-LOGGED_VOID(parseEEPROMsettingsSD)
-LOGGED_VOID(createNextFileSD)
-LOGGED_VOID(reOpenSD)
+LOGGED_VOID(beginSd)
+LOGGED_VOID(restartSd)
+LOGGED_VOID(parseEepromSettingsSd)
+LOGGED_VOID(createNextFileSd)
+LOGGED_VOID(reopenSd)
 LOGGED_VOID(beginTelemetry)
 LOGGED_VOID(accelCalibrate)
 LOGGED_VOID(magCalibrate)
 LOGGED_VOID(baroCalibrate)
 LOGGED_VOID(setCanardTrim)
 
-/** readFlightSettingsSD(): the fields the real parser (SD.cpp) sets, in its order. */
-void readFlightSettingsSD()
+/** readFlightSettingsSd(): the fields the real parser (SD.cpp) sets, in its order. */
+void readFlightSettingsSd()
 {
-  logIo("readFlightSettingsSD");
+  logIo("readFlightSettingsSd");
   const UserSettings &f = settingsFile_;
   memcpy(settings.rocketName, f.rocketName, sizeof(settings.rocketName));
   settings.fltProfile = f.fltProfile;

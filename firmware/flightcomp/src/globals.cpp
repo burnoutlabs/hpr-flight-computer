@@ -28,17 +28,17 @@ SensorData highG;
 //-----------------------------------------
 // pyro variables
 //-----------------------------------------
-pyroMap pyros[4];
+PyroMap pyros[4];
 //-----------------------------------------
 // flight events
 //-----------------------------------------
-alignas(4) struct eventList events;
-alignas(4) struct eventList resetEvents;
+alignas(4) struct EventList events;
+alignas(4) struct EventList resetEvents;
 //-----------------------------------------
 // Master timing variables
 //-----------------------------------------
-struct timerList fltTime;
-struct timerList resetFltTime;
+struct TimerList fltTime;
+struct TimerList resetFltTime;
 //-----------------------------------------
 // GPIO pin mapping
 //-----------------------------------------
@@ -72,8 +72,8 @@ alignas(4) ContinuityStatus cont;
 //-----------------------------------------
 // Non-Event Booleans
 //-----------------------------------------
-bool rotnOK = true;
-bool altOK = false;
+bool rotnOk = true;
+bool altOk = false;
 bool beep = false;
 bool pyroFire = false;
 bool fileClose = false;
@@ -82,7 +82,7 @@ float unitConvert = 3.2808F;
 //-----------------------------------------
 // digital accelerometer variables
 //-----------------------------------------
-int g = 1366;
+int accel1G = 1366;
 float accelNow;
 float maxG = 0.0;
 int gTrigger = 3415; // 2.5G trigger
@@ -91,11 +91,11 @@ int gTrigger = 3415; // 2.5G trigger
 //-----------------------------------------
 int high1G = 63;
 bool filterFull = false;
-long highGsum = 0L;
-int highGfilter[30] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t sizeHighGfilter = 30;
+long highGSum = 0L;
+int highGFilter[30] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t sizeHighGFilter = 30;
 uint8_t filterPosn = 0;
-float highGsmooth;
+float highGSmooth;
 float adcConvert = 0.000015259;
 uint16_t adcMidValue = 32768;
 alignas(4) CalUnion calUnion;
@@ -124,9 +124,9 @@ int magYaw = 0;
 //-----------------------------------------
 // gyro & rotation variables
 //-----------------------------------------
-long dx = 0L;
-long dy = 0L;
-long dz = 0L;
+long gyroDeltaX = 0L;
+long gyroDeltaY = 0L;
+long gyroDeltaZ = 0L;
 float yawY0;
 float pitchX0;
 int pitchX;
@@ -153,11 +153,11 @@ uint32_t clearRailTime = 250000UL;
 //-----------------------------------------
 // beeper variables
 //-----------------------------------------
-uint8_t beep_counter = 0;
+uint8_t beepCounter = 0;
 uint8_t beepPosn = 0;
-uint32_t beep_delay = 100000UL;
+uint32_t beepDelay = 100000UL;
 uint8_t beepCode = 0;
-uint32_t beep_len = 100000UL;
+uint32_t beepLen = 100000UL;
 uint32_t timeBeepStart = 0UL;
 uint32_t timeLastBeepEnd = 0UL;
 bool beepAlt = false;
@@ -187,7 +187,7 @@ bool writeVolt = false;
 unsigned long voltRate = 33333UL;
 uint16_t voltReading;
 unsigned long lastVolt = 0UL;
-bool reportCode = true; // true = report max altitude, false = report max velocity
+bool reportMaxAlt = true; // true = report max altitude, false = report max velocity
 uint8_t postFlightCode = 0;
 //-----------------------------------------
 // GNSS Variables

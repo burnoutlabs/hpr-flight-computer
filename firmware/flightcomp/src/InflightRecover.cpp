@@ -29,7 +29,7 @@
  * - two-stage and airstart flights: they resume as single stage, so no stage or airstart charge
  *   fires after a restart;
  * - an event whose charge fired but whose record did not reach EEPROM: that charge fires again;
- * - a restart under the main (after Fire_Mains or Under_Chute) or after the booster's main: the
+ * - a restart under the main (after FIRE_MAINS or UNDER_CHUTE) or after the booster's main: the
  *   normal startup runs, as before.
  */
 
@@ -55,38 +55,38 @@ constexpr float RECOVERY_STILL_G = 0.2F;
 
 bool isRecoverableEvent(uint8_t lastEvent)
 {
-  return lastEvent >= Liftoff && lastEvent < Fire_Booster_Mains && lastEvent != Fire_Mains && lastEvent != Under_Chute;
+  return lastEvent >= LIFTOFF && lastEvent < FIRE_BOOSTER_MAINS && lastEvent != FIRE_MAINS && lastEvent != UNDER_CHUTE;
 }
 
 /**
  * @brief The flight events of a flight whose last recorded event is lastEvent.
  */
-static eventList eventsAfter(uint8_t lastEvent)
+static EventList eventsAfter(uint8_t lastEvent)
 {
-  eventList e = resetEvents;
+  EventList e = resetEvents;
   e.preLiftoff = false;
   e.inFlight = true;
   e.liftoff = true;
   e.falseLiftoffCheck = false;
   switch (lastEvent)
   {
-  case Liftoff:
+  case LIFTOFF:
     break;
-  case Separation:
-  case Booster_Separation:
+  case SEPARATION:
+  case BOOSTER_SEPARATION:
     e.apogeeSeparation = true;
     e.apogeeFire = true;
     e.apogee = true;
     e.boosterBurnout = true;
     break;
-  case Fire_Apogee:
-  case Fire_Booster_Apogee:
+  case FIRE_APOGEE:
+  case FIRE_BOOSTER_APOGEE:
     e.apogeeFire = true;
     e.apogee = true;
     e.boosterBurnout = true;
     break;
-  case Apogee:
-  case Booster_Apogee:
+  case APOGEE:
+  case BOOSTER_APOGEE:
     e.apogee = true;
     e.boosterBurnout = true;
     break;
@@ -136,7 +136,7 @@ bool rapidReset(uint8_t lastEvent)
   // the pad altitude stored at liftoff
   for (byte i = 0; i < 4; i++)
   {
-    floatUnion.Byte[i] = (byte)EEPROM.read(eeprom.baseAlt + i);
+    floatUnion.bytes[i] = (byte)EEPROM.read(eeprom.baseAlt + i);
   }
   baro.baseAlt = floatUnion.val;
 
@@ -165,21 +165,21 @@ bool rapidReset(uint8_t lastEvent)
       baroSamples++;
     }
   }
-  const float accelG = sqrtf((float)accel.x * accel.x + (float)accel.y * accel.y + (float)accel.z * accel.z) / (float)g;
+  const float accelG = sqrtf((float)accel.x * accel.x + (float)accel.y * accel.y + (float)accel.z * accel.z) / (float)accel1G;
 
   // standing still: on the ground, so start normally
-  if (fabsf(baro.Vel) < RECOVERY_STILL_VEL_MPS && fabsf(accelG - 1.0F) < RECOVERY_STILL_G)
+  if (fabsf(baro.vel) < RECOVERY_STILL_VEL_MPS && fabsf(accelG - 1.0F) < RECOVERY_STILL_G)
   {
     events = resetEvents;
     return false;
   }
 
   // restart the velocity and altitude estimates from the barometer
-  fusionVel = accelVel = baro.Vel;
+  fusionVel = accelVel = baro.vel;
   fusionAlt = accelAlt = baro.smoothAlt;
 
   reOpenSD();
-  radio.event = (settings.fltProfile == 'B') ? Booster_Power_Loss : Power_Loss_Restart;
+  radio.event = (settings.fltProfile == 'B') ? BOOSTER_POWER_LOSS : POWER_LOSS_RESTART;
   if (settings.txEnable)
   {
     radioTimer.begin(timerBuildPkt, pktInterval.inflight / pktInterval.samplesPerPkt);

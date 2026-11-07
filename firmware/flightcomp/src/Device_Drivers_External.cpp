@@ -238,7 +238,7 @@ bool beginExternalHighG()
   highG.gainX = highG.gainY = highG.gainZ = Sensor_G_per_LSB;
 
   // set the size of the moving average filter
-  sizeHighGfilter = 15;
+  sizeHighGFilter = 15;
 
   // set the output data rate to at least 1000Hz
   // setODR(1000HZ);

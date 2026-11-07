@@ -22,10 +22,10 @@
  * - speedTan() returns |tan|: it folds negative angles and angles past 90 deg
  *   onto 0..90. Its callers square the result, so the sign is not used.
  * - speedArcSin(-1.0) returns +900, not -900; it is excluded from the sweep.
- * - speedArcCos() searches the decreasing Cos[] table as if it were increasing,
+ * - speedArcCos() searches the decreasing COS_TABLE[] table as if it were increasing,
  *   so it does not return arccos (speedArcCos(1.0) is 900, speedArcCos(0.5) is 0).
  *   It has no test here; magRotn() is its only caller.
- * - cosSmallAngle() takes its small-angle branch, 1 - x^2/2, for |x| < Cos[7]
+ * - cosSmallAngle() takes its small-angle branch, 1 - x^2/2, for |x| < COS_TABLE[7]
  *   (0.99993 rad), so the Maclaurin branch below it is unreachable and the
  *   error grows to 4e-2 near 1 rad. The bounds above are what it does today.
  */
@@ -101,7 +101,7 @@ void test_speedArcTan_within_a_tenth_and_truncates_toward_zero()
     worst = fmax(worst, fabs(err));
     // Below the 89.9 deg table entry the result is the table angle at or below
     // the true angle (above it, for negative values).
-    if (fabs(value) <= Tan[899])
+    if (fabs(value) <= TAN_TABLE[899])
     {
       TEST_ASSERT_TRUE_MESSAGE(value >= 0 ? err <= 1e-4 : err >= -1e-4, "speedArcTan does not truncate toward zero");
     }
@@ -172,7 +172,7 @@ void test_sinSmallAngle_matches_sin()
 
 void test_cosSmallAngle_matches_cos()
 {
-  // getDCM2DRotn() passes it one 10 ms roll step: 20 deg at the 2000 deg/s limit
+  // getDcm2dRotn() passes it one 10 ms roll step: 20 deg at the 2000 deg/s limit
   assertWithin("cosSmallAngle, |x| <= 1 deg", worstSmallAngleError(cosSmallAngle, cos, 1 * kDegToRad), 4e-8);
   assertWithin("cosSmallAngle, |x| <= 20 deg", worstSmallAngleError(cosSmallAngle, cos, 20 * kDegToRad), 6.5e-4);
   assertWithin("cosSmallAngle, |x| <= pi", worstSmallAngleError(cosSmallAngle, cos, M_PI), 4.1e-2);

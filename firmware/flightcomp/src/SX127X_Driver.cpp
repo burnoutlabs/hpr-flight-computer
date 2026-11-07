@@ -133,16 +133,16 @@ bool beginSX127X()
   union
   {
     uint16_t val;
-    byte Byte[2];
+    byte bytes[2];
   } intUnion;
   intUnion.val = preambleLength;
-  write8(RegPreambleLsb, intUnion.Byte[0]);
-  write8(RegPreambleMsb, intUnion.Byte[1]);
+  write8(RegPreambleLsb, intUnion.bytes[0]);
+  write8(RegPreambleMsb, intUnion.bytes[1]);
   delay(10);
   debugVal = read8(RegPreambleLsb);
-  intUnion.Byte[0] = debugVal;
+  intUnion.bytes[0] = debugVal;
   debugVal = read8(RegPreambleMsb);
-  intUnion.Byte[1] = debugVal;
+  intUnion.bytes[1] = debugVal;
   if (intUnion.val != preambleLength)
   {
     Serial.print("Set Preamble Len Failed: ");
@@ -422,7 +422,7 @@ bool setFreqSX127X(float freq)
   union
   {
     uint32_t val;
-    uint8_t Byte[4];
+    uint8_t bytes[4];
   } ulongUnion;
 
   ulongUnion.val = frf;
@@ -431,16 +431,16 @@ bool setFreqSX127X(float freq)
 #define RegFrfMid 0x07
 #define RegFrfLsb 0x08
 
-  write8(RegFrfMsb, ulongUnion.Byte[2]);
-  write8(RegFrfMid, ulongUnion.Byte[1]);
-  write8(RegFrfLsb, ulongUnion.Byte[0]);
+  write8(RegFrfMsb, ulongUnion.bytes[2]);
+  write8(RegFrfMid, ulongUnion.bytes[1]);
+  write8(RegFrfLsb, ulongUnion.bytes[0]);
 
   // delay(10);
 
   // read back the frequency
-  ulongUnion.Byte[2] = read8(RegFrfMsb);
-  ulongUnion.Byte[1] = read8(RegFrfMid);
-  ulongUnion.Byte[0] = read8(RegFrfLsb);
+  ulongUnion.bytes[2] = read8(RegFrfMsb);
+  ulongUnion.bytes[1] = read8(RegFrfMid);
+  ulongUnion.bytes[0] = read8(RegFrfLsb);
 
   if (ulongUnion.val != frf)
   {

@@ -3,7 +3,7 @@
  * @brief Rotation.cpp tests, shared by the Teensy 4.x (double) and 3.x (float) suites.
  *
  * Each suite's .cpp chooses the getQuatRotn() path, includes flightcomp_subset.h,
- * then this file. The cases drive getQuatRotn() and getDCM2DRotn() as the flight
+ * then this file. The cases drive getQuatRotn() and getDcm2dRotn() as the flight
  * loop does: once per 10 ms, with each axis's input the sum over that interval of
  * gyro reading (LSB) x sample time (us). At a gain of 0.07 deg/s/LSB (the value
  * several of the supported gyro drivers set), a constant 1000 LSB reading is
@@ -117,11 +117,11 @@ static double refOffVertDeg()
 static void resetRotationState()
 {
   // getQuatRotn() state, to the initial values in Rotation.cpp
-  Quat[0] = 0;
-  Quat[1] = 1;
-  Quat[2] = Quat[3] = Quat[4] = 0;
+  quat[0] = 0;
+  quat[1] = 1;
+  quat[2] = quat[3] = quat[4] = 0;
   prevRollZ = quatRollZ = fullRollZ = 0;
-  // getDCM2DRotn() state
+  // getDcm2dRotn() state
   rawX = rawY = rawZ = 0;
   cosZ = 1;
   sinZ = 0;
@@ -129,7 +129,7 @@ static void resetRotationState()
   pitchX = yawY = offVert = 0;
   rollZ = 0;
   rotationFault = false;
-  rotnOK = true;
+  rotnOk = true;
   settings.maxAngle = 300; // 30 deg; the settings file is in degrees, stored x10
   settings.testMode = false;
   events.apogee = false;
@@ -157,7 +157,7 @@ static void dcmRotate(int axis, int sign, int calls)
 {
   for (int i = 0; i < calls; i++)
   {
-    getDCM2DRotn(axis == 0 ? sign * kStep : 0, axis == 1 ? sign * kStep : 0, axis == 2 ? sign * kStep : 0, kGyroGain);
+    getDcm2dRotn(axis == 0 ? sign * kStep : 0, axis == 1 ? sign * kStep : 0, axis == 2 ? sign * kStep : 0, kGyroGain);
   }
 }
 
@@ -260,7 +260,7 @@ void test_quat_stays_normalised_over_a_long_sequence()
   {
     quatRotate(i % 3, (i & 1) ? -1 : 1, 50 + 7 * i);
   }
-  double norm = sqrt((double)Quat[1] * Quat[1] + (double)Quat[2] * Quat[2] + (double)Quat[3] * Quat[3] + (double)Quat[4] * Quat[4]);
+  double norm = sqrt((double)quat[1] * quat[1] + (double)quat[2] * quat[2] + (double)quat[3] * quat[3] + (double)quat[4] * quat[4]);
   TEST_ASSERT_FLOAT_WITHIN(1e-6f, 1.0f, (float)norm);
   assertMatchesReference("mixed 20-segment sequence");
 }
@@ -268,20 +268,20 @@ void test_quat_stays_normalised_over_a_long_sequence()
 void test_quat_rotation_fault_latches_past_45_deg()
 {
   quatRotate(0, +1, 40); // 28 deg: inside the 30 deg cone
-  TEST_ASSERT_TRUE(rotnOK);
+  TEST_ASSERT_TRUE(rotnOk);
   quatRotate(0, +1, 10); // 35 deg: outside the cone, no fault yet
-  TEST_ASSERT_FALSE(rotnOK);
+  TEST_ASSERT_FALSE(rotnOk);
   TEST_ASSERT_FALSE(rotationFault);
   quatRotate(0, +1, 20); // 49 deg: past 45, faults
   TEST_ASSERT_TRUE(rotationFault);
   quatRotate(0, -1, 70); // back to vertical: the fault stays
   TEST_ASSERT_INT_WITHIN(2, 0, offVert);
   TEST_ASSERT_TRUE(rotationFault);
-  TEST_ASSERT_FALSE(rotnOK);
+  TEST_ASSERT_FALSE(rotnOk);
 }
 
 //-----------------------------------------------------------------------------
-// getDCM2DRotn(): accumulates tilt in the launch frame, so a roll does not move
+// getDcm2dRotn(): accumulates tilt in the launch frame, so a roll does not move
 // an existing tilt between pitch and yaw, and body rates are rotated by the roll
 //-----------------------------------------------------------------------------
 void test_dcm_single_axis()
@@ -314,7 +314,7 @@ void test_dcm_roll_then_pitch_rate_lands_on_yaw()
 void test_dcm_rotation_fault_past_45_deg()
 {
   dcmRotate(0, +1, 50); // 35 deg
-  TEST_ASSERT_FALSE(rotnOK);
+  TEST_ASSERT_FALSE(rotnOk);
   TEST_ASSERT_FALSE(rotationFault);
   dcmRotate(0, +1, 20); // 49 deg
   TEST_ASSERT_TRUE(rotationFault);

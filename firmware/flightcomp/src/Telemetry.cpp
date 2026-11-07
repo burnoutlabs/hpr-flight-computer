@@ -100,7 +100,7 @@ float freq;
 union
 {
   uint32_t val = 0;
-  uint8_t Byte[4];
+  uint8_t bytes[4];
 } idUnion;
 
 void beginTelemetry()

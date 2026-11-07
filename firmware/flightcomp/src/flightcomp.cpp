@@ -312,7 +312,7 @@ void loop(void)
     if (settings.stableRotn || settings.stableVert || settings.flyBack)
     {
       uint32_t controlTime = micros();
-      if (controlTime - timeLastControl >= controlInterval)
+      if (controlTime - timeLastControl >= CONTROL_INTERVAL)
       {
         // if active stabilization is activated, set the canards
         if ((settings.stableVert || settings.stableRotn) && !events.apogee && events.boosterBurnout)
@@ -322,7 +322,7 @@ void loop(void)
         // if RTB is on and we are post apogee, then set canards to return to launch point
         if (settings.flyBack && events.apogeeFire && !events.mainDeploy)
         {
-          setRTB();
+          setRtb();
         }
         // update control timer
         timeLastControl = controlTime;
@@ -395,7 +395,7 @@ void loop(void)
       beepAlt = true;
       beepCont = false;
       beepAlarm = false;
-      beep_delay = long_beep_delay;
+      beepDelay = LONG_BEEP_DELAY;
       // store the maximum altitude in EEPROM
       if (!settings.testMode)
       {
@@ -472,84 +472,84 @@ void loop(void)
   }
 
   // pre-flight continuity alarm beep
-  if (events.preLiftoff && settings.reportStyle != 'M' && beepAlarm && !beep && fltTime.tmClock - timeLastBeepEnd > beep_delay)
+  if (events.preLiftoff && settings.reportStyle != 'M' && beepAlarm && !beep && fltTime.tmClock - timeLastBeepEnd > beepDelay)
   {
     digitalWrite(pins.beep, HIGH);
     beep = true;
-    beep_len = alarmBeepLen;
-    beep_delay = alarmBeepDelay;
+    beepLen = ALARM_BEEP_LEN;
+    beepDelay = ALARM_BEEP_DELAY;
     timeBeepStart = fltTime.tmClock;
-    beep_counter++;
+    beepCounter++;
     // if the counter reaches the beepCode, then switch to error pyro channel
-    if (beep_counter == beepCode)
+    if (beepCounter == beepCode)
     {
-      beep_counter = 0;
+      beepCounter = 0;
       // cycle to the error pyro channel
       beepCont = true;
       beepAlarm = false;
       beepCode = cont.beepCode;
-      beep_delay = long_beep_delay;
+      beepDelay = LONG_BEEP_DELAY;
     }
   }
 
   // pre-flight continuity beep
-  if (events.preLiftoff && beepCont && !beep && fltTime.tmClock - timeLastBeepEnd > beep_delay)
+  if (events.preLiftoff && beepCont && !beep && fltTime.tmClock - timeLastBeepEnd > beepDelay)
   {
     digitalWrite(pins.beep, HIGH);
     beep = true;
-    beep_len = medBeepLen;
-    beep_delay = short_beep_delay;
+    beepLen = MED_BEEP_LEN;
+    beepDelay = SHORT_BEEP_DELAY;
     timeBeepStart = fltTime.tmClock;
-    beep_counter++;
+    beepCounter++;
     // if the counter reaches the beepCode, then pause for a long delay
-    if (beep_counter == beepCode)
+    if (beepCounter == beepCode)
     {
-      beep_counter = 0;
-      beep_delay = long_beep_delay;
+      beepCounter = 0;
+      beepDelay = LONG_BEEP_DELAY;
       // cycle to the alarm if there is a continuity error
       if (cont.error && settings.reportStyle != 'M')
       {
         beepAlarm = true;
         beepCont = false;
         beepCode = 50;
-        beep_delay = long_beep_delay;
+        beepDelay = LONG_BEEP_DELAY;
       }
     }
   }
 
   // inflight live-pyro activation Warning
-  if (livePyroAlarm && !beep && fltTime.tmClock - timeLastBeepEnd > beep_delay)
+  if (livePyroAlarm && !beep && fltTime.tmClock - timeLastBeepEnd > beepDelay)
   {
     digitalWrite(pins.beep, HIGH);
     beepCode = 50;
     beep = true;
-    beep_len = alarmBeepLen;
-    beep_delay = alarmBeepDelay;
+    beepLen = ALARM_BEEP_LEN;
+    beepDelay = ALARM_BEEP_DELAY;
     timeBeepStart = fltTime.tmClock;
-    beep_counter++;
+    beepCounter++;
     // if the counter reaches the beepCode, then give a long delay between beeps
-    if (beep_counter == beepCode)
+    if (beepCounter == beepCode)
     {
-      beep_counter = 0;
-      beep_delay = 3000000;
+      beepCounter = 0;
+      beepDelay = 3000000;
     }
   }
 
   // post-flight max velocity beeping
-  if (fileClose && beepVel && !beep && fltTime.tmClock - timeLastBeepEnd > beep_delay)
+  if (fileClose && beepVel && !beep && fltTime.tmClock - timeLastBeepEnd > beepDelay)
   {
     digitalWrite(pins.beep, HIGH);
     beepCode = maxVelDigits[beepPosn - 1];
     beep = true;
-    beep_len = medBeepLen;
-    beep_delay = short_beep_delay;
+    beepLen = MED_BEEP_LEN;
+    beepDelay = SHORT_BEEP_DELAY;
     timeBeepStart = fltTime.tmClock;
-    beep_counter++;
+    beepCounter++;
     // if the beep has hit the current digit, then move to the next digit
-    if (beep_counter == beepCode)
+    if (beepCounter == beepCode)
     {
-      beep_counter = 0;
-      beep_delay = long_beep_delay;
+      beepCounter = 0;
+      beepDelay = LONG_BEEP_DELAY;
       beepPosn--;
       // if we are at the end of the velocity array, switch to the altitude array
       if (beepPosn == 0)
@@ -557,26 +557,26 @@ void loop(void)
         beepVel = false;
         beepAlt = true;
         beepPosn = altDigits;
-        beep_delay = 3000000UL;
+        beepDelay = 3000000UL;
       }
     }
   }
 
   // post-flight max altitude beeping
-  if (fileClose && beepAlt && !beep && fltTime.tmClock - timeLastBeepEnd > beep_delay)
+  if (fileClose && beepAlt && !beep && fltTime.tmClock - timeLastBeepEnd > beepDelay)
   {
     digitalWrite(pins.beep, HIGH);
     beepCode = maxAltDigits[beepPosn - 1];
     beep = true;
-    beep_len = medBeepLen;
-    beep_delay = short_beep_delay;
+    beepLen = MED_BEEP_LEN;
+    beepDelay = SHORT_BEEP_DELAY;
     timeBeepStart = fltTime.tmClock;
-    beep_counter++;
+    beepCounter++;
     // if the beep has hit the current digit, then move to the next digit
-    if (beep_counter == beepCode)
+    if (beepCounter == beepCode)
     {
-      beep_counter = 0;
-      beep_delay = long_beep_delay;
+      beepCounter = 0;
+      beepDelay = LONG_BEEP_DELAY;
       beepPosn--;
       // if we are at the end of the altitude array, switch to the velocity array
       if (beepPosn == 0)
@@ -584,13 +584,13 @@ void loop(void)
         beepAlt = false;
         beepVel = true;
         beepPosn = velDigits;
-        beep_delay = 3000000UL;
+        beepDelay = 3000000UL;
       }
     }
   }
 
   // Code to stop the beep
-  if (beep && (fltTime.tmClock - timeBeepStart > beep_len))
+  if (beep && (fltTime.tmClock - timeBeepStart > beepLen))
   {
     digitalWrite(pins.beep, LOW);
     beep = false;
@@ -675,13 +675,13 @@ void loop(void)
     {
       gnss.altPosn = 0;
     }
-    gnss.vel = (GPS.altitude.meters() - gnss.altBuff[gnss.altPosn]) / ((micros() - gnss.timeBuff[gnss.altPosn]) * mlnth);
+    gnss.vel = (GPS.altitude.meters() - gnss.altBuff[gnss.altPosn]) / ((micros() - gnss.timeBuff[gnss.altPosn]) * MILLIONTH);
     gnss.altBuff[gnss.altPosn] = GPS.altitude.meters();
     gnss.timeBuff[gnss.altPosn] = micros();
     // update sensor fusion velocity if descending
     if (events.apogeeFire)
     {
-      fusionVel = 0.9 * gnss.vel + 0.1 * baro.Vel;
+      fusionVel = 0.9 * gnss.vel + 0.1 * baro.vel;
     }
     // capture the GPS takeoff position and correct base altitude
     if (events.preLiftoff)

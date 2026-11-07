@@ -49,10 +49,10 @@ namespace legacy
 {
 // The reference's names for the pyro channels, servos and servo trims, which are elements of
 // pyros, servos and servoTrim now (the trims as legacy_names.h spells them)
-static pyroMap &pyro1 = pyros[0];
-static pyroMap &pyro2 = pyros[1];
-static pyroMap &pyro3 = pyros[2];
-static pyroMap &pyro4 = pyros[3];
+static PyroMap &pyro1 = pyros[0];
+static PyroMap &pyro2 = pyros[1];
+static PyroMap &pyro3 = pyros[2];
+static PyroMap &pyro4 = pyros[3];
 static PWMServo &canardYaw1 = servos[0];
 static PWMServo &canardYaw2 = servos[1];
 static PWMServo &canardPitch3 = servos[2];
@@ -350,7 +350,7 @@ void test_test_mode_with_servos_uncalibrated_first_use()
   s.calibrated = false;
   s.initialUse = true;
   s.testButton = {{2, LOW}, {1, HIGH}};
-  s.reached = [] { return settings.testMode && !settings.calibrationMode && servos[0].pin == 3 && settings.txPwr == 2 && radio.event == Booster_Preflight; };
+  s.reached = [] { return settings.testMode && !settings.calibrationMode && servos[0].pin == 3 && settings.txPwr == 2 && radio.event == BOOSTER_PREFLIGHT; };
   runSideBySide(s);
 }
 

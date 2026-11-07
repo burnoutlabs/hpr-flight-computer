@@ -78,11 +78,11 @@ inline void configureSensors()
   sensors.highG = 1;
   baro.timeBtwnSamp = BARO_SAMPLE_US;
   // setup(): set the accelerometer g level and convert the gains to m/s^2
-  g = (int16_t)(1.0 / accel.gainX);
+  accel1G = (int16_t)(1.0 / accel.gainX);
   accel.gainX *= 9.80665;
   accel.gainY *= 9.80665;
   accel.gainZ *= 9.80665;
-  gTrigger = 2.5 * g;
+  gTrigger = 2.5 * accel1G;
   high1G = (int16_t)(1.0 / highG.gainX);
   highG.gainX *= 9.80665;
   highG.gainY *= 9.80665;
@@ -116,7 +116,7 @@ inline void applyTestModeOverrides()
   {
     settings.rcdTime = 30000000UL;
   }
-  gTrigger = (int)(1.5 * g);
+  gTrigger = (int)(1.5 * accel1G);
   baro.maxAlt = 11101 / unitConvert;
   maxVelocity = 202 / unitConvert;
   pktInterval.postFlight = 1000000UL;

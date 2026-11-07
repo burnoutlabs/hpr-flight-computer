@@ -12,22 +12,24 @@
  *   speedTan                rel 5.7e-8 vs |tan|    bound 1e-7
  *   speedArcTan             |err| 0.1000017 deg    bound 0.1001 deg
  *   speedArcSin (-1 < x < 1) |err| 0.100011 deg    bound 0.1001 deg
+ *   speedArcCos (-1 <= x <= 1) |err| 0.100011 deg  bound 0.1001 deg
  *   speedAtan2              |err| 0.1000017 deg    bound 0.1001 deg
  *   sinSmallAngle (|x| <= pi)       1.15e-7        bound 1.5e-7
  *   cosSmallAngle (|x| <= 1 deg)    3.4e-8         bound 4e-8
- *   cosSmallAngle (|x| <= 20 deg)   6.2e-4         bound 6.5e-4
- *   cosSmallAngle (|x| <= pi)       4.03e-2        bound 4.1e-2
+ *   cosSmallAngle (|x| <= 20 deg)   9.2e-8         bound 1e-7
+ *   cosSmallAngle (|x| <= pi)       1.35e-7        bound 1.5e-7
  *
- * Behaviour these tests describe rather than endorse (left unchanged here):
- * - speedTan() returns |tan|: it folds negative angles and angles past 90 deg
- *   onto 0..90. Its callers square the result, so the sign is not used.
- * - speedArcSin(-1.0) returns +900, not -900; it is excluded from the sweep.
- * - speedArcCos() searches the decreasing COS_TABLE[] table as if it were increasing,
- *   so it does not return arccos (speedArcCos(1.0) is 900, speedArcCos(0.5) is 0).
- *   It has no test here; magRotn() is its only caller.
- * - cosSmallAngle() takes its small-angle branch, 1 - x^2/2, for |x| < COS_TABLE[7]
- *   (0.99993 rad), so the Maclaurin branch below it is unreachable and the
- *   error grows to 4e-2 near 1 rad. The bounds above are what it does today.
+ * speedTan() returns |tan|, as Speed_Trig.h documents: it folds negative angles and
+ * angles past 90 deg onto 0..90. Nothing in the firmware calls it since offVert is
+ * computed from cosines (#33).
+ *
+ * Fixed in #33, each with a test below that failed before:
+ * - speedArcSin(-1.0) returned +900, not -900;
+ * - speedArcCos() searched the decreasing COS_TABLE[] as if it were increasing
+ *   (speedArcCos(1.0) was 900, speedArcCos(0.5) was 0);
+ * - cosSmallAngle() took its small-angle branch, 1 - x^2/2, for |x| < COS_TABLE[7]
+ *   (0.99993 rad) instead of 0.7 deg, so its Maclaurin branch was unreachable and
+ *   the error reached 6.2e-4 at 20 deg and 4.03e-2 near 1 rad.
  */
 #include <unity.h>
 
@@ -127,6 +129,30 @@ void test_speedArcSin_within_a_tenth_on_open_interval()
   TEST_ASSERT_EQUAL_INT(0, speedArcSin(0.0f));
 }
 
+void test_speedArcSin_of_minus_one_is_minus_90_deg()
+{
+  // #33: it returned +900
+  TEST_ASSERT_EQUAL_INT(-900, speedArcSin(-1.0f));
+}
+
+void test_speedArcCos_within_a_tenth()
+{
+  // #33: it searched the decreasing COS_TABLE[] as if it increased
+  double worst = 0;
+  for (long i = -1000000; i <= 1000000; i++)
+  {
+    float value = i * 1e-6;
+    double err = speedArcCos(value) * 0.1 - acos((double)value) * kRadToDeg;
+    worst = fmax(worst, fabs(err));
+  }
+  assertWithin("speedArcCos, -1 <= x <= 1", worst, 0.1001);
+  TEST_ASSERT_EQUAL_INT(0, speedArcCos(1.0f));
+  TEST_ASSERT_EQUAL_INT(900, speedArcCos(0.0f));
+  TEST_ASSERT_EQUAL_INT(1800, speedArcCos(-1.0f));
+  TEST_ASSERT_INT_WITHIN(1, 600, speedArcCos(0.5f));
+  TEST_ASSERT_INT_WITHIN(1, 1200, speedArcCos(-0.5f));
+}
+
 void test_speedAtan2_within_a_tenth_in_every_quadrant()
 {
   double worst = 0;
@@ -173,9 +199,10 @@ void test_sinSmallAngle_matches_sin()
 void test_cosSmallAngle_matches_cos()
 {
   // getDcm2dRotn() passes it one 10 ms roll step: 20 deg at the 2000 deg/s limit
+  // #33: the small-angle branch (1 - x^2/2) ran up to 0.99993 rad, so these were 6.2e-4 and 4.03e-2
   assertWithin("cosSmallAngle, |x| <= 1 deg", worstSmallAngleError(cosSmallAngle, cos, 1 * kDegToRad), 4e-8);
-  assertWithin("cosSmallAngle, |x| <= 20 deg", worstSmallAngleError(cosSmallAngle, cos, 20 * kDegToRad), 6.5e-4);
-  assertWithin("cosSmallAngle, |x| <= pi", worstSmallAngleError(cosSmallAngle, cos, M_PI), 4.1e-2);
+  assertWithin("cosSmallAngle, |x| <= 20 deg", worstSmallAngleError(cosSmallAngle, cos, 20 * kDegToRad), 1e-7);
+  assertWithin("cosSmallAngle, |x| <= pi", worstSmallAngleError(cosSmallAngle, cos, M_PI), 1.5e-7);
 }
 
 int main()
@@ -186,6 +213,8 @@ int main()
   RUN_TEST(test_speedTan_matches_abs_tan);
   RUN_TEST(test_speedArcTan_within_a_tenth_and_truncates_toward_zero);
   RUN_TEST(test_speedArcSin_within_a_tenth_on_open_interval);
+  RUN_TEST(test_speedArcSin_of_minus_one_is_minus_90_deg);
+  RUN_TEST(test_speedArcCos_within_a_tenth);
   RUN_TEST(test_speedAtan2_within_a_tenth_in_every_quadrant);
   RUN_TEST(test_sinSmallAngle_matches_sin);
   RUN_TEST(test_cosSmallAngle_matches_cos);

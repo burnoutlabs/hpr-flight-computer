@@ -40,6 +40,15 @@ static long fullRollZ = 0;
 #endif
 
 /**
+ * @brief The angle between the rocket's axis and the vertical, after a pitch about X and then a
+ * yaw about the pitched Y axis: cos(offVert) = cos(pitch) * cos(yaw).
+ * @param pitch Pitch, tenths of a degree.
+ * @param yaw Yaw, tenths of a degree.
+ * @return 0 to 1800, tenths of a degree.
+ */
+static int offVertical(int pitch, int yaw) { return speedArcCos(speedCos(pitch) * speedCos(yaw)); }
+
+/**
  * @brief Calculate quaternion rotation at 100Hz using only gyroscope data.
  *
  * On Teensy 4.0/4.1 (`__IMXRT1062__`) the calculation runs in double precision on the
@@ -97,8 +106,12 @@ void getQuatRotn(float dx, float dy, float dz, float gyroGain)
   quat[3] += quatDiff[3];
   quat[4] += quatDiff[4];
 
-  // re-normalize
+  // re-normalize, in the precision of the path
+#if defined(__IMXRT1062__)
+  quatLen = 1.0 / sqrt(quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3] + quat[4] * quat[4]);
+#else
   quatLen = powf(quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3] + quat[4] * quat[4], -0.5);
+#endif
   quat[1] *= quatLen;
   quat[2] *= quatLen;
   quat[3] *= quatLen;
@@ -148,11 +161,7 @@ void getQuatRotn(float dx, float dy, float dz, float gyroGain)
   rollZ = (fullRollZ * 3600 + quatRollZ) * .1; // this is in whole degrees since its usually MUCH bigger than pitch and yaw
 
   // Compute angle off vertical
-  float tanYaw = speedTan(yawY);
-  float tanPitch = speedTan(pitchX);
-  float hyp1 = tanYaw * tanYaw + tanPitch * tanPitch;
-  float hyp2 = powf(hyp1, 0.5);
-  offVert = speedArcTan(hyp2); // this returns tenths of a degree, not whole degrees
+  offVert = offVertical(pitchX, yawY); // this returns tenths of a degree, not whole degrees
 
   // as long as the rocket never exceeded 45 degrees, set the rotnOk variable to whether or not the current off-vertical rotation is within the allowable cone
   rotnOk = (!rotationFault && offVert < settings.maxAngle) ? true : false;
@@ -212,11 +221,7 @@ void getDcm2dRotn(long dx, long dy, long dz, float gyroGain)
   yawY = (int)((rawY * gyroGain) * MILLIONTH * 10);
 
   // Compute off-vertical
-  float tanYaw = speedTan(yawY);
-  tanYaw *= tanYaw;
-  float tanPitch = speedTan(pitchX);
-  tanPitch *= tanPitch;
-  offVert = speedArcTan(powf(tanYaw + tanPitch, 0.5));
+  offVert = offVertical(pitchX, yawY);
 
   // Check if the max angle is exceeded, shutdown staging if angle > 45 is detected
   if ((!events.apogee) || settings.testMode)

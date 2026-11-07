@@ -36,7 +36,7 @@ Four samples of 11 bytes each, sample `n` (0-3) at offset `6 + 11n`, then a 12-b
 | 1-2 | int16 | velocity | `baro.vel`, m/s |
 | 3-4 | int16 | altitude | `baro.smoothAlt`, m |
 | 5-6 | int16 | roll | `rollZ` |
-| 7-8 | int16 | off vertical | `offVert`, tenths of a degree |
+| 7-8 | int16 | off vertical | `offVert`, tenths of a degree, 0-1800 |
 | 9-10 | int16 | acceleration | `accelNow × 33.41406087` (`accelNow` in m/s²; 33.41406087 = 32768 / 9.80665 / 100) |
 
 | Offset | Type | Field | Value |

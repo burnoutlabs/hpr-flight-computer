@@ -33,7 +33,7 @@ new value this pass is left empty.
 | `smoothHighGz` | `highGSmooth` | |
 | `rollZ` | `rollZ` | |
 | `yawY`, `pitchX` | `yawY`, `pitchX` | |
-| `offVert` | `offVert` | tenths of a degree |
+| `offVert` | `offVert` | angle off vertical, tenths of a degree, 0-1800 |
 | `intVel`, `intAlt` | `accelVel`, `accelAlt` | integrated from the accelerometer, 2 decimals |
 | `fusionVel`, `fusionAlt` | `fusionVel`, `fusionAlt` | 2 decimals |
 | `fltEvents` | event bit string | see below |

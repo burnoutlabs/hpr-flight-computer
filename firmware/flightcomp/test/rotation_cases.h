@@ -104,12 +104,8 @@ static void refRotate(int axis, double angleDeg)
 
 static double refPitchDeg() { return atan2(ref.m[2][1], ref.m[2][2]) * kDegPerRad; }
 static double refYawDeg() { return asin(-ref.m[2][0]) * kDegPerRad; }
-// Rotation.cpp's off-vertical: atan(sqrt(tan^2 pitch + tan^2 yaw))
-static double refOffVertDeg()
-{
-  double tp = tan(refPitchDeg() * kRadPerDeg), ty = tan(refYawDeg() * kRadPerDeg);
-  return atan(sqrt(tp * tp + ty * ty)) * kDegPerRad;
-}
+// The angle between the body Z axis and the vertical
+static double refOffVertDeg() { return acos(ref.m[2][2]) * kDegPerRad; }
 
 //-----------------------------------------------------------------------------
 // Firmware state
@@ -246,11 +242,11 @@ void test_quat_roll_moves_tilt_from_pitch_to_yaw()
 
 void test_quat_combined_tilt_about_x_then_y()
 {
-  // offVert is Rotation.cpp's atan(sqrt(tan^2 pitch + tan^2 yaw)), 27.6 deg here.
-  // The true angle off vertical, acos(cos 20.3 x cos 20.3), is 28.4 deg: the two
-  // agree only while pitch or yaw is zero. This checks the code as written.
+  // The angle off vertical is acos(cos 20.3 x cos 20.3) = 28.4 deg. #33: offVert was
+  // atan(sqrt(tan^2 pitch + tan^2 yaw)), 27.6 deg here.
   quatRotate(0, +1, 29);
   quatRotate(1, +1, 29);
+  TEST_ASSERT_INT_WITHIN(2, 284, offVert);
   assertMatchesReference("X 20.3 then Y 20.3");
 }
 
@@ -261,7 +257,12 @@ void test_quat_stays_normalised_over_a_long_sequence()
     quatRotate(i % 3, (i & 1) ? -1 : 1, 50 + 7 * i);
   }
   double norm = sqrt((double)quat[1] * quat[1] + (double)quat[2] * quat[2] + (double)quat[3] * quat[3] + (double)quat[4] * quat[4]);
-  TEST_ASSERT_FLOAT_WITHIN(1e-6f, 1.0f, (float)norm);
+  // the double path normalises in double precision (#33: it used powf, good to about 3e-8)
+  const double tolerance = sizeof(quat[0]) == 8 ? 1e-12 : 1e-6;
+  char msg[80];
+  snprintf(msg, sizeof(msg), "norm - 1 = %.3g", norm - 1.0);
+  TEST_MESSAGE(msg);
+  TEST_ASSERT_TRUE_MESSAGE(fabs(norm - 1.0) <= tolerance, msg);
   assertMatchesReference("mixed 20-segment sequence");
 }
 
@@ -311,6 +312,16 @@ void test_dcm_roll_then_pitch_rate_lands_on_yaw()
   TEST_ASSERT_INT_WITHIN(1, 90, rollZ);
 }
 
+void test_dcm_combined_tilt_about_x_then_y()
+{
+  // 20.3 deg about X, then 20.3 deg about Y: acos(cos 20.3 x cos 20.3) = 28.4 deg off vertical
+  dcmRotate(0, +1, 29);
+  dcmRotate(1, +1, 29);
+  TEST_ASSERT_INT_WITHIN(2, 203, pitchX);
+  TEST_ASSERT_INT_WITHIN(2, 203, yawY);
+  TEST_ASSERT_INT_WITHIN(2, 284, offVert);
+}
+
 void test_dcm_rotation_fault_past_45_deg()
 {
   dcmRotate(0, +1, 50); // 35 deg
@@ -335,6 +346,7 @@ static int runRotationTests()
   RUN_TEST(test_quat_rotation_fault_latches_past_45_deg);
   RUN_TEST(test_dcm_single_axis);
   RUN_TEST(test_dcm_roll_then_pitch_rate_lands_on_yaw);
+  RUN_TEST(test_dcm_combined_tilt_about_x_then_y);
   RUN_TEST(test_dcm_rotation_fault_past_45_deg);
   return UNITY_END();
 }

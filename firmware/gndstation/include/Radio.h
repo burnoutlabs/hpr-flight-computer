@@ -7,7 +7,7 @@
 #include <Arduino.h>
 
 bool radioBegin();
-bool setRadioPWR(uint8_t pwr);
+bool setRadioPwr(uint8_t pwr);
 bool radioRecvPkt(uint8_t *data);
 float readRadioFreq();
 bool setRadioFreq(float freq);

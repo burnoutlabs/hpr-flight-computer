@@ -11,17 +11,17 @@
 
 #include <Arduino.h>
 
-// RegOpMode
+// REG_OP_MODE
 enum
 {
-  SleepMode = 0x00,
-  StandbyMode = 0x01,
-  TXmode = 0x03,
-  RXmode = 0x05,
-  CADmode = 0x07,
-  LoRaMode = 0x80,
-  LowFrqMode = 0x08, // LowFrq mode enables registers below 860MHz
-  writeMask = 0x80
+  SLEEP_MODE = 0x00,
+  STANDBY_MODE = 0x01,
+  TX_MODE = 0x03,
+  RX_MODE = 0x05,
+  CAD_MODE = 0x07,
+  LORA_MODE = 0x80,
+  LOW_FRQ_MODE = 0x08, // LowFrq mode enables registers below 860MHz
+  WRITE_MASK = 0x80
 };
 
 //---------------------------
@@ -29,24 +29,24 @@ enum
 //---------------------------
 struct UserSettings
 {
-  boolean radio1enable = true;
-  boolean radio2enable = true;
+  boolean radio1Enable = true;
+  boolean radio2Enable = true;
   float radio1freq;
   float radio2freq;
-  boolean radio1FHSS = false;
-  boolean radio2FHSS = false;
+  boolean radio1Fhss = false;
+  boolean radio2Fhss = false;
   byte radio1Pwr = 13;
   byte radio2Pwr = 13;
   boolean displayMetric = false;
   byte debugSerial = 1;
   char callSign[7] = "KK4ELF";
-  boolean LCD = false;
-  byte LCDbrightness = 75;
-  byte LCDcontrast = 50;
-  boolean LCDcolorEvents = false;
-  boolean blueTooth = true;
-  boolean enableSD = true;
-  boolean enableGPS = true;
+  boolean enableLcd = false;
+  byte lcdBrightness = 75;
+  byte lcdContrast = 50;
+  boolean lcdColorEvents = false;
+  boolean bluetooth = true;
+  boolean enableSd = true;
+  boolean enableGps = true;
 };
 alignas(4) extern UserSettings settings;
 //---------------------------
@@ -57,12 +57,12 @@ typedef struct
   float frq;
   byte num;
   boolean enable = true;
-  boolean FHSS = false;
+  boolean fhss = false;
   boolean status = false;
-  byte TXpwr = 13;
+  byte txPwr = 13;
   byte dataPacket[256];
   boolean signalEst = false;
-  uint32_t lastRX = 0UL;
+  uint32_t lastRx = 0UL;
   uint8_t cs;
   uint8_t rst;
   uint8_t hailChnl = 0;
@@ -72,28 +72,28 @@ typedef struct
   uint8_t chnlUsed = 0;
   boolean syncFreq = true;
   uint32_t lastHopTime = 0UL;
-} radio;
-extern radio radio1;
-extern radio radio2;
-extern radio *activeRadio;
+} Radio;
+extern Radio radio1;
+extern Radio radio2;
+extern Radio *activeRadio;
 extern char serialBuffer[256];
 extern int serialPosn;
 
 extern byte dataPkt[80];
-extern volatile boolean processIRQ;
+extern volatile boolean processIrq;
 extern uint32_t timeLastPkt;
 extern uint32_t debugTime;
 extern int16_t pktRssi;
 extern float radio1Freq;
 extern float radio2Freq;
-extern byte radio1Fnctn;
-extern byte radio2Fnctn;
+extern byte radio1Function;
+extern byte radio2Function;
 //---------------------------
 // Data Packet variables
 //---------------------------
 extern uint8_t len;
 alignas(4) extern char dataString[512];
-extern boolean SDstatus;
+extern boolean sdStatus;
 extern char sustainerFileName[13];
 extern char boosterFileName[14];
 extern boolean sustainerFileOpen;
@@ -103,23 +103,23 @@ extern boolean boosterFileCreated;
 extern byte n;
 extern byte fileNum;
 extern byte pktPosn;
-extern int16_t packetnum;
+extern int16_t lastPacketNum;
 extern unsigned long timer;
 extern boolean radio1status;
 extern boolean radio2status;
 extern boolean sendPacket;
 extern boolean testMode;
 extern unsigned long testStart;
-extern unsigned long lastRX;
+extern unsigned long lastRx;
 extern unsigned long debugStart;
 extern unsigned long debugStop;
 extern unsigned long colorStart;
 extern int battVolt;
-extern boolean SDinit;
-extern boolean LCDinit;
+extern boolean sdInit;
+extern boolean lcdInit;
 extern boolean parseSustainer;
 extern boolean parseBooster;
-extern uint32_t timeLastNMEA;
+extern uint32_t timeLastNmea;
 extern bool ledLight;
 //---------------------------
 // preflight output variables
@@ -140,7 +140,7 @@ extern byte j;
 //---------------------------
 alignas(4) extern char rocketName[20];
 extern int baseAlt;
-extern int baseGPSalt;
+extern int baseGpsAlt;
 extern byte contCode;
 extern int satNum;
 extern boolean fileOpen;
@@ -150,45 +150,45 @@ extern boolean fileOpen;
 extern uint16_t sampleTime;
 extern int16_t signalStrength;
 extern int16_t velocity;
-extern int16_t Alt;
+extern int16_t alt;
 extern int16_t spin;
 extern int16_t offVert;
 extern int16_t accel;
 extern int16_t packetNum;
 extern boolean apogee;
-extern unsigned long lastSustainerRX;
-extern unsigned long lastBoosterRX;
+extern unsigned long lastSustainerRx;
+extern unsigned long lastBoosterRx;
 //---------------------------
 // Postflight output variables
 //---------------------------
 extern int maxAltitude;
 extern int maxVelocity;
 extern int maxG;
-extern int maxGPSalt;
+extern int maxGpsAlt;
 // GPS output variables
-extern byte GPSlock;
-extern int GPSalt;
-extern int prevGPSalt;
-extern char charGPSlat;
-extern float GPSlatitude;
-extern char charGPSlon;
-extern float GPSlongitude;
-extern float lastGPSlat;
-extern float lastGPSlon;
-extern float prevGPSlat;
-extern float prevGPSlon;
-extern unsigned long lastGPSfix;
+extern byte gpsLock;
+extern int gpsAlt;
+extern int prevGpsAlt;
+extern char charGpsLat;
+extern float gpsLatitude;
+extern char charGpsLon;
+extern float gpsLongitude;
+extern float lastGpsLat;
+extern float lastGpsLon;
+extern float prevGpsLat;
+extern float prevGpsLon;
+extern unsigned long lastGpsFix;
 //---------------------------
 // Radio Variables
 //---------------------------
-extern boolean GPSdebug;
+extern boolean gpsDebug;
 extern boolean debugSerial;
 extern float unitConvert;
 extern volatile boolean radio1Pkt;
 extern volatile boolean radio2Pkt;
 union RadioUnion
 {
-  float GPScoord;
+  float gpsCoord;
   unsigned long radioTime;
   byte unionByte[4];
 };
@@ -199,7 +199,7 @@ union RadioInt
   byte unionByte[2];
 };
 extern RadioInt radioInt;
-extern byte radioFnctn;
+extern byte radioFunction;
 //---------------------------
 // LCD Variables
 //---------------------------
@@ -212,7 +212,7 @@ extern byte flightPhase;
 // Event Table
 //---------------------------
 
-extern const String eventTable[33];
+extern const String EVENT_TABLE[33];
 
 extern byte greenEvents[3];
 extern byte redEvents[5];
@@ -221,7 +221,7 @@ extern byte redEvents[5];
 // Pyro Code Table
 //---------------------------
 
-extern const String pyroTable[10];
+extern const String PYRO_TABLE[10];
 
 extern byte greenCont[5];
 extern byte redCont[5];

@@ -43,15 +43,15 @@
 HardwareSerial *HWSERIAL;
 
 // Radio control pins
-#define radio1RST 14 // ok
-#define radio1CS 15  // ok
-#define radio1IRQ 17 // ok
-#define radio2RST 16 // ok
-#define radio2CS 20  // ok
-#define radio2IRQ 22 // ok
+#define RADIO1_RST 14 // ok
+#define RADIO1_CS 15  // ok
+#define RADIO1_IRQ 17 // ok
+#define RADIO2_RST 16 // ok
+#define RADIO2_CS 20  // ok
+#define RADIO2_IRQ 22 // ok
 
 // GPS Setup
-TinyGPSPlus GPS;
+TinyGPSPlus gps;
 
 // Timer for the radio
 IntervalTimer radioTimer;
@@ -77,14 +77,14 @@ void setup()
   battVolt /= 5;
 
   // Set interrupts
-  pinMode(radio1IRQ, INPUT);
-  attachInterrupt(digitalPinToInterrupt(radio1IRQ), clearIRQ1, RISING);
-  pinMode(radio2IRQ, INPUT);
-  attachInterrupt(digitalPinToInterrupt(radio2IRQ), clearIRQ2, RISING);
+  pinMode(RADIO1_IRQ, INPUT);
+  attachInterrupt(digitalPinToInterrupt(RADIO1_IRQ), clearIrq1, RISING);
+  pinMode(RADIO2_IRQ, INPUT);
+  attachInterrupt(digitalPinToInterrupt(RADIO2_IRQ), clearIrq2, RISING);
 
   // Start SD card
-  SDinit = SD.begin(SD_CONFIG);
-  if (!SDinit)
+  sdInit = SD.begin(SD_CONFIG);
+  if (!sdInit)
   {
     Serial.println(F("SD card failed"));
   }
@@ -93,15 +93,15 @@ void setup()
     Serial.println(F("SD Card OK!"));
   }
   // Read user settings
-  readRadioSettingsSD();
+  readRadioSettingsSd();
 
   // set the radio pointers
   radio1.num = 1;
   radio2.num = 2;
-  radio1.cs = radio1CS;
-  radio2.cs = radio2CS;
-  radio1.rst = radio1RST;
-  radio2.rst = radio2RST;
+  radio1.cs = RADIO1_CS;
+  radio2.cs = RADIO2_CS;
+  radio1.rst = RADIO1_RST;
+  radio2.rst = RADIO2_RST;
 
   // set radio pins
   pinMode(radio1.cs, OUTPUT);
@@ -148,7 +148,7 @@ void setup()
       Serial.println(" Set Frequency Failed");
     }
     // set to recieve mode
-    radioSetMode(RXmode);
+    radioSetMode(RX_MODE);
   }
 
   // Radio2 setup
@@ -186,7 +186,7 @@ void setup()
       Serial.println(" Set Frequency Failed");
     }
     // set to recieve mode
-    radioSetMode(RXmode);
+    radioSetMode(RX_MODE);
   }
 
   // set active radio based on user settings
@@ -224,37 +224,37 @@ void setup()
   {
     radioUnion.unionByte[i] = EEPROM.read(20 + i);
   }
-  lastGPSlat = radioUnion.GPScoord;
-  if (fabs(lastGPSlat) > 90)
+  lastGpsLat = radioUnion.gpsCoord;
+  if (fabs(lastGpsLat) > 90)
   {
-    lastGPSlat = 0.0;
+    lastGpsLat = 0.0;
   }
   for (byte i = 0; i < 4; i++)
   {
     radioUnion.unionByte[i] = EEPROM.read(24 + i);
   }
-  lastGPSlon = radioUnion.GPScoord;
-  if (fabs(lastGPSlon) > 180)
+  lastGpsLon = radioUnion.gpsCoord;
+  if (fabs(lastGpsLon) > 180)
   {
-    lastGPSlon = 0.0;
+    lastGpsLon = 0.0;
   }
 
   // configure GPS
-  configGPS();
+  configGps();
 
   // Display the startup screen
   Serial.println("starting LCD");
-  startupLCD();
+  startupLcd();
 
 } // end setup
 
 void loop()
 {
 
-  boolean msgRX = false;
+  boolean msgRx = false;
 
   // Serial Print Debug
-  if (micros() - timer > 1000000UL && micros() - timeLastNMEA > 500000)
+  if (micros() - timer > 1000000UL && micros() - timeLastNmea > 500000)
   {
     timer = micros();
     Serial.print(F("Waiting for Packet, frequency "));
@@ -277,18 +277,18 @@ void loop()
     }
 
     // set the timers
-    lastRX = micros();
-    activeRadio->lastRX = lastRX;
-    timer = lastRX;
+    lastRx = micros();
+    activeRadio->lastRx = lastRx;
+    timer = lastRx;
 
     // get the packet from the radio
-    bool pktRX = radioRecvPkt(activeRadio->dataPacket);
+    bool pktRx = radioRecvPkt(activeRadio->dataPacket);
 
     // get signal strength
     signalStrength = pktRssi;
 
     // if it is from our flight computer, parse it, log it, display it and follow the frequency hops
-    if (pktRX)
+    if (pktRx)
     {
       processPacket();
     }
@@ -304,7 +304,7 @@ void loop()
   } // end check radios
 
   // On FHSS, if signal was established on the ground but a packet was missed, then move to the next channel
-  if (event == 0 && radio1.FHSS && micros() - radio1.lastHopTime > 2000000UL && radio1.signalEst && radio1.chnlUsed < 3)
+  if (event == 0 && radio1.fhss && micros() - radio1.lastHopTime > 2000000UL && radio1.signalEst && radio1.chnlUsed < 3)
   {
     Serial.println("-------Radio 1 Missed Packet--------");
     activeRadio = &radio1;
@@ -314,14 +314,14 @@ void loop()
   }
 
   // On FHSS, if signal was established in-flight but a packet was missed, then move to the next channel
-  else if (radio1.FHSS && micros() - radio1.lastHopTime > 630000UL && radio1.signalEst && radio1.chnlUsed < 3)
+  else if (radio1.fhss && micros() - radio1.lastHopTime > 630000UL && radio1.signalEst && radio1.chnlUsed < 3)
   {
     Serial.println("-------Radio 1 Missed Packet--------");
     activeRadio = &radio1;
     hopFreq();
   }
 
-  if (event == 0 && radio2.FHSS && micros() - radio2.lastHopTime > 2000000UL && radio2.signalEst && radio2.chnlUsed < 3)
+  if (event == 0 && radio2.fhss && micros() - radio2.lastHopTime > 2000000UL && radio2.signalEst && radio2.chnlUsed < 3)
   {
     Serial.println("-------Radio 1 Missed Packet--------");
     activeRadio = &radio2;
@@ -330,7 +330,7 @@ void loop()
     hopFreq();
   }
 
-  else if (radio2.FHSS && micros() - radio2.lastHopTime > 630000UL && radio2.signalEst && radio2.chnlUsed < 3)
+  else if (radio2.fhss && micros() - radio2.lastHopTime > 630000UL && radio2.signalEst && radio2.chnlUsed < 3)
   {
     Serial.println("-------Radio 2 Missed Packet--------");
     activeRadio = &radio2;
@@ -338,7 +338,7 @@ void loop()
   }
 
   // display lost signal status
-  if (micros() - lastRX > lostSignalTime && signalEst)
+  if (micros() - lastRx > lostSignalTime && signalEst)
   {
 
     if (debugSerial)
@@ -362,25 +362,25 @@ void loop()
     {
       EEPROM.update(i, rocketName[i]);
     }
-    radioUnion.GPScoord = lastGPSlat;
+    radioUnion.gpsCoord = lastGpsLat;
     for (byte i = 0; i < 4; i++)
     {
       EEPROM.update(i + 20, radioUnion.unionByte[i]);
     }
-    radioUnion.GPScoord = lastGPSlon;
+    radioUnion.gpsCoord = lastGpsLon;
     for (byte i = 0; i < 4; i++)
     {
       EEPROM.update(i + 24, radioUnion.unionByte[i]);
     }
 
     // sync the SD card
-    if (SDinit && sustainerFileOpen)
+    if (sdInit && sustainerFileOpen)
     {
       sustainerFile.sync();
     }
 
     // display last coordinates on LCD
-    signalLostLCD();
+    signalLostLcd();
 
     signalEst = false;
   }
@@ -388,25 +388,25 @@ void loop()
   // GPS
   while (Serial2.available() > 0)
   {
-    if (!msgRX)
+    if (!msgRx)
     {
-      msgRX = true;
+      msgRx = true;
     }
     char c = Serial2.read();
-    GPS.encode(c);
-    if (GPSdebug)
+    gps.encode(c);
+    if (gpsDebug)
     {
       serialBuffer[serialPosn] = c;
       serialPosn++;
     }
   }
-  if (GPSdebug && msgRX)
+  if (gpsDebug && msgRx)
   {
     serialBuffer[serialPosn] = '\0';
     Serial.print(serialBuffer);
-    msgRX = false;
+    msgRx = false;
     serialPosn = 0;
-    timeLastNMEA = micros();
+    timeLastNmea = micros();
   }
 
   // check LED
@@ -419,14 +419,14 @@ void loop()
 
 } // end loop
 
-void clearIRQ1()
+void clearIrq1()
 {
   noInterrupts();
   radio1Pkt = true;
   interrupts();
 }
 
-void clearIRQ2()
+void clearIrq2()
 {
   noInterrupts();
   radio2Pkt = true;

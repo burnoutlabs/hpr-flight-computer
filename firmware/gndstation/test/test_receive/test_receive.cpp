@@ -29,19 +29,19 @@ static void resetGroundStation(bool fhss, float freq, const char *callSign)
   shimSetMicros(5000000UL);
   settings = UserSettings();
   strcpy(settings.callSign, callSign);
-  radio2 = radio();
+  radio2 = Radio();
   radio2.num = 2;
-  radio2.FHSS = fhss;
+  radio2.fhss = fhss;
   radio2.frq = freq;
   activeRadio = &radio2;
   memset(rocketName, 0, sizeof(rocketName));
   event = 0;
   apogee = false;
-  maxAltitude = maxVelocity = maxG = maxGPSalt = 0;
-  packetnum = 0;
+  maxAltitude = maxVelocity = maxG = maxGpsAlt = 0;
+  lastPacketNum = 0;
   signalEst = false;
   strPosn = 0;
-  SDinit = true;
+  sdInit = true;
   sustainerFile = FsFile();
   boosterFile = FsFile();
   sustainerFileCreated = boosterFileCreated = false;
@@ -49,7 +49,7 @@ static void resetGroundStation(bool fhss, float freq, const char *callSign)
   sustainerPostFlightWrite = boosterPostFlightWrite = true;
   radio2.status = radioBegin();
   setRadioFreq(activeRadio->frq);
-  radioSetMode(RXmode);
+  radioSetMode(RX_MODE);
 }
 
 static bool receive(const GoldenPacket &p) { return receivePacket(p.bytes, p.len); }
@@ -86,13 +86,13 @@ void test_preflight_packet_is_decoded()
   resetGroundStation(false, 433.250F, "KK4ELF");
   TEST_ASSERT_TRUE(receive(GOLDEN_FHSS_OFF[0]));
   TEST_ASSERT_EQUAL_UINT8(0, event);
-  TEST_ASSERT_EQUAL_UINT8(1, GPSlock);
+  TEST_ASSERT_EQUAL_UINT8(1, gpsLock);
   TEST_ASSERT_EQUAL_UINT8(6, contCode);
   TEST_ASSERT_EQUAL_STRING("Golden Test Rocket", rocketName);
   TEST_ASSERT_EQUAL_INT(-123, baseAlt);
-  TEST_ASSERT_EQUAL_INT(1234, baseGPSalt);
-  TEST_ASSERT_TRUE((float)34.123456 == GPSlatitude);
-  TEST_ASSERT_TRUE((float)-117.654321 == GPSlongitude);
+  TEST_ASSERT_EQUAL_INT(1234, baseGpsAlt);
+  TEST_ASSERT_TRUE((float)34.123456 == gpsLatitude);
+  TEST_ASSERT_TRUE((float)-117.654321 == gpsLongitude);
   TEST_ASSERT_EQUAL_INT(7, satNum);
 }
 
@@ -104,15 +104,15 @@ void test_inflight_packet_is_decoded_and_logged()
     TEST_ASSERT_TRUE(receive(GOLDEN_FHSS_OFF[i]));
   }
   // the last sample of inflight packet 2 is the scenario's sample 7
-  TEST_ASSERT_EQUAL_INT16(2, packetnum);
+  TEST_ASSERT_EQUAL_INT16(2, lastPacketNum);
   TEST_ASSERT_EQUAL_UINT8(1, event);
   TEST_ASSERT_EQUAL_INT16(7 * 37 - 300, velocity);
-  TEST_ASSERT_EQUAL_INT16(7 * 113 - 50, Alt);
+  TEST_ASSERT_EQUAL_INT16(7 * 113 - 50, alt);
   TEST_ASSERT_EQUAL_INT16(7 * 29 - 700, spin);
   TEST_ASSERT_EQUAL_INT16(7 * 7, offVert);
   TEST_ASSERT_EQUAL_INT16((int16_t)((9.80665F * 7 - 20.0F) * 33.41406087), accel);
-  TEST_ASSERT_EQUAL_INT(1300 + 7 * 11, GPSalt);
-  TEST_ASSERT_TRUE((float)(34.123456 + 7 * 0.00001) == GPSlatitude);
+  TEST_ASSERT_EQUAL_INT(1300 + 7 * 11, gpsAlt);
+  TEST_ASSERT_TRUE((float)(34.123456 + 7 * 0.00001) == gpsLatitude);
 
   // file: header, preflight row, inflight header, then 4 rows per inflight packet
   const std::string &log = sustainerFile.text;
@@ -147,10 +147,10 @@ void test_postflight_packet_is_decoded()
   TEST_ASSERT_EQUAL_INT(4321, maxAltitude);
   TEST_ASSERT_EQUAL_INT(876, maxVelocity);
   TEST_ASSERT_EQUAL_INT(-1234, maxG);
-  TEST_ASSERT_EQUAL_INT(4300, maxGPSalt);
-  TEST_ASSERT_EQUAL_UINT8(1, GPSlock);
-  TEST_ASSERT_EQUAL_INT(1240, GPSalt);
-  TEST_ASSERT_TRUE((float)34.2 == GPSlatitude);
+  TEST_ASSERT_EQUAL_INT(4300, maxGpsAlt);
+  TEST_ASSERT_EQUAL_UINT8(1, gpsLock);
+  TEST_ASSERT_EQUAL_INT(1240, gpsAlt);
+  TEST_ASSERT_TRUE((float)34.2 == gpsLatitude);
 }
 
 void test_packet_with_another_callsign_is_ignored()
@@ -231,7 +231,7 @@ void test_ground_station_follows_the_flight_computer_hops()
   {
     TEST_ASSERT_EQUAL_INT(expected[k], heard[k]);
   }
-  TEST_ASSERT_EQUAL_INT16(13, packetnum);
+  TEST_ASSERT_EQUAL_INT16(13, lastPacketNum);
 }
 
 int main(int, char **)

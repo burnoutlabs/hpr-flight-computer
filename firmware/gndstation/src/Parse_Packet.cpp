@@ -48,7 +48,7 @@ bool processPacket()
     Serial.print("Length: ");
     Serial.println(len);
     Serial.print("TimeStamp: ");
-    Serial.println(activeRadio->lastRX);
+    Serial.println(activeRadio->lastRx);
   }
   // determine if it is a sustainer or booster packet
   if (event < 21)
@@ -65,11 +65,11 @@ bool processPacket()
   }
 
   // Create the SD file
-  if (parseSustainer && !sustainerFileCreated && SDinit)
+  if (parseSustainer && !sustainerFileCreated && sdInit)
   {
     createSustainerFile();
   }
-  if (parseBooster && !boosterFileCreated && SDinit)
+  if (parseBooster && !boosterFileCreated && sdInit)
   {
     createBoosterFile();
   }
@@ -91,7 +91,7 @@ bool processPacket()
     // set lost signal time
     lostSignalTime = 2000000UL;
     // LCD
-    preflightLCD();
+    preflightLcd();
   }
 
   // inflight packet
@@ -101,11 +101,11 @@ bool processPacket()
     lostSignalTime = 2000000UL;
 
     // write the last pre-flight packet to the SD card
-    if (SDinit && sustainerPreFlightWrite && parseSustainer)
+    if (sdInit && sustainerPreFlightWrite && parseSustainer)
     {
       writePreflightData();
     }
-    if (SDinit && boosterPreFlightWrite && parseBooster)
+    if (sdInit && boosterPreFlightWrite && parseBooster)
     {
       writePreflightData();
     }
@@ -114,7 +114,7 @@ bool processPacket()
     inflightPacket(activeRadio->dataPacket);
 
     // display to LCD
-    inflightLCD();
+    inflightLcd();
   }
 
   // postflight packet
@@ -125,13 +125,13 @@ bool processPacket()
     // parse the packet
     postflightPacket(activeRadio->dataPacket);
     // display to LCD
-    postflightLCD();
+    postflightLcd();
   }
 
   // error packet
   else
   {
-    errorLCD();
+    errorLcd();
   }
 
   parseSustainer = false;
@@ -153,17 +153,17 @@ void preflightPacket(byte rxPacket[])
     return;
   }
   event = pkt.event;
-  GPSlock = pkt.gnssFix;
+  gpsLock = pkt.gnssFix;
   contCode = pkt.contCode;
   memcpy(rocketName, pkt.rocketName, sizeof(rocketName));
   baseAlt = pkt.baseAlt;
-  baseGPSalt = pkt.gpsAlt;
-  GPSlatitude = pkt.latitude;
-  GPSlongitude = pkt.longitude;
+  baseGpsAlt = pkt.gpsAlt;
+  gpsLatitude = pkt.latitude;
+  gpsLongitude = pkt.longitude;
   satNum = pkt.satNum;
 
   // the flight computer hops before every preflight packet: follow it to the next channel
-  if (activeRadio->FHSS)
+  if (activeRadio->fhss)
   {
     activeRadio->syncFreq = false;
     if (settings.debugSerial)
@@ -175,10 +175,10 @@ void preflightPacket(byte rxPacket[])
     hopFreq();
   }
   // capture the last good GPS coordinates to potentially store later in EEPROM
-  if (GPSlock == 1)
+  if (gpsLock == 1)
   {
-    lastGPSlat = GPSlatitude;
-    lastGPSlon = GPSlongitude;
+    lastGpsLat = gpsLatitude;
+    lastGpsLon = gpsLongitude;
   }
 }
 
@@ -196,27 +196,27 @@ void inflightPacket(byte rxPacket[])
   }
 
   // the GPS data and packet number first, then the samples
-  packetnum = pkt.packetNum;
+  lastPacketNum = pkt.packetNum;
 
   if (debugSerial)
   {
     Serial.print(F("Inflight Packet Received, PktNum: "));
-    Serial.println(packetnum);
+    Serial.println(lastPacketNum);
   }
 
-  GPSalt = pkt.gpsAlt;
-  GPSlatitude = pkt.latitude;
-  GPSlongitude = pkt.longitude;
+  gpsAlt = pkt.gpsAlt;
+  gpsLatitude = pkt.latitude;
+  gpsLongitude = pkt.longitude;
 
   // determine GPS lock from coordinates
-  if (fabs(GPSlongitude) > 0)
+  if (fabs(gpsLongitude) > 0)
   {
-    GPSlock = 1;
-    lastGPSfix = micros();
+    gpsLock = 1;
+    lastGpsFix = micros();
   }
   else
   {
-    GPSlock = 0;
+    gpsLock = 0;
   }
 
   // parse inflight packet of 4 samples
@@ -232,21 +232,21 @@ void inflightPacket(byte rxPacket[])
       apogee = true;
     }
     // the packet carries no sample time: count samples from the first packet after liftoff
-    sampleTime = (uint16_t)(((packetnum - 1) * telemetry::INFLIGHT_SAMPLES + i) * INFLIGHT_SAMPLE_INTERVAL_CS);
+    sampleTime = (uint16_t)(((lastPacketNum - 1) * telemetry::INFLIGHT_SAMPLES + i) * INFLIGHT_SAMPLE_INTERVAL_CS);
     velocity = sample.velocity;
     if (!apogee && velocity > maxVelocity)
     {
       maxVelocity = velocity;
     }
-    Alt = sample.altitude;
-    if (!apogee && Alt > maxAltitude)
+    alt = sample.altitude;
+    if (!apogee && alt > maxAltitude)
     {
-      maxAltitude = Alt;
+      maxAltitude = alt;
     }
     spin = sample.roll;
     offVert = sample.offVert;
     accel = sample.accel;
-    if (SDinit)
+    if (sdInit)
     {
       writeInflightData();
     }
@@ -267,11 +267,11 @@ void inflightPacket(byte rxPacket[])
   }
 
   // sync the SD card
-  if (SDinit && parseSustainer)
+  if (sdInit && parseSustainer)
   {
     sustainerFile.sync();
   }
-  if (SDinit && parseBooster)
+  if (sdInit && parseBooster)
   {
     boosterFile.sync();
   }
@@ -281,16 +281,16 @@ void inflightPacket(byte rxPacket[])
     Serial.println("Inflight Data Written");
   }
   // set the next channel: the flight computer hops after every 3rd packet
-  if (activeRadio->FHSS)
+  if (activeRadio->fhss)
   {
     activeRadio->syncFreq = false;
     if (debugSerial)
     {
       dispPktInfo();
     }
-    activeRadio->lastHopTime = activeRadio->lastRX - (packetnum % 3 * 200000UL);
+    activeRadio->lastHopTime = activeRadio->lastRx - (lastPacketNum % 3 * 200000UL);
     activeRadio->chnlUsed = 0;
-    if (packetnum % 3 == 0)
+    if (lastPacketNum % 3 == 0)
     {
       if (settings.debugSerial)
       {
@@ -301,10 +301,10 @@ void inflightPacket(byte rxPacket[])
   }
 
   // capture the last good GPS coordinates to potentially store later in EEPROM
-  if (GPSlock == 1)
+  if (gpsLock == 1)
   {
-    lastGPSlat = GPSlatitude;
-    lastGPSlon = GPSlongitude;
+    lastGpsLat = gpsLatitude;
+    lastGpsLon = gpsLongitude;
   }
 }
 
@@ -322,41 +322,41 @@ void postflightPacket(byte rxPacket[])
   maxAltitude = pkt.maxAlt;
   maxVelocity = pkt.maxVel;
   maxG = pkt.maxG;
-  maxGPSalt = pkt.maxGpsAlt;
-  GPSlock = pkt.gnssFix;
-  GPSalt = pkt.gpsAlt;
-  GPSlatitude = pkt.latitude;
-  GPSlongitude = pkt.longitude;
+  maxGpsAlt = pkt.maxGpsAlt;
+  gpsLock = pkt.gnssFix;
+  gpsAlt = pkt.gpsAlt;
+  gpsLatitude = pkt.latitude;
+  gpsLongitude = pkt.longitude;
 
   // capture the last good GPS coordinates to potentially store later in EEPROM
-  if (GPSlock == 1)
+  if (gpsLock == 1)
   {
-    lastGPSlat = GPSlatitude;
-    lastGPSlon = GPSlongitude;
+    lastGpsLat = gpsLatitude;
+    lastGpsLon = gpsLongitude;
   }
 
   // write to the SD card
-  if (SDinit && parseSustainer && sustainerPostFlightWrite)
+  if (sdInit && parseSustainer && sustainerPostFlightWrite)
   {
     writePostflightData();
   }
-  if (SDinit && parseBooster && boosterPostFlightWrite)
+  if (sdInit && parseBooster && boosterPostFlightWrite)
   {
     writePostflightData();
   }
 
   // sync the SD card
-  if (SDinit && parseSustainer)
+  if (sdInit && parseSustainer)
   {
     sustainerFile.flush();
   }
-  if (SDinit && parseBooster)
+  if (sdInit && parseBooster)
   {
     boosterFile.flush();
   }
 
   // the flight computer hops before every postflight packet: follow it to the next channel
-  if (activeRadio->FHSS)
+  if (activeRadio->fhss)
   {
     activeRadio->chnlUsed = 0;
     hopFreq();

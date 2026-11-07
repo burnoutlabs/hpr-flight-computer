@@ -8,9 +8,9 @@
 #include <TinyGPS++.h>
 
 // GPS Setup (defined in gndstation.cpp)
-extern TinyGPSPlus GPS;
+extern TinyGPSPlus gps;
 
 void setup();
 void loop();
-void clearIRQ1();
-void clearIRQ2();
+void clearIrq1();
+void clearIrq2();

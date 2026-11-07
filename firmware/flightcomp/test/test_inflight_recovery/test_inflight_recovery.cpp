@@ -275,7 +275,7 @@ static RecoveryRun flyWithReset(uint8_t inflightRecover, uint32_t apogeeDelay, b
       run.recovered = std::find(ioLog.begin(), ioLog.end(), "createNextFileSd") == ioLog.end();
       run.eventsAtResume = events;
       run.accelBusNum = sensors.accelBusNum;
-      run.beginAccelSet = beginAccel == beginLSM6DSOX;
+      run.beginAccelSet = beginAccel == beginLsm6dsox;
       run.telemetryBegun = std::find(ioLog.begin(), ioLog.end(), "beginTelemetry") != ioLog.end();
       run.radioEvent = radioTelemetry.event;
       run.lastEventAfterSetup = shimEeprom.bytes[eeprom.lastEvent];

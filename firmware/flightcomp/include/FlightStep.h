@@ -950,16 +950,16 @@ inline __attribute__((always_inline)) void performFlightActions(const FlightActi
       Io::syncSd();
       break;
     case FlightAction::GNSS_LIFTOFF_TIME:
-      gnss.liftoff.hour = GPS.time.hour();
-      gnss.liftoff.minute = GPS.time.minute();
-      gnss.liftoff.second = GPS.time.second();
-      gnss.liftoff.mili = GPS.time.centisecond();
+      gnss.liftoff.hour = gps.time.hour();
+      gnss.liftoff.minute = gps.time.minute();
+      gnss.liftoff.second = gps.time.second();
+      gnss.liftoff.centisecond = gps.time.centisecond();
       break;
     case FlightAction::GNSS_TOUCHDOWN_TIME:
-      gnss.touchdown.hour = GPS.time.hour();
-      gnss.touchdown.minute = GPS.time.minute();
-      gnss.touchdown.second = GPS.time.second();
-      gnss.touchdown.mili = GPS.time.centisecond();
+      gnss.touchdown.hour = gps.time.hour();
+      gnss.touchdown.minute = gps.time.minute();
+      gnss.touchdown.second = gps.time.second();
+      gnss.touchdown.centisecond = gps.time.centisecond();
       break;
     case FlightAction::PRINT_SIMULATED_LIFTOFF:
       Io::println(" ");

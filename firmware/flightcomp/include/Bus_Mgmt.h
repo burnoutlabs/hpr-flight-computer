@@ -13,7 +13,7 @@
 alignas(4) extern byte rawData[14];
 
 // Hardware Serial for GPS (defined in Bus_Mgmt.cpp)
-extern HardwareSerial *HWSERIAL;
+extern HardwareSerial *gnssSerial;
 
 //-----------------------------------------
 // Bus Variables (defined in Bus_Mgmt.cpp)
@@ -31,20 +31,20 @@ typedef struct
   uint8_t writeMask = 0x00;
   uint8_t readMask = 0x00;
   uint8_t incMask = 0x00;
-} _bus;
-extern _bus accelBus;
-extern _bus gyroBus;
-extern _bus magBus;
-extern _bus highGBus;
-extern _bus baroBus;
-extern _bus radioBus;
-extern _bus sdBus;
-extern _bus *activeBus;
+} Bus;
+extern Bus accelBus;
+extern Bus gyroBus;
+extern Bus magBus;
+extern Bus highGBus;
+extern Bus baroBus;
+extern Bus radioBus;
+extern Bus sdBus;
+extern Bus *activeBus;
 
-void setHWSERIAL();
-void startI2C(_bus *myBus, uint8_t busNum);
+void setGnssSerial();
+void startI2c(Bus *myBus, uint8_t busNum);
 bool testSensor(uint8_t address);
-void startSPI(_bus *myBus, uint8_t busNum);
+void startSpi(Bus *myBus, uint8_t busNum);
 uint8_t read8(uint8_t reg);
 void burstRead(uint8_t reg, uint8_t bytes);
 void write8(uint8_t reg, uint8_t val);

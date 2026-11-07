@@ -15,19 +15,19 @@
 alignas(4) byte rawData[14];
 
 // Hardware Serial for GPS
-HardwareSerial *HWSERIAL;
+HardwareSerial *gnssSerial;
 
 //-----------------------------------------
 // Bus Variables
 //-----------------------------------------
-_bus accelBus;
-_bus gyroBus;
-_bus magBus;
-_bus highGBus;
-_bus baroBus;
-_bus radioBus;
-_bus sdBus;
-_bus *activeBus;
+Bus accelBus;
+Bus gyroBus;
+Bus magBus;
+Bus highGBus;
+Bus baroBus;
+Bus radioBus;
+Bus sdBus;
+Bus *activeBus;
 
 // Supported Buses for Teensy Models
 // ----------------------------------------------------------
@@ -72,7 +72,7 @@ _bus *activeBus;
  */
 // ----------------------------------------------------------
 /**
- * @function startI2C
+ * @function startI2c
  * @brief Starts the I2C bus.
  */
 
@@ -82,7 +82,7 @@ _bus *activeBus;
  */
 
 /**
- * @function startSPI
+ * @function startSpi
  * @brief Starts the SPI bus.
  */
 
@@ -112,7 +112,7 @@ _bus *activeBus;
  */
 
 /**
- * @function setHWSERIAL
+ * @function setGnssSerial
  * @brief Sets the active UART bus for the GPS to the user-specified bus.
  */
 
@@ -123,7 +123,7 @@ _bus *activeBus;
  * @details This function sets the hardware serial communication based on the
  * specified Teensy model and GPS bus number.
  */
-void setHWSERIAL()
+void setGnssSerial()
 {
 
   Serial.print(F("Setting HW Serial"));
@@ -134,29 +134,29 @@ void setHWSERIAL()
   {
 
   case 1:
-    HWSERIAL = &Serial1;
+    gnssSerial = &Serial1;
     break;
 
   case 2:
-    HWSERIAL = &Serial2;
+    gnssSerial = &Serial2;
     break;
 
   case 3:
-    HWSERIAL = &Serial3;
+    gnssSerial = &Serial3;
     break;
 
 // Teensy 3.5, 3.6, 4.0, 4.1
 #if defined(__MK64FX512__) || defined(__MK66FX1M0__) || defined(__IMXRT1062__)
   case 4:
-    HWSERIAL = &Serial4;
+    gnssSerial = &Serial4;
     break;
 
   case 5:
-    HWSERIAL = &Serial5;
+    gnssSerial = &Serial5;
     break;
 
   case 6:
-    HWSERIAL = &Serial6;
+    gnssSerial = &Serial6;
     break;
 
 #endif
@@ -165,7 +165,7 @@ void setHWSERIAL()
 #if defined(__IMXRT1062__)
 
   case 7:
-    HWSERIAL = &Serial7;
+    gnssSerial = &Serial7;
     break;
 
 #endif
@@ -174,7 +174,7 @@ void setHWSERIAL()
 #if defined(ARDUINO_TEENSY41)
 
   case 8:
-    HWSERIAL = &Serial8;
+    gnssSerial = &Serial8;
     break;
 #endif
   }
@@ -188,7 +188,7 @@ void setHWSERIAL()
  * @param[in] myBus Pointer to the bus structure.
  * @param[in] busNum The bus number to start.
  */
-void startI2C(_bus *myBus, uint8_t busNum)
+void startI2c(Bus *myBus, uint8_t busNum)
 {
 
   // start the bus
@@ -330,7 +330,7 @@ bool testSensor(uint8_t address)
  * @param[in] myBus Pointer to the bus structure.
  * @param[in] busNum The bus number to start.
  */
-void startSPI(_bus *myBus, uint8_t busNum)
+void startSpi(Bus *myBus, uint8_t busNum)
 {
 
   if (settings.testMode)

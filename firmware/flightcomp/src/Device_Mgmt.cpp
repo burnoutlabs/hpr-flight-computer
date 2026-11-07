@@ -41,7 +41,7 @@
 // orientGyro(): removes bias from raw sensor data and orients corrected data to the proper axes
 // orientMag(): removes bias from raw sensor data and orients corrected data to the proper axes
 // orientHighG(): removes bias from raw sensor data and orients corrected data to the proper axes
-// GNSSconfig(): configures the GNSS unit for flight conditions
+// gnssConfig(): configures the GNSS unit for flight conditions
 // GNSSpowerSaveMode(): reduces power consumption post-flight
 // dummyVoid(): executes no code when a routine or sensor is absent
 // dummyBool(): executes no code and returns true when a routine or sensor is absent
@@ -67,32 +67,32 @@ void setPolyMorphs()
   switch (sensors.accel)
   {
   case 1:
-    beginAccel = beginLSM303_A;
-    getAccel = getLSM303_A;
+    beginAccel = beginLsm303Accel;
+    getAccel = getLsm303Accel;
     break;
   case 2:
-    beginAccel = beginLSM9DS1_AG;
-    getAccel = getLSM9DS1_AG;
+    beginAccel = beginLsm9ds1AccelGyro;
+    getAccel = getLsm9ds1AccelGyro;
     break;
   case 3:
-    beginAccel = beginLSM6DS33;
-    getAccel = getLSM6DS33;
+    beginAccel = beginLsm6ds33;
+    getAccel = getLsm6ds33;
     break;
   case 4:
-    beginAccel = beginMPU6050;
-    getAccel = getMPU6050;
+    beginAccel = beginMpu6050;
+    getAccel = getMpu6050;
     break;
   case 5:
-    beginAccel = beginMPU9250_AG;
-    getAccel = getMPU9250_AG;
+    beginAccel = beginMpu9250AccelGyro;
+    getAccel = getMpu9250AccelGyro;
     break;
   case 6:
-    beginAccel = beginLSM6DSOX;
-    getAccel = getLSM6DSOX;
+    beginAccel = beginLsm6dsox;
+    getAccel = getLsm6dsox;
     break;
   case 8:
-    beginAccel = beginLSM6DS3TR;
-    getAccel = getLSM6DS3TR;
+    beginAccel = beginLsm6ds3tr;
+    getAccel = getLsm6ds3tr;
     break;
   case 7: // External Library
   default:
@@ -105,8 +105,8 @@ void setPolyMorphs()
   switch (sensors.gyro)
   {
   case 1:
-    beginGyro = beginL3GD20H;
-    getGyro = getL3GD20H;
+    beginGyro = beginL3gd20h;
+    getGyro = getL3gd20h;
     break;
   case 7: // External Library
     beginGyro = beginExternalGyro;
@@ -122,16 +122,16 @@ void setPolyMorphs()
   switch (sensors.highG)
   {
   case 1:
-    beginHighG = beginADS1115;
-    getHighG = getADS1115;
+    beginHighG = beginAds1115;
+    getHighG = getAds1115;
     break;
   case 2:
-    beginHighG = beginH3LIS331DL;
-    getHighG = getH3LIS331DL;
+    beginHighG = beginH3lis331dl;
+    getHighG = getH3lis331dl;
     break;
   case 3:
-    beginHighG = beginADXL377;
-    getHighG = getADXL377;
+    beginHighG = beginAdxl377;
+    getHighG = getAdxl377;
     break;
   case 4: // External Library
     beginHighG = beginExternalHighG;
@@ -147,20 +147,20 @@ void setPolyMorphs()
   switch (sensors.mag)
   {
   case 1:
-    beginMag = beginLSM303_M;
-    getMag = getLSM303_M;
+    beginMag = beginLsm303Mag;
+    getMag = getLsm303Mag;
     break;
   case 2:
-    beginMag = beginLSM9DS1_M;
-    getMag = getLSM9DS1_M;
+    beginMag = beginLsm9ds1Mag;
+    getMag = getLsm9ds1Mag;
     break;
   case 3:
-    beginMag = beginLIS3MDL;
-    getMag = getLIS3MDL;
+    beginMag = beginLis3mdl;
+    getMag = getLis3mdl;
     break;
   case 4:
-    beginMag = beginMPU9250_M;
-    getMag = getMPU9250_M;
+    beginMag = beginMpu9250Mag;
+    getMag = getMpu9250Mag;
     break;
   case 5: // External Library
     beginMag = beginExternalMag;
@@ -176,29 +176,29 @@ void setPolyMorphs()
   switch (sensors.baro)
   {
   case 1:
-    beginBaro = beginBMP180;
-    getBaro = getBMP180;
+    beginBaro = beginBmp180;
+    getBaro = getBmp180;
     break;
   case 2:
-    beginBaro = beginMPL3115A2;
-    getBaro = getMPL3115A2;
+    beginBaro = beginMpl3115a2;
+    getBaro = getMpl3115a2;
     break;
   case 3:
-    beginBaro = beginBMP280;
-    getBaro = getBMP280;
+    beginBaro = beginBmp280;
+    getBaro = getBmp280;
     break;
   case 4:
-    beginBaro = beginBMP388;
-    getBaro = getBMP388;
+    beginBaro = beginBmp388;
+    getBaro = getBmp388;
     break;
   case 5: // MS5611
   case 6: // MS5607
-    beginBaro = beginMS56XX;
-    getBaro = getMS56XX;
+    beginBaro = beginMs56xx;
+    getBaro = getMs56xx;
     break;
   case 7:
-    beginBaro = beginLPS25H;
-    getBaro = getLPS25H;
+    beginBaro = beginLps25h;
+    getBaro = getLps25h;
     break;
   case 8: // External Library
   default:
@@ -246,19 +246,19 @@ void setPolyMorphs()
   case 1: // NEO-M8N
   case 2: // SAM/MAX/NEO-M8Q/W
   case 3: // NEO-M9N
-    GNSSrestorDefaults = UBLOXrestorDefaults;
-    GNSSconfig = UBLOXconfig;
-    GNSSpowerSave = UBLOXpowerSave;
+    gnssRestoreDefaults = ubloxRestoreDefaults;
+    gnssConfig = ubloxConfig;
+    gnssPowerSave = ubloxPowerSave;
     break;
   case 4: // Adafruit Ultimate GPS or External Library
-    GNSSrestorDefaults = dummyVoid;
-    GNSSconfig = ExternalGNSSconfig;
-    GNSSpowerSave = externalGNSS_PSM;
+    gnssRestoreDefaults = dummyVoid;
+    gnssConfig = externalGnssConfig;
+    gnssPowerSave = externalGnssPowerSave;
     break;
   default: // none
-    GNSSrestorDefaults = dummyVoid;
-    GNSSconfig = dummyVoid;
-    GNSSpowerSave = dummyVoid;
+    gnssRestoreDefaults = dummyVoid;
+    gnssConfig = dummyVoid;
+    gnssPowerSave = dummyVoid;
     break;
   }
 

@@ -42,72 +42,72 @@
  * @warning Some Bosch sensors, such as BMP280 and BMP388, may be sensitive to RF interference.
  *
  * @section sensor_specific_functions Sensor-Specific Functions
- * - beginLSM303_A(): Starts LSM303 accelerometer.
- * - beginLSM303_M(): Starts LSM303 magnetometer.
- * - getLSM303_A(): Gets LSM303 accelerometer data.
- * - getLSM303_M(): Gets LSM303 magnetometer data.
+ * - beginLsm303Accel(): Starts LSM303 accelerometer.
+ * - beginLsm303Mag(): Starts LSM303 magnetometer.
+ * - getLsm303Accel(): Gets LSM303 accelerometer data.
+ * - getLsm303Mag(): Gets LSM303 magnetometer data.
  *
- * - beginL3GD20H(): Starts L3GD20H gyroscope.
- * - getL3GD20H(): Gets L3GD20H gyroscope data.
+ * - beginL3gd20h(): Starts L3GD20H gyroscope.
+ * - getL3gd20h(): Gets L3GD20H gyroscope data.
  *
- * - beginLSM9DS1_AG(): Starts LSM9DS1 accelerometer & gyro.
- * - beginLSM9DS1_M(): Starts LSM9DS1 magnetometer.
- * - getLSM9DS1_AG(): Gets LSM9DS1 accelerometer & gyro data.
- * - getLSM9DS1_M(): Gets LSM9DS1 magnetometer data.
+ * - beginLsm9ds1AccelGyro(): Starts LSM9DS1 accelerometer & gyro.
+ * - beginLsm9ds1Mag(): Starts LSM9DS1 magnetometer.
+ * - getLsm9ds1AccelGyro(): Gets LSM9DS1 accelerometer & gyro data.
+ * - getLsm9ds1Mag(): Gets LSM9DS1 magnetometer data.
  *
- * - beginLSM6DS3TR(): Starts LSM6DS3TR sensor.
- * - getLSM6DS3TR(): Gets LSM6DS3TR accelerometer & gyro data.
+ * - beginLsm6ds3tr(): Starts LSM6DS3TR sensor.
+ * - getLsm6ds3tr(): Gets LSM6DS3TR accelerometer & gyro data.
  *
- * - beginLSM6DS33(): Starts LSM6DS33 sensor.
- * - getLSM6DS33(): Gets LSM6DS33 accelerometer & gyro data.
+ * - beginLsm6ds33(): Starts LSM6DS33 sensor.
+ * - getLsm6ds33(): Gets LSM6DS33 accelerometer & gyro data.
  *
- * - beginLSM6DSOX(): Starts LSM6DSOX sensor.
- * - getLSM6DSOX(): Gets LSM6DSOX accelerometer & gyro data.
+ * - beginLsm6dsox(): Starts LSM6DSOX sensor.
+ * - getLsm6dsox(): Gets LSM6DSOX accelerometer & gyro data.
  *
- * - beginMPU6050(): Starts MPU6050 sensor.
- * - getMPU6050(): Gets MPU6050 accelerometer & gyro data.
+ * - beginMpu6050(): Starts MPU6050 sensor.
+ * - getMpu6050(): Gets MPU6050 accelerometer & gyro data.
  *
- * - beginMPU9250_AG(): Starts MPU9250 accelerometer & gyro.
- * - beginMPU9250_M(): Starts MPU9250 magnetometer.
- * - getMPU9250_AG(): Gets MPU9250 accelerometer & gyro data.
- * - getMPU9250_M(): Gets MPU9250 magnetometer data.
+ * - beginMpu9250AccelGyro(): Starts MPU9250 accelerometer & gyro.
+ * - beginMpu9250Mag(): Starts MPU9250 magnetometer.
+ * - getMpu9250AccelGyro(): Gets MPU9250 accelerometer & gyro data.
+ * - getMpu9250Mag(): Gets MPU9250 magnetometer data.
  *
- * - beginLIS3MDL(): Starts LIS3MDL magnetometer.
- * - getLIS3MDL(): Gets LIS3MDL magnetometer data.
+ * - beginLis3mdl(): Starts LIS3MDL magnetometer.
+ * - getLis3mdl(): Gets LIS3MDL magnetometer data.
  *
- * - beginLPS25H(): Starts LPS25H sensor.
- * - getLPS25H(): Gets both temperature and pressure data.
+ * - beginLps25h(): Starts LPS25H sensor.
+ * - getLps25h(): Gets both temperature and pressure data.
  *
- * - beginADXL377(): Starts Teensy ADC.
- * - getADXL377(): Gets accelerometer data from Teensy ADC.
+ * - beginAdxl377(): Starts Teensy ADC.
+ * - getAdxl377(): Gets accelerometer data from Teensy ADC.
  *
- * - beginH3LIS331DL(): Starts H3LIS331DL high-G accelerometer.
- * - getH3LIS331DL(): Gets H3LIS331DL high-G accelerometer data.
+ * - beginH3lis331dl(): Starts H3LIS331DL high-G accelerometer.
+ * - getH3lis331dl(): Gets H3LIS331DL high-G accelerometer data.
  *
- * - beginADS1115(): Starts ADS1115 ADC.
- * - getADS1115(): Gets accelerometer data from ADXL377.
+ * - beginAds1115(): Starts ADS1115 ADC.
+ * - getAds1115(): Gets accelerometer data from ADXL377.
  *
- * - beginMPL3115A2(): Starts MPL3115A2 sensor.
- * - getMPL3115A2(): Reads MPL3115A2 sensor data.
+ * - beginMpl3115a2(): Starts MPL3115A2 sensor.
+ * - getMpl3115a2(): Reads MPL3115A2 sensor data.
  * - pressureToAltitude(): Converts pressure to altitude.
  *
- * - beginBMP180(): Starts BMP180 barometric sensor.
- * - getBMP180(): Gets BMP180 sensor data.
+ * - beginBmp180(): Starts BMP180 barometric sensor.
+ * - getBmp180(): Gets BMP180 sensor data.
  * - initiateTemp(): Initiates temperature measurement.
  * - initiatePressure(): Initiates pressure measurement.
  * - getPressure(): Retrieves pressure data.
  *
- * - beginBMP280(): Starts BMP280 sensor.
- * - getBMP280(): Gets BMP280 sensor data.
+ * - beginBmp280(): Starts BMP280 sensor.
+ * - getBmp280(): Gets BMP280 sensor data.
  *
- * - beginBMP388(): Starts BMP388 sensor.
- * - getBMP388(): Gets BMP388 sensor data.
+ * - beginBmp388(): Starts BMP388 sensor.
+ * - getBmp388(): Gets BMP388 sensor data.
  *
- * - beginMS56XX(): Starts MS56XX sensor.
- * - getMS56XX(): Retrieves MS56XX sensor data.
- * - cmdMS56XX(): Helper function for sending commands.
- * - ConvertTempMS56XX(): Converts temperature.
- * - ConvertPressMS56XX(): Converts pressure.
+ * - beginMs56xx(): Starts MS56XX sensor.
+ * - getMs56xx(): Retrieves MS56XX sensor data.
+ * - cmdMs56xx(): Helper function for sending commands.
+ * - convertTempMs56xx(): Converts temperature.
+ * - convertPressMs56xx(): Converts pressure.
  */
 
 #include <Arduino.h>
@@ -120,7 +120,7 @@
 // LSM303 Accelerometer, which has a different address from the magnetometer
 //***************************************************************************
 
-bool beginLSM303_A()
+bool beginLsm303Accel()
 {
 
 #define LSM303_ADDRESS_ACCEL (0x32 >> 1)
@@ -130,7 +130,7 @@ bool beginLSM303_A()
   // Define bus settings and start bus- ONLY I2C for LSM303!!
   accelBus.i2cRate = 400000;
   accelBus.i2cAddress = LSM303_ADDRESS_ACCEL;
-  startI2C(&accelBus, sensors.accelBusNum);
+  startI2c(&accelBus, sensors.accelBusNum);
 
   // check if there is a device at this address
   if (!testSensor(LSM303_ADDRESS_ACCEL))
@@ -163,12 +163,12 @@ bool beginLSM303_A()
   accel.gainX = accel.gainY = accel.gainZ = 0.012;
 
   return true;
-} // end beginLSM303_A
+} // end beginLsm303Accel
 
 //***************************************************************************
 // LSM303 Magnetometer
 //***************************************************************************
-bool beginLSM303_M()
+bool beginLsm303Mag()
 {
 #define LSM303_ADDRESS_MAG (0x3C >> 1)
 #define LSM303_REGISTER_MAG_MR_REG_M (0x02)
@@ -185,7 +185,7 @@ bool beginLSM303_M()
   // Define bus settings and start bus - ONLY I2C for LSM303!!
   magBus.i2cRate = 400000;
   magBus.i2cAddress = LSM303_ADDRESS_MAG;
-  startI2C(&magBus, sensors.magBusNum);
+  startI2c(&magBus, sensors.magBusNum);
 
   // check if there is a device at this address
   if (!testSensor(LSM303_ADDRESS_MAG))
@@ -274,9 +274,9 @@ bool beginLSM303_M()
   mag.timeBtwnSamp = 33333UL;
 
   return true;
-} // end beginLSM303_M
+} // end beginLsm303Mag
 
-void getLSM303_A()
+void getLsm303Accel()
 {
 
 #define LSM303_REGISTER_ACCEL_OUT_X_L_A (0x28)
@@ -293,7 +293,7 @@ void getLSM303_A()
   accel.rawZ = (int16_t)(rawData[4] | (rawData[5] << 8)) >> 4;
 }
 
-void getLSM303_M()
+void getLsm303Mag()
 {
 
 #define LSM303_REGISTER_MAG_OUT_X_H_M (0x03)
@@ -311,7 +311,7 @@ void getLSM303_M()
 //***************************************************************************
 // L3GD20 Gyroscope
 //***************************************************************************
-bool beginL3GD20H()
+bool beginL3gd20h()
 {
 
 #define L3GD20_ADDRESS 0x6B
@@ -325,13 +325,13 @@ bool beginL3GD20H()
   {
     gyroBus.i2cAddress = L3GD20_ADDRESS;
     gyroBus.i2cRate = 400000;
-    startI2C(&gyroBus, sensors.gyroBusNum);
+    startI2c(&gyroBus, sensors.gyroBusNum);
   }
   else
   {
     gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     gyroBus.cs = pins.gyroCs;
-    startSPI(&gyroBus, sensors.gyroBusNum);
+    startSpi(&gyroBus, sensors.gyroBusNum);
   }
 
   // Check if there is a device at this address
@@ -369,7 +369,7 @@ bool beginL3GD20H()
   return true;
 }
 
-void getL3GD20H()
+void getL3gd20h()
 {
 
 #define GYRO_REGISTER_OUT_X_L (0x28)
@@ -389,7 +389,7 @@ void getL3GD20H()
 //***************************************************************************
 // LSM9DS1 Accelerometer & Gyroscope, which has a different addres from the magnetometer
 //***************************************************************************
-bool beginLSM9DS1_AG()
+bool beginLsm9ds1AccelGyro()
 {
 
 // Addresses for the registers
@@ -405,13 +405,13 @@ bool beginLSM9DS1_AG()
   {
     accelBus.i2cAddress = gyroBus.i2cAddress = LSM9DS1_ADDRESS_ACCELGYRO;
     accelBus.i2cRate = gyroBus.i2cRate = 1000000;
-    startI2C(&accelBus, sensors.accelBusNum);
+    startI2c(&accelBus, sensors.accelBusNum);
   }
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     accelBus.cs = pins.accelCs;
-    startSPI(&accelBus, sensors.accelBusNum);
+    startSpi(&accelBus, sensors.accelBusNum);
     accelBus.readMask = 0x80;
   }
   gyroBus = accelBus;
@@ -471,7 +471,7 @@ bool beginLSM9DS1_AG()
 //***************************************************************************
 // LSM9DS1 Magnetometer
 //***************************************************************************
-bool beginLSM9DS1_M()
+bool beginLsm9ds1Mag()
 {
 #define LSM9DS1_ADDRESS_MAG (0x1E)
 #define LSM9DS1_MAG_ID (0b00111101)
@@ -485,7 +485,7 @@ bool beginLSM9DS1_M()
   {
     magBus.i2cAddress = LSM9DS1_ADDRESS_MAG;
     magBus.i2cRate = 1000000;
-    startI2C(&magBus, sensors.magBusNum);
+    startI2c(&magBus, sensors.magBusNum);
   }
   else
   {
@@ -493,7 +493,7 @@ bool beginLSM9DS1_M()
     magBus.cs = pins.magCs;
     magBus.readMask = 0x80;
     magBus.incMask = 0x40;
-    startSPI(&magBus, sensors.magBusNum);
+    startSpi(&magBus, sensors.magBusNum);
   }
 
   // If I2C, check if there is a sensor at this address
@@ -544,7 +544,7 @@ bool beginLSM9DS1_M()
   return true;
 } // end begin
 
-void getLSM9DS1_AG()
+void getLsm9ds1AccelGyro()
 {
 
 // this routine uses the LSM9DS1 burst read to rapidly read 12 bytes from the sensors
@@ -566,7 +566,7 @@ void getLSM9DS1_AG()
   accel.rawZ = (int16_t)(rawData[10] | (rawData[11] << 8));
 }
 
-void getLSM9DS1_M()
+void getLsm9ds1Mag()
 {
 
 // This routine reads 6 bytes from the magnetometer
@@ -593,7 +593,7 @@ void getLSM9DS1_M()
 //***************************************************************************
 // LSM6DS3TR Accelerometer & Gyroscope
 //***************************************************************************
-bool beginLSM6DS3TR()
+bool beginLsm6ds3tr()
 {
 
 // Addresses for the registers
@@ -607,14 +607,14 @@ bool beginLSM6DS3TR()
   {
     accelBus.i2cAddress = gyroBus.i2cAddress = LSM6DS3TR_ADDRESS_ACCELGYRO;
     accelBus.i2cRate = gyroBus.i2cRate = 1000000;
-    startI2C(&accelBus, sensors.accelBusNum);
+    startI2c(&accelBus, sensors.accelBusNum);
   }
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     accelBus.cs = gyroBus.cs = pins.accelCs;
     accelBus.readMask = gyroBus.readMask = 0x80;
-    startSPI(&accelBus, sensors.accelBusNum);
+    startSpi(&accelBus, sensors.accelBusNum);
   }
   gyroBus = accelBus;
 
@@ -661,7 +661,7 @@ bool beginLSM6DS3TR()
   return true;
 } // end begin
 
-void getLSM6DS3TR()
+void getLsm6ds3tr()
 {
 
 // this routine uses the LSM6DS33 burst read to rapidly read 12 bytes from the sensors
@@ -685,7 +685,7 @@ void getLSM6DS3TR()
 //***************************************************************************
 // LSM6DS33 Accelerometer & Gyroscope
 //***************************************************************************
-bool beginLSM6DS33()
+bool beginLsm6ds33()
 {
 
 // Addresses for the registers
@@ -699,14 +699,14 @@ bool beginLSM6DS33()
   {
     accelBus.i2cAddress = gyroBus.i2cAddress = LSM6DS33_ADDRESS_ACCELGYRO;
     accelBus.i2cRate = gyroBus.i2cRate = 1000000;
-    startI2C(&accelBus, sensors.accelBusNum);
+    startI2c(&accelBus, sensors.accelBusNum);
   }
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     accelBus.cs = gyroBus.cs = pins.accelCs;
     accelBus.readMask = gyroBus.readMask = 0x80;
-    startSPI(&accelBus, sensors.accelBusNum);
+    startSpi(&accelBus, sensors.accelBusNum);
   }
   gyroBus = accelBus;
 
@@ -747,7 +747,7 @@ bool beginLSM6DS33()
   return true;
 } // end begin
 
-void getLSM6DS33()
+void getLsm6ds33()
 {
 
 // this routine uses the LSM6DS33 burst read to rapidly read 12 bytes from the sensors
@@ -771,7 +771,7 @@ void getLSM6DS33()
 //***************************************************************************
 // LSM6DSOX Accelerometer & Gyroscope
 //***************************************************************************
-bool beginLSM6DSOX()
+bool beginLsm6dsox()
 {
 
 // Addresses for the registers
@@ -785,14 +785,14 @@ bool beginLSM6DSOX()
   {
     accelBus.i2cAddress = gyroBus.i2cAddress = LSM6DSOX_ADDRESS_ACCELGYRO;
     accelBus.i2cRate = gyroBus.i2cRate = 400000;
-    startI2C(&accelBus, sensors.accelBusNum);
+    startI2c(&accelBus, sensors.accelBusNum);
   }
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     accelBus.cs = gyroBus.cs = pins.accelCs;
     accelBus.readMask = gyroBus.readMask = 0x80;
-    startSPI(&accelBus, sensors.accelBusNum);
+    startSpi(&accelBus, sensors.accelBusNum);
   }
   gyroBus = accelBus;
 
@@ -852,7 +852,7 @@ bool beginLSM6DSOX()
   return true;
 } // end begin
 
-void getLSM6DSOX()
+void getLsm6dsox()
 {
 
 // this routine uses the LSM6DS33 burst read to rapidly read 12 bytes from the sensors
@@ -876,7 +876,7 @@ void getLSM6DSOX()
 //***************************************************************************
 // MPU6050 Accelerometer & Gyroscope
 //***************************************************************************
-bool beginMPU6050()
+bool beginMpu6050()
 {
 // Addresses for the registers
 #define MPU6050_ADDRESS_ACCELGYRO (0x6B)
@@ -889,13 +889,13 @@ bool beginMPU6050()
   {
     accelBus.i2cAddress = gyroBus.i2cAddress = MPU6050_ADDRESS_ACCELGYRO;
     accelBus.i2cRate = gyroBus.i2cRate = 400000;
-    startI2C(&accelBus, sensors.accelBusNum);
+    startI2c(&accelBus, sensors.accelBusNum);
   }
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     accelBus.cs = gyroBus.cs = pins.accelCs;
-    startSPI(&accelBus, sensors.accelBusNum);
+    startSpi(&accelBus, sensors.accelBusNum);
     accelBus.readMask = gyroBus.readMask = 0x80;
   }
   gyroBus = accelBus;
@@ -934,7 +934,7 @@ bool beginMPU6050()
   return true;
 }
 
-void getMPU6050()
+void getMpu6050()
 {
 
 // the MPU6050 accel and gyro output registers are not sequential, so we need to draw 14 bytes
@@ -957,7 +957,7 @@ void getMPU6050()
 //***************************************************************************
 // MPU9250 Accelerometer & Gyroscope
 //***************************************************************************
-bool beginMPU9250_AG()
+bool beginMpu9250AccelGyro()
 {
 // Addresses for the registers
 #define MPU9250_IMU_ADDRESS (0x68)
@@ -979,13 +979,13 @@ bool beginMPU9250_AG()
   {
     accelBus.i2cAddress = gyroBus.i2cAddress = MPU9250_IMU_ADDRESS;
     accelBus.i2cRate = gyroBus.i2cRate = 400000;
-    startI2C(&accelBus, sensors.accelBusNum);
+    startI2c(&accelBus, sensors.accelBusNum);
   }
   else
   {
     accelBus.spiSet = gyroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     accelBus.cs = gyroBus.cs = pins.accelCs;
-    startSPI(&accelBus, sensors.accelBusNum);
+    startSpi(&accelBus, sensors.accelBusNum);
     accelBus.readMask = gyroBus.readMask = 0x80;
   }
   gyroBus = accelBus;
@@ -1026,7 +1026,7 @@ bool beginMPU9250_AG()
   return true;
 }
 
-void getMPU9250_AG()
+void getMpu9250AccelGyro()
 {
 
 // the MPU6050 accel and gyro output registers are not sequential, so we need to draw 14 bytes
@@ -1050,7 +1050,7 @@ void getMPU9250_AG()
 //***************************************************************************
 // MPU9250 Magnetometer
 //***************************************************************************
-bool beginMPU9250_M()
+bool beginMpu9250Mag()
 {
 #define MAGNETOMETER_I2C_ADDRESS (0x0C)
 #define REGISTER_AK8963_CNTL_1 (0x0A)
@@ -1065,7 +1065,7 @@ bool beginMPU9250_M()
   {
     magBus.i2cAddress = MAGNETOMETER_I2C_ADDRESS;
     magBus.i2cRate = 400000;
-    startI2C(&magBus, sensors.magBusNum);
+    startI2c(&magBus, sensors.magBusNum);
   }
   else
   {
@@ -1073,7 +1073,7 @@ bool beginMPU9250_M()
     magBus.cs = pins.magCs;
     magBus.readMask = 0x80;
     magBus.incMask = 0x40;
-    startSPI(&magBus, sensors.magBusNum);
+    startSpi(&magBus, sensors.magBusNum);
   }
   // If I2C, check if there is a sensor at this address
   if (sensors.magBusType == 'I')
@@ -1104,7 +1104,7 @@ bool beginMPU9250_M()
   return true;
 }
 
-void getMPU9250_M()
+void getMpu9250Mag()
 {
 
 // This routine reads 7 bytes from the magnetometer
@@ -1123,7 +1123,7 @@ void getMPU9250_M()
 //***************************************************************************
 // LIS3MDL Magnetometer
 //***************************************************************************
-bool beginLIS3MDL()
+bool beginLis3mdl()
 {
 
 // Addresses for the registers
@@ -1139,13 +1139,13 @@ bool beginLIS3MDL()
   {
     magBus.i2cAddress = LIS3MDL_ADDRESS_MAG;
     magBus.i2cRate = 400000;
-    startI2C(&magBus, sensors.magBusNum);
+    startI2c(&magBus, sensors.magBusNum);
   }
   else
   {
     magBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     magBus.cs = pins.magCs;
-    startSPI(&magBus, sensors.magBusNum);
+    startSpi(&magBus, sensors.magBusNum);
   }
 
   // If I2C, check to see if there is a sensor at this address
@@ -1239,7 +1239,7 @@ bool beginLIS3MDL()
   return true;
 } // end begin
 
-void getLIS3MDL()
+void getLis3mdl()
 {
 #define LIS3MDL_REGISTER_OUT_X_L (0x28)
 
@@ -1257,7 +1257,7 @@ void getLIS3MDL()
 //***************************************************************************
 // LPS25H Barometric Pressure & Temperature
 //***************************************************************************
-bool beginLPS25H()
+bool beginLps25h()
 {
 
 // Addresses for the registers
@@ -1274,14 +1274,14 @@ bool beginLPS25H()
     baroBus.i2cAddress = LPS25H_ADDRESS_BARO;
     baroBus.i2cRate = 400000;
     baroBus.incMask = 0x80;
-    startI2C(&baroBus, sensors.baroBusNum);
+    startI2c(&baroBus, sensors.baroBusNum);
   }
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     baroBus.cs = pins.baroCs;
     baroBus.readMask = 0x80;
-    startSPI(&baroBus, sensors.baroBusNum);
+    startSpi(&baroBus, sensors.baroBusNum);
   }
 
   // If I2C, check to see if there is a sensor at this address
@@ -1315,7 +1315,7 @@ bool beginLPS25H()
   return true;
 } // end begin
 
-void getLPS25H()
+void getLps25h()
 {
 #define LPS25H_PRESS_POUT_XL (0x28)
 
@@ -1341,13 +1341,13 @@ void getLPS25H()
 //***************************************************************************
 // AXL377 High-G Analog Accelerometer w/ Teensy3.5 ADC
 //***************************************************************************
-bool beginADXL377()
+bool beginAdxl377()
 {
 
   // set gain
-  float Vmax = 3.3;        // this is the input voltage to the ADXL377
-  float mV_per_G = 0.0065; // this is the mV per G from the data sheet
-  highG.gainX = highG.gainY = highG.gainZ = Vmax / (mV_per_G)*adcConvert;
+  float vMax = 3.3;      // this is the input voltage to the ADXL377
+  float mvPerG = 0.0065; // this is the mV per G from the data sheet
+  highG.gainX = highG.gainY = highG.gainZ = vMax / (mvPerG)*adcConvert;
 
   sizeHighGFilter = 10;
   highG.timeBtwnSamp = 1000UL;
@@ -1364,7 +1364,7 @@ bool beginADXL377()
   return true;
 }
 
-void getADXL377()
+void getAdxl377()
 {
 
   // measured time is 45 micros per reading
@@ -1389,7 +1389,7 @@ void getADXL377()
 // H3LIS331DL High-G Accelerometer
 //***************************************************************************
 
-bool beginH3LIS331DL()
+bool beginH3lis331dl()
 {
 
 #define H3LIS331_ADDRESS (0x19)
@@ -1403,7 +1403,7 @@ bool beginH3LIS331DL()
     highGBus.i2cAddress = H3LIS331_ADDRESS;
     highGBus.i2cRate = 1000000;
     highGBus.incMask = 0x80;
-    startI2C(&highGBus, sensors.highGBusNum);
+    startI2c(&highGBus, sensors.highGBusNum);
   }
   else
   {
@@ -1411,7 +1411,7 @@ bool beginH3LIS331DL()
     highGBus.cs = pins.highGCs;
     highGBus.readMask = 0x80;
     highGBus.incMask = 0x40;
-    startSPI(&highGBus, sensors.highGBusNum);
+    startSpi(&highGBus, sensors.highGBusNum);
   }
 
   // If I2C, check to see if there is a sensor at this address
@@ -1449,7 +1449,7 @@ bool beginH3LIS331DL()
   return true;
 }
 
-void getH3LIS331DL()
+void getH3lis331dl()
 {
 
 #define H3LIS331_REGISTER_OUT_X_L 0x28
@@ -1466,12 +1466,12 @@ void getH3LIS331DL()
   highG.rawY = (int16_t)(rawData[2] | (rawData[3] << 8)) >> 4;
   highG.rawZ = (int16_t)(rawData[4] | (rawData[5] << 8)) >> 4;
 
-} // end getH3LIS331DL
+} // end getH3lis331dl
 
 //***************************************************************************
 // ADS1115 ADC interface to ADXL377
 //***************************************************************************
-bool beginADS1115()
+bool beginAds1115()
 {
 
 #define ADS1115_ADDRESS (0x48)
@@ -1481,7 +1481,7 @@ bool beginADS1115()
   // Define bus settings and start bus - ONLY I2C!!
   highGBus.i2cAddress = ADS1115_ADDRESS;
   highGBus.i2cRate = 400000;
-  startI2C(&highGBus, sensors.highGBusNum);
+  startI2c(&highGBus, sensors.highGBusNum);
 
   // Check to see if there is a sensor at this address, no whoami
   if (!testSensor(ADS1115_ADDRESS))
@@ -1501,29 +1501,29 @@ bool beginADS1115()
   // COMP_LAT: 0   -> non-latching
   // COMP_QUE: 11  -> Disable Comparator
 
-  uint16_t ADS1115settings;
+  uint16_t ads1115Settings;
   switch (dataRate)
   {
   case 'F':
-    ADS1115settings = 0b1100001011100011;
+    ads1115Settings = 0b1100001011100011;
     break;
 
   case 'M':
-    ADS1115settings = 0b1100001011000011;
+    ads1115Settings = 0b1100001011000011;
     break;
 
   case 'S':
-    ADS1115settings = 0b1100001001000011;
+    ads1115Settings = 0b1100001001000011;
     break;
 
   default:
-    ADS1115settings = 0b1100001011100011;
+    ads1115Settings = 0b1100001011100011;
     break;
   }
 
 // Write config register to the ADC
 #define ADS1115_REG_CONFIG (0x01)
-  write16(ADS1115_REG_CONFIG, ADS1115settings);
+  write16(ADS1115_REG_CONFIG, ads1115Settings);
 
   highG.gainX = highG.gainY = highG.gainZ = 0.0183;
   sizeHighGFilter = 10;
@@ -1532,7 +1532,7 @@ bool beginADS1115()
   return true;
 }
 
-void getADS1115()
+void getAds1115()
 {
 
 #define ADS1115_REG_CONVERT (0x00)
@@ -1555,7 +1555,7 @@ void getADS1115()
 // MPL3115A2 Barometric Pressure Sensor
 //***************************************************************************
 
-boolean beginMPL3115A2()
+boolean beginMpl3115a2()
 {
 #define MPL3115A2_ADDRESS 0x60
 #define MPL3115A2_I2C_READ 0xC1
@@ -1565,7 +1565,7 @@ boolean beginMPL3115A2()
   // Define bus settings and start bus - ONLY I2C!!
   baroBus.i2cAddress = MPL3115A2_ADDRESS;
   baroBus.i2cRate = 400000;
-  startI2C(&baroBus, sensors.baroBusNum);
+  startI2c(&baroBus, sensors.baroBusNum);
 
   // Check to see if there is a sensor at this address, no whoami
   if (!testSensor(MPL3115A2_ADDRESS))
@@ -1599,7 +1599,7 @@ boolean beginMPL3115A2()
   return true;
 }
 
-void getMPL3115A2()
+void getMpl3115a2()
 {
 
   // set bus
@@ -1663,9 +1663,9 @@ float pressureToAltitude(float seaLevel, float atmospheric)
   BSD license, all text above must be included in any redistribution
 ***************************************************************************/
 #define BMP180_ADDRESS (0x77)
-#define _BMP180Mode (3)
+#define BMP180_MODE (3)
 
-struct BMP180_calib_data
+struct Bmp180CalibData
 {
   int16_t ac1;
   int16_t ac2;
@@ -1680,9 +1680,9 @@ struct BMP180_calib_data
   int16_t mc;
   int16_t md;
 };
-static BMP180_calib_data _BMP180_coeffs;
+static Bmp180CalibData bmp180Coeffs;
 
-bool beginBMP180()
+bool beginBmp180()
 {
 
 #define BMP180_REGISTER_CAL_AC1 0xAA
@@ -1700,7 +1700,7 @@ bool beginBMP180()
   // Define bus settings and start bus - ONLY I2C!!
   baroBus.i2cAddress = BMP180_ADDRESS;
   baroBus.i2cRate = 400000;
-  startI2C(&baroBus, sensors.baroBusNum);
+  startI2c(&baroBus, sensors.baroBusNum);
 
   // establish contact
   if (!testSensor(BMP180_ADDRESS))
@@ -1723,27 +1723,27 @@ bool beginBMP180()
 
   // Read calibration coefficients
   burstRead(BMP180_REGISTER_CAL_AC1, 2);
-  _BMP180_coeffs.ac1 = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.ac1 = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_AC2, 2);
-  _BMP180_coeffs.ac2 = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.ac2 = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_AC3, 2);
-  _BMP180_coeffs.ac3 = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.ac3 = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_AC4, 2);
-  _BMP180_coeffs.ac4 = (uint16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.ac4 = (uint16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_AC5, 2);
-  _BMP180_coeffs.ac5 = (uint16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.ac5 = (uint16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_AC6, 2);
-  _BMP180_coeffs.ac6 = (uint16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.ac6 = (uint16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_B1, 2);
-  _BMP180_coeffs.b1 = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.b1 = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_B2, 2);
-  _BMP180_coeffs.b2 = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.b2 = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_MB, 2);
-  _BMP180_coeffs.mb = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.mb = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_MC, 2);
-  _BMP180_coeffs.mc = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.mc = (int16_t)((rawData[0] << 8) | rawData[1]);
   burstRead(BMP180_REGISTER_CAL_MD, 2);
-  _BMP180_coeffs.md = (int16_t)((rawData[0] << 8) | rawData[1]);
+  bmp180Coeffs.md = (int16_t)((rawData[0] << 8) | rawData[1]);
 
   // since everthing happens in a timed sequence, we need to check it every cycle
   baro.timeBtwnSamp = 0;
@@ -1751,7 +1751,7 @@ bool beginBMP180()
   return true;
 }
 
-void getBMP180()
+void getBmp180()
 {
 
   // Get a BMP180 barometric event if needed
@@ -1789,7 +1789,7 @@ void getBMP180()
     getTemp = true;
     baro.newSamp = true;
   }
-} // end getBMP180
+} // end getBmp180
 
 void initiateTemp()
 {
@@ -1824,10 +1824,10 @@ void initiatePressure()
   ut = rt;
 
   // Calculate true temperature
-  X1 = (ut - (int32_t)_BMP180_coeffs.ac6) * ((int32_t)_BMP180_coeffs.ac5) >> 15;
-  X2 = ((int32_t)_BMP180_coeffs.mc << 11) / (X1 + (int32_t)_BMP180_coeffs.md);
-  _BMP180_coeffs.b5 = X1 + X2;
-  t = (_BMP180_coeffs.b5 + 8) >> 4;
+  X1 = (ut - (int32_t)bmp180Coeffs.ac6) * ((int32_t)bmp180Coeffs.ac5) >> 15;
+  X2 = ((int32_t)bmp180Coeffs.mc << 11) / (X1 + (int32_t)bmp180Coeffs.md);
+  bmp180Coeffs.b5 = X1 + X2;
+  t = (bmp180Coeffs.b5 + 8) >> 4;
   t /= 10;
 
   float tempCheck = baro.temperature - t - baro.tempOffset;
@@ -1842,7 +1842,7 @@ void initiatePressure()
   }
 
   // Initiate Pressure
-  write8(BMP180_REGISTER_CONTROL, BMP180_REGISTER_READPRESSURECMD + (_BMP180Mode << 6));
+  write8(BMP180_REGISTER_CONTROL, BMP180_REGISTER_READPRESSURECMD + (BMP180_MODE << 6));
 } // end initiate pressure
 
 void getPressure()
@@ -1868,19 +1868,19 @@ void getPressure()
   up = (uint32_t)p16 << 8;
   p8 = rawData[2];
   up += p8;
-  up >>= (8 - _BMP180Mode);
+  up >>= (8 - BMP180_MODE);
 
   // Calculate true pressure
-  b6 = _BMP180_coeffs.b5 - 4000;
-  x1 = (_BMP180_coeffs.b2 * ((b6 * b6) >> 12)) >> 11;
-  x2 = (_BMP180_coeffs.ac2 * b6) >> 11;
+  b6 = bmp180Coeffs.b5 - 4000;
+  x1 = (bmp180Coeffs.b2 * ((b6 * b6) >> 12)) >> 11;
+  x2 = (bmp180Coeffs.ac2 * b6) >> 11;
   x3 = x1 + x2;
-  b3 = (((((int32_t)_BMP180_coeffs.ac1) * 4 + x3) << _BMP180Mode) + 2) >> 2;
-  x1 = (_BMP180_coeffs.ac3 * b6) >> 13;
-  x2 = (_BMP180_coeffs.b1 * ((b6 * b6) >> 12)) >> 16;
+  b3 = (((((int32_t)bmp180Coeffs.ac1) * 4 + x3) << BMP180_MODE) + 2) >> 2;
+  x1 = (bmp180Coeffs.ac3 * b6) >> 13;
+  x2 = (bmp180Coeffs.b1 * ((b6 * b6) >> 12)) >> 16;
   x3 = ((x1 + x2) + 2) >> 2;
-  b4 = (_BMP180_coeffs.ac4 * (uint32_t)(x3 + 32768)) >> 15;
-  b7 = ((uint32_t)(up - b3) * (50000 >> _BMP180Mode));
+  b4 = (bmp180Coeffs.ac4 * (uint32_t)(x3 + 32768)) >> 15;
+  b7 = ((uint32_t)(up - b3) * (50000 >> BMP180_MODE));
 
   if (b7 < 0x80000000)
   {
@@ -1970,11 +1970,11 @@ typedef struct
   int16_t dig_H4;
   int16_t dig_H5;
   int8_t dig_H6;
-} bmp280_calib_data;
+} Bmp280CalibData;
 
-bmp280_calib_data _bmp280_calib;
+Bmp280CalibData bmp280Calib;
 
-boolean beginBMP280()
+boolean beginBmp280()
 {
 
   // Define bus settings and start bus
@@ -1982,13 +1982,13 @@ boolean beginBMP280()
   {
     baroBus.i2cAddress = BMP280_ADDRESS;
     baroBus.i2cRate = 1000000;
-    startI2C(&baroBus, sensors.baroBusNum);
+    startI2c(&baroBus, sensors.baroBusNum);
   }
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     baroBus.cs = pins.baroCs;
-    startSPI(&baroBus, sensors.baroBusNum);
+    startSpi(&baroBus, sensors.baroBusNum);
   }
 
   // If I2C, check to see if there is a sensor at this address
@@ -2017,29 +2017,29 @@ boolean beginBMP280()
 
   // read coefficients
   burstRead(BMP280_REGISTER_DIG_T1, 2);
-  _bmp280_calib.dig_T1 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_T1 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_T2, 2);
-  _bmp280_calib.dig_T2 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_T2 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_T3, 2);
-  _bmp280_calib.dig_T3 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_T3 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P1, 2);
-  _bmp280_calib.dig_P1 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P1 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P2, 2);
-  _bmp280_calib.dig_P2 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P2 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P3, 2);
-  _bmp280_calib.dig_P3 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P3 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P4, 2);
-  _bmp280_calib.dig_P4 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P4 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P5, 2);
-  _bmp280_calib.dig_P5 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P5 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P6, 2);
-  _bmp280_calib.dig_P6 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P6 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P7, 2);
-  _bmp280_calib.dig_P7 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P7 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P8, 2);
-  _bmp280_calib.dig_P8 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P8 = (rawData[1] << 8) | rawData[0];
   burstRead(BMP280_REGISTER_DIG_P9, 2);
-  _bmp280_calib.dig_P9 = (rawData[1] << 8) | rawData[0];
+  bmp280Calib.dig_P9 = (rawData[1] << 8) | rawData[0];
 
   // put the BMP280 into sleep mode
   write8(BMP280_REGISTER_CONTROL, 0x00);
@@ -2051,7 +2051,7 @@ boolean beginBMP280()
   return true;
 }
 
-void getBMP280()
+void getBmp280()
 {
 
   // set bus
@@ -2085,14 +2085,14 @@ void getBMP280()
 
   int32_t var1, var2, t_fine;
 
-  var1 = ((((adc_T >> 3) - ((int32_t)_bmp280_calib.dig_T1 << 1))) *
-          ((int32_t)_bmp280_calib.dig_T2)) >>
+  var1 = ((((adc_T >> 3) - ((int32_t)bmp280Calib.dig_T1 << 1))) *
+          ((int32_t)bmp280Calib.dig_T2)) >>
          11;
 
-  var2 = (((((adc_T >> 4) - ((int32_t)_bmp280_calib.dig_T1)) *
-            ((adc_T >> 4) - ((int32_t)_bmp280_calib.dig_T1))) >>
+  var2 = (((((adc_T >> 4) - ((int32_t)bmp280Calib.dig_T1)) *
+            ((adc_T >> 4) - ((int32_t)bmp280Calib.dig_T1))) >>
            12) *
-          ((int32_t)_bmp280_calib.dig_T3)) >>
+          ((int32_t)bmp280Calib.dig_T3)) >>
          14;
 
   t_fine = var1 + var2;
@@ -2107,12 +2107,12 @@ void getBMP280()
   int64_t var3, var4, p;
 
   var3 = ((int64_t)t_fine) - 128000;
-  var4 = var3 * var3 * (int64_t)_bmp280_calib.dig_P6;
-  var4 = var4 + ((var3 * (int64_t)_bmp280_calib.dig_P5) << 17);
-  var4 = var4 + (((int64_t)_bmp280_calib.dig_P4) << 35);
-  var3 = ((var3 * var3 * (int64_t)_bmp280_calib.dig_P3) >> 8) +
-         ((var3 * (int64_t)_bmp280_calib.dig_P2) << 12);
-  var3 = (((((int64_t)1) << 47) + var3)) * ((int64_t)_bmp280_calib.dig_P1) >> 33;
+  var4 = var3 * var3 * (int64_t)bmp280Calib.dig_P6;
+  var4 = var4 + ((var3 * (int64_t)bmp280Calib.dig_P5) << 17);
+  var4 = var4 + (((int64_t)bmp280Calib.dig_P4) << 35);
+  var3 = ((var3 * var3 * (int64_t)bmp280Calib.dig_P3) >> 8) +
+         ((var3 * (int64_t)bmp280Calib.dig_P2) << 12);
+  var3 = (((((int64_t)1) << 47) + var3)) * ((int64_t)bmp280Calib.dig_P1) >> 33;
 
   // avoid exception caused by division by zero
   if (var3 == 0)
@@ -2123,10 +2123,10 @@ void getBMP280()
   {
     p = 1048576 - adc_P;
     p = (((p << 31) - var4) * 3125) / var3;
-    var3 = (((int64_t)_bmp280_calib.dig_P9) * (p >> 13) * (p >> 13)) >> 25;
-    var4 = (((int64_t)_bmp280_calib.dig_P8) * p) >> 19;
+    var3 = (((int64_t)bmp280Calib.dig_P9) * (p >> 13) * (p >> 13)) >> 25;
+    var4 = (((int64_t)bmp280Calib.dig_P8) * p) >> 19;
 
-    p = ((p + var3 + var4) >> 8) + (((int64_t)_bmp280_calib.dig_P7) << 4);
+    p = ((p + var3 + var4) >> 8) + (((int64_t)bmp280Calib.dig_P7) << 4);
     baro.pressure = (float)p / 256;
   }
 
@@ -2210,11 +2210,11 @@ typedef struct
 
   float t_lin;
 
-} bmp388_calib_data;
+} Bmp388CalibData;
 
-bmp388_calib_data bmp388cal;
+Bmp388CalibData bmp388cal;
 
-boolean beginBMP388()
+boolean beginBmp388()
 {
 
 #define BMP388_REGISTER_CHIPID 0x00
@@ -2227,13 +2227,13 @@ boolean beginBMP388()
   {
     baroBus.i2cAddress = BMP388_ADDRESS;
     baroBus.i2cRate = 1000000;
-    startI2C(&baroBus, sensors.baroBusNum);
+    startI2c(&baroBus, sensors.baroBusNum);
   }
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     baroBus.cs = pins.baroCs;
-    startSPI(&baroBus, sensors.baroBusNum);
+    startSpi(&baroBus, sensors.baroBusNum);
   }
 
   // If I2C, check to see if there is a sensor at this address
@@ -2350,7 +2350,7 @@ boolean beginBMP388()
   return true;
 }
 
-void getBMP388()
+void getBmp388()
 {
 
 #define BMP388_REGISTER_PRESSUREDATA 0x04
@@ -2426,17 +2426,17 @@ void getBMP388()
 
   baro.rawAlt = 44330 * (1.0 - pow(baro.pressure / (baro.seaLevelPressure), 0.1903));
   baro.newSamp = baro.newTemp = true;
-} // end getBMP388
+} // end getBmp388
 
 //***************************************************************************
 // MS5611 and MS5607 Barometric Pressure Sensors
 //***************************************************************************
 #define MS56XX_ADDRESS (0x77)
-uint16_t MS56XX_PROM[6];
-int64_t MS56XX_dT;
-int64_t MS56XX_TEMP;
+uint16_t ms56xxProm[6];
+int64_t ms56xxDt;
+int64_t ms56xxTemp;
 
-void cmdMS56XX(byte cmd)
+void cmdMs56xx(byte cmd)
 {
 
   // I2C
@@ -2462,30 +2462,30 @@ void cmdMS56XX(byte cmd)
     digitalWriteFast(baroBus.cs, HIGH);
     baroBus.spi->endTransaction();
   }
-} // end cmdMS56XX
+} // end cmdMs56xx
 
-bool beginMS56XX()
+bool beginMs56xx()
 {
 
-#define prom1MS56XX 0xA2
-#define prom2MS56XX 0xA4
-#define prom3MS56XX 0xA6
-#define prom4MS56XX 0xA8
-#define prom5MS56XX 0xAA
-#define prom6MS56XX 0xAC
+#define MS56XX_PROM1 0xA2
+#define MS56XX_PROM2 0xA4
+#define MS56XX_PROM3 0xA6
+#define MS56XX_PROM4 0xA8
+#define MS56XX_PROM5 0xAA
+#define MS56XX_PROM6 0xAC
 
   // Define bus settings and start bus
   if (sensors.baroBusType == 'I')
   {
     baroBus.i2cAddress = MS56XX_ADDRESS;
     baroBus.i2cRate = 1000000;
-    startI2C(&baroBus, sensors.baroBusNum);
+    startI2c(&baroBus, sensors.baroBusNum);
   }
   else
   {
     baroBus.spiSet = SPISettings(10000000, MSBFIRST, SPI_MODE0);
     baroBus.cs = pins.baroCs;
-    startSPI(&baroBus, sensors.baroBusNum);
+    startSpi(&baroBus, sensors.baroBusNum);
   }
 
   // If I2C, check to see if there is a sensor at this address
@@ -2500,45 +2500,45 @@ bool beginMS56XX()
   Serial.println(F("MS56XX OK!"));
 
   // reset
-  cmdMS56XX(0x1E);
+  cmdMs56xx(0x1E);
   delay(100);
 
   // read PROM
-  burstRead(prom1MS56XX, 2);
-  MS56XX_PROM[0] = (rawData[0] << 8 | rawData[1]);
-  burstRead(prom2MS56XX, 2);
-  MS56XX_PROM[1] = (rawData[0] << 8 | rawData[1]);
-  burstRead(prom3MS56XX, 2);
-  MS56XX_PROM[2] = (rawData[0] << 8 | rawData[1]);
-  burstRead(prom4MS56XX, 2);
-  MS56XX_PROM[3] = (rawData[0] << 8 | rawData[1]);
-  burstRead(prom5MS56XX, 2);
-  MS56XX_PROM[4] = (rawData[0] << 8 | rawData[1]);
-  burstRead(prom6MS56XX, 2);
-  MS56XX_PROM[5] = (rawData[0] << 8 | rawData[1]);
+  burstRead(MS56XX_PROM1, 2);
+  ms56xxProm[0] = (rawData[0] << 8 | rawData[1]);
+  burstRead(MS56XX_PROM2, 2);
+  ms56xxProm[1] = (rawData[0] << 8 | rawData[1]);
+  burstRead(MS56XX_PROM3, 2);
+  ms56xxProm[2] = (rawData[0] << 8 | rawData[1]);
+  burstRead(MS56XX_PROM4, 2);
+  ms56xxProm[3] = (rawData[0] << 8 | rawData[1]);
+  burstRead(MS56XX_PROM5, 2);
+  ms56xxProm[4] = (rawData[0] << 8 | rawData[1]);
+  burstRead(MS56XX_PROM6, 2);
+  ms56xxProm[5] = (rawData[0] << 8 | rawData[1]);
 
   // get initial temperature
-  cmdMS56XX(0x58);
+  cmdMs56xx(0x58);
   delayMicroseconds(9040);
   burstRead(0x00, 3);
-  baro.temperature = ConvertTempMS56XX();
+  baro.temperature = convertTempMs56xx();
 
   // get initial pressure
-  cmdMS56XX(0x48);
+  cmdMs56xx(0x48);
   delayMicroseconds(9040);
   burstRead(0x00, 3);
-  baro.pressure = ConvertPressMS56XX();
+  baro.pressure = convertPressMs56xx();
 
   // get another pressure
-  cmdMS56XX(0x48);
+  cmdMs56xx(0x48);
 
   // set the sampling control rate to 110Hz
   baro.timeBtwnSamp = 9090UL;
 
   return true;
-} // end beginMS56XX
+} // end beginMs56xx
 
-void getMS56XX()
+void getMs56xx()
 {
 
   static byte counter = 0;
@@ -2553,7 +2553,7 @@ void getMS56XX()
     // D2 at 4096
     // Read pressure
     burstRead(0x00, 3);
-    baro.pressure = ConvertPressMS56XX();
+    baro.pressure = convertPressMs56xx();
 
     // update the counter
     counter++;
@@ -2561,13 +2561,13 @@ void getMS56XX()
     // if we have done 10 pressure readings, then initiate a temperature reading
     if (counter >= 10)
     {
-      cmdMS56XX(0x58);
+      cmdMs56xx(0x58);
     }
 
     // else issue the next pressure command
     else
     {
-      cmdMS56XX(0x48);
+      cmdMs56xx(0x48);
     }
   }
 
@@ -2576,15 +2576,15 @@ void getMS56XX()
   {
     // Read Temp
     burstRead(0x00, 3);
-    baro.temperature = ConvertTempMS56XX();
+    baro.temperature = convertTempMs56xx();
     // Pressure Command
-    cmdMS56XX(0x48);
+    cmdMs56xx(0x48);
     counter = 0;
   }
 
-} // end getMS56XX
+} // end getMs56xx
 
-float ConvertTempMS56XX()
+float convertTempMs56xx()
 {
 
   union
@@ -2592,39 +2592,39 @@ float ConvertTempMS56XX()
     uint32_t val;
     uint8_t b[4];
   } D2;
-  uint16_t C6 = MS56XX_PROM[5];
-  uint16_t C5 = MS56XX_PROM[4];
+  uint16_t C6 = ms56xxProm[5];
+  uint16_t C5 = ms56xxProm[4];
 
   D2.b[0] = rawData[2];
   D2.b[1] = rawData[1];
   D2.b[2] = rawData[0];
   D2.b[3] = 0;
 
-  MS56XX_dT = (uint64_t)D2.val - ((uint64_t)C5 << 8);
+  ms56xxDt = (uint64_t)D2.val - ((uint64_t)C5 << 8);
 
-  MS56XX_TEMP = 2000 + (((int64_t)MS56XX_dT * (uint64_t)C6) >> 23);
+  ms56xxTemp = 2000 + (((int64_t)ms56xxDt * (uint64_t)C6) >> 23);
 
   int32_t T2 = 0L;
-  if (MS56XX_TEMP < 2000)
+  if (ms56xxTemp < 2000)
   {
-    T2 = ((int64_t)MS56XX_dT * (int64_t)MS56XX_dT) >> 31;
+    T2 = ((int64_t)ms56xxDt * (int64_t)ms56xxDt) >> 31;
   }
 
-  MS56XX_TEMP -= T2;
+  ms56xxTemp -= T2;
 
-  float finalTemp = ((float)MS56XX_TEMP) * 0.01 - baro.tempOffset;
+  float finalTemp = ((float)ms56xxTemp) * 0.01 - baro.tempOffset;
 
   baro.newTemp = true;
 
   return finalTemp;
-} // end ConvertTempMS56XX
+} // end convertTempMs56xx
 
-float ConvertPressMS56XX()
+float convertPressMs56xx()
 {
-  uint16_t C1 = MS56XX_PROM[0];
-  uint16_t C2 = MS56XX_PROM[1];
-  uint16_t C3 = MS56XX_PROM[2];
-  uint16_t C4 = MS56XX_PROM[3];
+  uint16_t C1 = ms56xxProm[0];
+  uint16_t C2 = ms56xxProm[1];
+  uint16_t C3 = ms56xxProm[2];
+  uint16_t C4 = ms56xxProm[3];
   int64_t OFF1;
   int64_t SENS;
   int64_t OFF2 = 0;
@@ -2638,19 +2638,19 @@ float ConvertPressMS56XX()
   //-------------------------------------------------------------
   if (sensors.baro == 5)
   {
-    OFF1 = ((int64_t)C2 << 16) + (((int64_t)C4 * (int64_t)MS56XX_dT) >> 7);
-    SENS = ((int64_t)C1 << 15) + (((int64_t)C3 * (int64_t)MS56XX_dT) >> 8);
+    OFF1 = ((int64_t)C2 << 16) + (((int64_t)C4 * (int64_t)ms56xxDt) >> 7);
+    SENS = ((int64_t)C1 << 15) + (((int64_t)C3 * (int64_t)ms56xxDt) >> 8);
 
     if (baro.temperature < 20.0F)
     {
-      OFF2 = 5 * ((int64_t)(MS56XX_TEMP - 2000) * (int64_t)(MS56XX_TEMP - 2000)) / 2;
-      SENS2 = 5 * ((int64_t)(MS56XX_TEMP - 2000) * (int64_t)(MS56XX_TEMP - 2000)) / 4;
+      OFF2 = 5 * ((int64_t)(ms56xxTemp - 2000) * (int64_t)(ms56xxTemp - 2000)) / 2;
+      SENS2 = 5 * ((int64_t)(ms56xxTemp - 2000) * (int64_t)(ms56xxTemp - 2000)) / 4;
     }
 
     if (baro.temperature < -15.0F)
     {
-      OFF2 += 7 * (int64_t)(MS56XX_TEMP + 1500) * (int64_t)(MS56XX_TEMP + 1500);
-      SENS2 += 11 * (int64_t)(MS56XX_TEMP + 1500) * (int64_t)(MS56XX_TEMP + 1500) / 2;
+      OFF2 += 7 * (int64_t)(ms56xxTemp + 1500) * (int64_t)(ms56xxTemp + 1500);
+      SENS2 += 11 * (int64_t)(ms56xxTemp + 1500) * (int64_t)(ms56xxTemp + 1500) / 2;
     }
 
     OFF1 -= OFF2;
@@ -2666,19 +2666,19 @@ float ConvertPressMS56XX()
   //-------------------------------------------------------------
   if (sensors.baro == 6)
   {
-    OFF1 = ((int64_t)C2 << 17) + (((int64_t)C4 * (int64_t)MS56XX_dT) >> 6);
-    SENS = ((int64_t)C1 << 16) + (((int64_t)C3 * (int64_t)MS56XX_dT) >> 7);
+    OFF1 = ((int64_t)C2 << 17) + (((int64_t)C4 * (int64_t)ms56xxDt) >> 6);
+    SENS = ((int64_t)C1 << 16) + (((int64_t)C3 * (int64_t)ms56xxDt) >> 7);
 
     if (baro.temperature < 20.0F)
     {
-      OFF2 = 61 * ((int64_t)(MS56XX_TEMP - 2000) * (int64_t)(MS56XX_TEMP - 2000)) / 16;
-      SENS2 = 2 * ((int64_t)(MS56XX_TEMP - 2000) * (int64_t)(MS56XX_TEMP - 2000));
+      OFF2 = 61 * ((int64_t)(ms56xxTemp - 2000) * (int64_t)(ms56xxTemp - 2000)) / 16;
+      SENS2 = 2 * ((int64_t)(ms56xxTemp - 2000) * (int64_t)(ms56xxTemp - 2000));
     }
 
     if (baro.temperature < -15.0F)
     {
-      OFF2 += 15 * (int64_t)(MS56XX_TEMP + 1500) * (int64_t)(MS56XX_TEMP + 1500);
-      SENS2 += 8 * (int64_t)(MS56XX_TEMP + 1500) * (int64_t)(MS56XX_TEMP + 1500);
+      OFF2 += 15 * (int64_t)(ms56xxTemp + 1500) * (int64_t)(ms56xxTemp + 1500);
+      SENS2 += 8 * (int64_t)(ms56xxTemp + 1500) * (int64_t)(ms56xxTemp + 1500);
     }
 
     OFF1 -= OFF2;
@@ -2700,4 +2700,4 @@ float ConvertPressMS56XX()
   baro.newSamp = true;
 
   return pressure;
-} // end ConvertPressMS56XX
+} // end convertPressMs56xx

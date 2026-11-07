@@ -228,9 +228,9 @@ inline __attribute__((always_inline)) void writeSdFlightData()
   {
     writeFloatData(gnss.latitude, 6);
     writeFloatData(gnss.longitude, 6);
-    writeFloatData((float)GPS.speed.mph(), 2);
+    writeFloatData((float)gps.speed.mph(), 2);
     writeFloatData2(gnss.alt, 2);
-    writeFloatData((float)GPS.course.deg(), 2);
+    writeFloatData((float)gps.course.deg(), 2);
     writeIntData(radioTelemetry.satNum);
     gnss.sdWrite = false;
   }

@@ -19,7 +19,7 @@
 #include "../src/globals.cpp"
 
 // Objects that flightcomp.cpp defines and Rotation.cpp uses.
-TinyGPSPlus GPS;
+TinyGPSPlus gps;
 PWMServo servos[8];
 
 #include "../src/Speed_Trig.cpp"

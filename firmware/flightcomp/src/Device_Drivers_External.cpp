@@ -38,7 +38,7 @@ Step 4: Place the EEPROMsettings.txt file in the root folder with the Settings.t
 
 // make necessary declarations
 // Adafruit GPS setup
-// Adafruit_GPS ultGPS(HWSERIAL);
+// Adafruit_GPS ultGPS(gnssSerial);
 
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -65,9 +65,9 @@ bool beginExternalAccel()
   // setMySensorRange(16G);
 
   // tell the system the lsb per G from the data sheet
-  float Sensor_G_per_LSB = 1;
-  // Sensor_G_per_LSB = 0.000732;
-  accel.gainX = accel.gainY = accel.gainZ = Sensor_G_per_LSB;
+  float sensorGPerLsb = 1;
+  // sensorGPerLsb = 0.000732;
+  accel.gainX = accel.gainY = accel.gainZ = sensorGPerLsb;
 
   // set the output data rate to at least 1000Hz
   // setMySensorODR();
@@ -117,9 +117,9 @@ bool beginExternalGyro()
   // setMySensorGain(2000DPS);
 
   // tell the system what the gain value is from the data sheet
-  float degrees_per_LSB = 0.07;
+  float degreesPerLsb = 0.07;
 
-  gyro.gainX = gyro.gainY = gyro.gainZ = degrees_per_LSB;
+  gyro.gainX = gyro.gainY = gyro.gainZ = degreesPerLsb;
 
   // set the output data rate to at least 1000Hz
   // setMySensorODR();
@@ -168,21 +168,21 @@ bool beginExternalMag()
   }
 
   // set the range of the magnetometer to 4Gauss or 8 Gauss if the magnetic switch is enabled
-  float gauss_per_LSB = 0.0;
+  float gaussPerLsb = 0.0;
 
   if (settings.magSwitchEnable)
   {
     // setGain(8GAUSS);
-    // gauss_per_LSB = 0.008;
+    // gaussPerLsb = 0.008;
   }
   else
   {
     // setGain(4GAUSS);
-    // gauss_per_LSB = 0.004;
+    // gaussPerLsb = 0.004;
   }
 
   // tell the system what the gain value is from the data sheet
-  mag.gainX = mag.gainY = mag.gainZ = gauss_per_LSB;
+  mag.gainX = mag.gainY = mag.gainZ = gaussPerLsb;
 
   // set the output data rate to at least 30Hz
   // setMySensorODR(30Hz);
@@ -218,9 +218,9 @@ bool beginExternalHighG()
 {
 
   // write the begin statement to start the sensor
-  bool highG_Response = false;
-  // highG_Response = mySensorBegin();
-  if (highG_Response)
+  bool highGResponse = false;
+  // highGResponse = mySensorBegin();
+  if (highGResponse)
   {
     Serial.println("High-G Acclerometer OK!");
   }
@@ -233,9 +233,9 @@ bool beginExternalHighG()
   // setRange(100G);
 
   // tell the system the G's per LSB from the data sheet
-  float Sensor_G_per_LSB = 0.0;
-  // Sensor_G_per_LSB = 0.049;
-  highG.gainX = highG.gainY = highG.gainZ = Sensor_G_per_LSB;
+  float sensorGPerLsb = 0.0;
+  // sensorGPerLsb = 0.049;
+  highG.gainX = highG.gainY = highG.gainZ = sensorGPerLsb;
 
   // set the size of the moving average filter
   sizeHighGFilter = 15;
@@ -247,22 +247,22 @@ bool beginExternalHighG()
   uint32_t ODR = 1000;
   highG.timeBtwnSamp = (uint32_t)(1000000 / ODR);
 
-  return highG_Response;
+  return highGResponse;
 }
 
 void getExternalHighG()
 {
 
-  int16_t highG_X, highG_Y, highG_Z;
-  highG_X = highG_Y = highG_Z = 0;
+  int16_t highGX, highGY, highGZ;
+  highGX = highGY = highGZ = 0;
 
   // read the data, this must be the raw data for the system to work properly
   // getAccelData();
 
   // set the raw output values
-  highG.rawX = highG_X;
-  highG.rawY = highG_Y;
-  highG.rawZ = highG_Z;
+  highG.rawX = highGX;
+  highG.rawY = highGY;
+  highG.rawZ = highGZ;
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -317,14 +317,14 @@ void getExternalBaro()
 // GNSS Device
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
-void externalGNSS_PSM()
+void externalGnssPowerSave()
 {
 
   // Set lower update rate for Adafruit Ultimate GPS
   // ultGPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ);
 }
 
-void ExternalGNSSconfig()
+void externalGnssConfig()
 {
 
   // setup for the Adafruit Ultimate GPS

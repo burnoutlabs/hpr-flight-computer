@@ -6,11 +6,11 @@
 
 #include <Arduino.h>
 
-void restoreGPSdefaults();
-void configGPS();
-void GPSpowerSaveMode();
+void restoreGpsDefaults();
+void configGps();
+void gpsPowerSaveMode();
 void calcChecksum(byte *checksumPayload, byte payloadSize);
-void sendUBX(byte *UBXmsg, byte msgLength);
-byte getUBX_ACK(byte *msgID);
+void sendUbx(byte *ubxMsg, byte msgLength);
+byte getUbxAck(byte *msgId);
 void printHex(uint8_t *data, uint8_t length);
-float calcGPSdist(float Alat, float Alon, float Blat, float Blon);
+float calcGpsDist(float aLat, float aLon, float bLat, float bLon);

@@ -24,13 +24,13 @@
 #include "../src/Parse_Packet.cpp"
 
 // The LCD screens (LCD.cpp) do nothing here.
-void startupLCD() {}
-void preflightLCD() {}
-void inflightLCD() {}
-void postflightLCD() {}
-void signalLostLCD() {}
-void errorLCD() {}
-void changeFreqLCD() {}
+void startupLcd() {}
+void preflightLcd() {}
+void inflightLcd() {}
+void postflightLcd() {}
+void signalLostLcd() {}
+void errorLcd() {}
+void changeFreqLcd() {}
 
 // loop()'s receive path for one packet; returns whether it was handled.
 static bool receivePacket(const uint8_t *bytes, uint8_t length)

@@ -4,8 +4,8 @@
  *
  * Each transaction's first byte is the register address, with bit 7 set for a write; the
  * bytes after it read or write consecutive registers, except register 0, the FIFO, which
- * reads and writes at RegFifoAddrPtr (0x0D) and advances it, as the chip does. Writing
- * RegIrqFlags (0x12) clears the flags written as 1. Once the LoRa bit of RegOpMode is set
+ * reads and writes at REG_FIFO_ADDR_PTR (0x0D) and advances it, as the chip does. Writing
+ * REG_IRQ_FLAGS (0x12) clears the flags written as 1. Once the LoRa bit of REG_OP_MODE is set
  * it stays set. shimRadioReceive() puts a packet in the FIFO as if it had just arrived.
  * One register file serves every chip select, which is enough for tests using one radio.
  */
@@ -65,9 +65,9 @@ inline ShimSX127X shimRadio;
 inline void shimRadioReceive(const uint8_t *data, uint8_t len)
 {
   memcpy(shimRadio.fifo, data, len);
-  shimRadio.reg[0x10] = 0x00; // RegFifoRxCurrentAddr
-  shimRadio.reg[0x13] = len;  // RegRxNbBytes
-  shimRadio.reg[0x12] = 0x40; // RegIrqFlags: RxDone
+  shimRadio.reg[0x10] = 0x00; // REG_FIFO_RX_CURRENT_ADDR
+  shimRadio.reg[0x13] = len;  // REG_RX_NB_BYTES
+  shimRadio.reg[0x12] = 0x40; // REG_IRQ_FLAGS: RxDone
 }
 
 // The frequency the emulated radio is tuned to, from RegFrf (0x06-0x08), in MHz.

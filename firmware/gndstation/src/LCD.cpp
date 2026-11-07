@@ -8,7 +8,7 @@
 // LCD Setup
 SerLCD lcd;
 
-void startupLCD()
+void startupLcd()
 {
 
   //-----------------------------------------------------
@@ -28,7 +28,7 @@ void startupLCD()
   lcd.print(dispVolt);
   lcd.print('V');
   lcd.print('\r');
-  if (SDinit)
+  if (sdInit)
   {
     lcd.print(F("SD Card OK!"));
   }
@@ -90,19 +90,19 @@ void startupLCD()
   // GPS Latitude - Line 4
   //----------------------------------------
   lcd.print('\r');
-  if (isnan(lastGPSlat) || lastGPSlon == 0.0)
+  if (isnan(lastGpsLat) || lastGpsLon == 0.0)
   {
-    lastGPSlon = 12.34567;
-    lastGPSlat = 12.34567;
+    lastGpsLon = 12.34567;
+    lastGpsLat = 12.34567;
   }
-  dtostrf(lastGPSlat, 2, 5, dataString);
+  dtostrf(lastGpsLat, 2, 5, dataString);
   lcd.print(dataString);
   lcd.print(",");
-  dtostrf(lastGPSlon, 3, 5, dataString);
+  dtostrf(lastGpsLon, 3, 5, dataString);
   lcd.print(dataString);
 }
 
-void preflightLCD()
+void preflightLcd()
 {
 
   //-----------------------------------------------------
@@ -124,13 +124,13 @@ void preflightLCD()
     myString += " ";
   }
   // line 1
-  myString += pyroTable[contCode];
+  myString += PYRO_TABLE[contCode];
   for (byte i = myString.length() + 1; i < 41; i++)
   {
     myString += " ";
   }
   // line 2
-  if (GPSlock == 1)
+  if (gpsLock == 1)
   {
     myString += "GPS FIX OK! ";
     myString += String(satNum);
@@ -154,7 +154,7 @@ void preflightLCD()
   {
     myString += " ";
   }
-  if (GPS.location.isUpdated())
+  if (gps.location.isUpdated())
   {
     myString.setCharAt(79, 'G');
   }
@@ -167,7 +167,7 @@ void preflightLCD()
 
 } // end Preflight Code
 
-void inflightLCD()
+void inflightLcd()
 {
   //-----------------------------------------------------------
   // Inflight Code
@@ -180,7 +180,7 @@ void inflightLCD()
   //-----------------------------------
   // event - line 1
   //-----------------------------------
-  String myString = eventTable[event];
+  String myString = EVENT_TABLE[event];
   myString.trim();
   for (byte i = myString.length() + 1; i < 21; i++)
   {
@@ -203,7 +203,7 @@ void inflightLCD()
   // display altitude - line 2
   //----------------------------------------
   myString += "Altitude: ";
-  myString += String((long)(Alt * 3.2808));
+  myString += String((long)(alt * 3.2808));
   myString += " ft";
   for (byte i = myString.length() + 1; i < 41; i++)
   {
@@ -225,13 +225,13 @@ void inflightLCD()
   myString += String((int)signalStrength);
   myString += "dBm ";
   // display GNSS data
-  if (GPSlock == 1)
+  if (gpsLock == 1)
   {
-    float bearing = TinyGPSPlus::courseTo(GPS.location.lat(), GPS.location.lng(), lastGPSlat, lastGPSlon);
+    float bearing = TinyGPSPlus::courseTo(gps.location.lat(), gps.location.lng(), lastGpsLat, lastGpsLon);
     myString += String((int)bearing);
     myString += (char)39;
     myString += " ";
-    float rktDist = TinyGPSPlus::distanceBetween(GPS.location.lat(), GPS.location.lng(), lastGPSlat, lastGPSlon);
+    float rktDist = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), lastGpsLat, lastGpsLon);
     rktDist /= 1609.34; // convert to miles
     if (rktDist > 99)
     {
@@ -270,7 +270,7 @@ void inflightLCD()
   }
 } // end Inflight Code
 
-void postflightLCD()
+void postflightLcd()
 {
   //-----------------------------------------------------------
   // Postflight Code
@@ -304,15 +304,15 @@ void postflightLCD()
   //----------------------------------------
   // GPS Coordinates - Line 3
   //----------------------------------------
-  if (isnan(lastGPSlat) || lastGPSlat == 0.0)
+  if (isnan(lastGpsLat) || lastGpsLat == 0.0)
   {
-    lastGPSlat = lastGPSlon = 12.34567;
+    lastGpsLat = lastGpsLon = 12.34567;
   }
-  dtostrf(lastGPSlat, 2, 5, dataString);
+  dtostrf(lastGpsLat, 2, 5, dataString);
   myString += dataString;
   myString.trim();
   myString += ",";
-  dtostrf(lastGPSlon, 2, 5, dataString);
+  dtostrf(lastGpsLon, 2, 5, dataString);
   myString += dataString;
   myString.trim();
   for (byte i = myString.length() + 1; i < 61; i++)
@@ -322,15 +322,15 @@ void postflightLCD()
   //----------------------------------------
   // Bearing and distance - Line 4
   //----------------------------------------
-  if (GPS.location.isUpdated())
+  if (gps.location.isUpdated())
   {
     // bearing
-    float bearing = TinyGPSPlus::courseTo(GPS.location.lat(), GPS.location.lng(), lastGPSlat, lastGPSlon);
+    float bearing = TinyGPSPlus::courseTo(gps.location.lat(), gps.location.lng(), lastGpsLat, lastGpsLon);
     myString += String((int)bearing);
     myString += (char)39;
     myString += " ";
     // distance
-    float dist2rkt = TinyGPSPlus::distanceBetween(GPS.location.lat(), GPS.location.lng(), lastGPSlat, lastGPSlon);
+    float dist2rkt = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), lastGpsLat, lastGpsLon);
     dist2rkt /= 1609.34; // convert to miles
     if (dist2rkt > 99)
     {
@@ -366,7 +366,7 @@ void postflightLCD()
   }
 } // end Postflight Code
 
-void signalLostLCD()
+void signalLostLcd()
 {
 
   // Write to the LCD
@@ -375,7 +375,7 @@ void signalLostLCD()
     lcd.clear();
     flightPhase = 4;
   }
-  lastRX = micros();
+  lastRx = micros();
   //----------------------------------------
   // Message - Line 1
   //----------------------------------------
@@ -387,15 +387,15 @@ void signalLostLCD()
   //----------------------------------------
   // GPS Coordinates - Line 2
   //----------------------------------------
-  if (isnan(lastGPSlat) || lastGPSlat == 0.0)
+  if (isnan(lastGpsLat) || lastGpsLat == 0.0)
   {
-    lastGPSlat = lastGPSlon = 12.34567;
+    lastGpsLat = lastGpsLon = 12.34567;
   }
-  dtostrf(lastGPSlat, 2, 5, dataString);
+  dtostrf(lastGpsLat, 2, 5, dataString);
   myString += dataString;
   myString.trim();
   myString += ",";
-  dtostrf(lastGPSlon, 2, 5, dataString);
+  dtostrf(lastGpsLon, 2, 5, dataString);
   myString += dataString;
   myString.trim();
   for (byte i = myString.length() + 1; i < 41; i++)
@@ -405,10 +405,10 @@ void signalLostLCD()
   //----------------------------------------
   // GPS Distance & Bearing to Rocket
   //----------------------------------------
-  if (GPS.location.isUpdated())
+  if (gps.location.isUpdated())
   {
     myString += "Dist: ";
-    float dist2rkt = TinyGPSPlus::distanceBetween(GPS.location.lat(), GPS.location.lng(), lastGPSlat, lastGPSlon);
+    float dist2rkt = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), lastGpsLat, lastGpsLon);
     dist2rkt /= 1609.34; // convert to miles
     if (dist2rkt > 99)
     {
@@ -429,7 +429,7 @@ void signalLostLCD()
       myString += "mi, ";
     }
     // bearing
-    float bearing = TinyGPSPlus::courseTo(GPS.location.lat(), GPS.location.lng(), lastGPSlat, lastGPSlon);
+    float bearing = TinyGPSPlus::courseTo(gps.location.lat(), gps.location.lng(), lastGpsLat, lastGpsLon);
     myString += String((int)bearing);
     myString += (char)39;
   }
@@ -464,7 +464,7 @@ void signalLostLCD()
   }
 }
 
-void errorLCD()
+void errorLcd()
 {
   Serial.println("---Pkt Error---");
   dispPktInfo();
@@ -475,7 +475,7 @@ void errorLCD()
   lcd.print(myString);
 }
 
-void changeFreqLCD()
+void changeFreqLcd()
 {
   flightPhase = 0;
   lcd.clear();
@@ -485,6 +485,6 @@ void changeFreqLCD()
   myString += "Frequency: ";
   myString += String(activeRadio->frq, 3);
   lcd.print(myString);
-  lastRX = micros();
+  lastRx = micros();
   delay(1000);
 }

@@ -10,10 +10,10 @@
 // LCD Setup (defined in LCD.cpp)
 extern SerLCD lcd;
 
-void startupLCD();
-void preflightLCD();
-void inflightLCD();
-void postflightLCD();
-void signalLostLCD();
-void errorLCD();
-void changeFreqLCD();
+void startupLcd();
+void preflightLcd();
+void inflightLcd();
+void postflightLcd();
+void signalLostLcd();
+void errorLcd();
+void changeFreqLcd();

@@ -5,11 +5,11 @@
 /**
  * @section List of Functions & Routines
  * 
- * - restoreGPSdefaults(): Overrides command settings and restores factory settings.
- * - configGPS(): Sends UBX commands to update navigation, data rate, GNSS constellations, reduce NMEA sentences, set interference thresholds, and adjust baud rate.
- * - GPSpowerSaveMode(): Reduces GPS power consumption and update rate after touchdown.
- * - sendUBX(): Helper function to send serial data.
- * - getUBX_ACK(): Function to receive the UBX acknowledgment for each command.
+ * - restoreGpsDefaults(): Overrides command settings and restores factory settings.
+ * - configGps(): Sends UBX commands to update navigation, data rate, GNSS constellations, reduce NMEA sentences, set interference thresholds, and adjust baud rate.
+ * - gpsPowerSaveMode(): Reduces GPS power consumption and update rate after touchdown.
+ * - sendUbx(): Helper function to send serial data.
+ * - getUbxAck(): Function to receive the UBX acknowledgment for each command.
  * - printHex(): Helper function to convert binary data to hexadecimal.
  */
 
@@ -24,7 +24,7 @@
 #include "declarations.h"
 #include "GPS.h"
 
-void restoreGPSdefaults()
+void restoreGpsDefaults()
 {
 
   byte gpsSetSuccess = 0;
@@ -37,8 +37,8 @@ void restoreGPSdefaults()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Restoring Factory Defaults... ");
-    sendUBX(&setDefaults[0], sizeof(setDefaults)); // Send UBX Packet
-    gpsSetSuccess += getUBX_ACK(&setDefaults[2]);
+    sendUbx(&setDefaults[0], sizeof(setDefaults)); // Send UBX Packet
+    gpsSetSuccess += getUbxAck(&setDefaults[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -46,7 +46,7 @@ void restoreGPSdefaults()
   }
 }
 
-void configGPS()
+void configGps()
 {
 
   byte gpsSetSuccess = 0;
@@ -72,13 +72,13 @@ void configGPS()
   byte setBaudRate[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0x96, 0x00, 0x00, 0x23, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAF, 0x70};
 
   // Generate the configuration string for NMEA messages
-  byte setGLL[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x2B};
-  // byte setGSA[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x32};
-  byte setGSA[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x31};
-  byte setGSV[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x39};
+  byte setGll[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x2B};
+  // byte setGsa[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x32};
+  byte setGsa[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x31};
+  byte setGsv[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x39};
   // byte setRMC[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x04, 0x40};
-  byte setVTG[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x46};
-  byte set4_1[] = {0xB5, 0x62, 0x06, 0x17, 0x14, 0x00, 0x00, 0x41, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x57};
+  byte setVtg[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x46};
+  byte setNmea41[] = {0xB5, 0x62, 0x06, 0x17, 0x14, 0x00, 0x00, 0x41, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x57};
 
   // Generate the configuration string for interference resistance settings
   byte setJam[] = {0xB5, 0x62, 0x06, 0x39, 0x08, 0x00, 0xF3, 0xAC, 0x62, 0xAD, 0x1E, 0x43, 0x00, 0x00, 0x56, 0x45};
@@ -91,8 +91,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Deactivating NMEA GSA Messages... ");
-    sendUBX(setGSA, sizeof(setGSA));
-    gpsSetSuccess += getUBX_ACK(&setGSA[2]);
+    sendUbx(setGsa, sizeof(setGsa));
+    gpsSetSuccess += getUbxAck(&setGsa[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -104,8 +104,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Setting Navigation Mode... ");
-    sendUBX(&setNav[0], sizeof(setNav)); // Send UBX Packet
-    gpsSetSuccess += getUBX_ACK(&setNav[2]);
+    sendUbx(&setNav[0], sizeof(setNav)); // Send UBX Packet
+    gpsSetSuccess += getUbxAck(&setNav[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -117,8 +117,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Deactivating NMEA GSV Messages... ");
-    sendUBX(setGSV, sizeof(setGSV));
-    gpsSetSuccess += getUBX_ACK(&setGSV[2]);
+    sendUbx(setGsv, sizeof(setGsv));
+    gpsSetSuccess += getUbxAck(&setGsv[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -129,8 +129,8 @@ void configGPS()
   // Set Data Update Rate
   //  while(gpsSetSuccess < 3) {
   //    Serial.print("Setting Data Update Rate... ");
-  //    sendUBX(&setDataRate[0], sizeof(setDataRate));  //Send UBX Packet
-  //    gpsSetSuccess += getUBX_ACK(&setDataRate[2]);}
+  //    sendUbx(&setDataRate[0], sizeof(setDataRate));  //Send UBX Packet
+  //    gpsSetSuccess += getUbxAck(&setDataRate[2]);}
   //  if (gpsSetSuccess == 3){Serial.println("Data update mode configuration failed!");}
   //  gpsSetSuccess = 0;
 
@@ -138,8 +138,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Turning on NMEA 4.1 Messages... ");
-    sendUBX(set4_1, sizeof(set4_1));
-    gpsSetSuccess += getUBX_ACK(&set4_1[2]);
+    sendUbx(setNmea41, sizeof(setNmea41));
+    gpsSetSuccess += getUbxAck(&setNmea41[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -151,8 +151,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Setting Satellite Constellations... ");
-    sendUBX(setSat, sizeof(setSat));
-    gpsSetSuccess += getUBX_ACK(&setSat[2]);
+    sendUbx(setSat, sizeof(setSat));
+    gpsSetSuccess += getUbxAck(&setSat[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -164,8 +164,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Deactivating NMEA VTG Messages... ");
-    sendUBX(setVTG, sizeof(setVTG));
-    gpsSetSuccess += getUBX_ACK(&setVTG[2]);
+    sendUbx(setVtg, sizeof(setVtg));
+    gpsSetSuccess += getUbxAck(&setVtg[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -177,8 +177,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Setting Interferece Thresholds... ");
-    sendUBX(setJam, sizeof(setJam));
-    gpsSetSuccess += getUBX_ACK(&setJam[2]);
+    sendUbx(setJam, sizeof(setJam));
+    gpsSetSuccess += getUbxAck(&setJam[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -190,8 +190,8 @@ void configGPS()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Deactivating NMEA GLL Messages... ");
-    sendUBX(setGLL, sizeof(setGLL));
-    gpsSetSuccess += getUBX_ACK(&setGLL[2]);
+    sendUbx(setGll, sizeof(setGll));
+    gpsSetSuccess += getUbxAck(&setGll[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -199,16 +199,16 @@ void configGPS()
   }
   gpsSetSuccess = 0;
 
-} // end configGPS
+} // end configGps
 
-void GPSpowerSaveMode()
+void gpsPowerSaveMode()
 {
 
   byte gpsSetSuccess = 0;
   Serial.println("Configuring u-Blox GPS Power Save mode... ");
 
   // Generate the configuration string to config GNSS (GLONASS Off)
-  byte setGNSS[] = {0xB5, 0x62, 0x6, 0x3E, 0x24, 0x0, 0x0, 0x0, 0x16, 0x4, 0x0, 0x8, 0xFF, 0x0, 0x1, 0x0, 0x0, 0x1, 0x1, 0x0, 0x3, 0x0, 0x1, 0x0, 0x0, 0x1, 0x5, 0x0, 0x3, 0x0, 0x1, 0x0, 0x0, 0x1, 0x6, 0x4, 0xFF, 0x0, 0x0, 0x0, 0x0, 0x1, 0xA5, 0x8E};
+  byte setGnss[] = {0xB5, 0x62, 0x6, 0x3E, 0x24, 0x0, 0x0, 0x0, 0x16, 0x4, 0x0, 0x8, 0xFF, 0x0, 0x1, 0x0, 0x0, 0x1, 0x1, 0x0, 0x3, 0x0, 0x1, 0x0, 0x0, 0x1, 0x5, 0x0, 0x3, 0x0, 0x1, 0x0, 0x0, 0x1, 0x6, 0x4, 0xFF, 0x0, 0x0, 0x0, 0x0, 0x1, 0xA5, 0x8E};
 
   // Generate the configuration string for Power Save mode with 5 minute updates
   byte setPwr[] = {0xB5, 0x62, 0x06, 0x24, 0x24, 0x00, 0xFF, 0xFF, 0x08, 0x03, 0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00, 0x05, 0x00, 0xFA, 0x00, 0xFA, 0x00, 0x64, 0x00, 0x2C, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4F, 0x1F};
@@ -224,8 +224,8 @@ void GPSpowerSaveMode()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Configuring GNSS for Power Save Mode (GLONASS OFF)... ");
-    sendUBX(setGNSS, sizeof(setGNSS));
-    gpsSetSuccess += getUBX_ACK(&setGNSS[2]);
+    sendUbx(setGnss, sizeof(setGnss));
+    gpsSetSuccess += getUbxAck(&setGnss[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -237,8 +237,8 @@ void GPSpowerSaveMode()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Configuring Power Save Mode... ");
-    sendUBX(setPwr, sizeof(setPwr));
-    gpsSetSuccess += getUBX_ACK(&setPwr[2]);
+    sendUbx(setPwr, sizeof(setPwr));
+    gpsSetSuccess += getUbxAck(&setPwr[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -250,8 +250,8 @@ void GPSpowerSaveMode()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Commit Power Save Mode... ");
-    sendUBX(setPwr2, sizeof(setPwr2));
-    gpsSetSuccess += getUBX_ACK(&setPwr2[2]);
+    sendUbx(setPwr2, sizeof(setPwr2));
+    gpsSetSuccess += getUbxAck(&setPwr2[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -263,8 +263,8 @@ void GPSpowerSaveMode()
   while (gpsSetSuccess < 3)
   {
     Serial.print("Setting Data Update Rate... ");
-    sendUBX(setDataRate01Hz, sizeof(setDataRate01Hz)); // Send UBX Packet
-    gpsSetSuccess += getUBX_ACK(&setDataRate01Hz[2]);
+    sendUbx(setDataRate01Hz, sizeof(setDataRate01Hz)); // Send UBX Packet
+    gpsSetSuccess += getUbxAck(&setDataRate01Hz[2]);
   }
   if (gpsSetSuccess == 3)
   {
@@ -288,11 +288,11 @@ void calcChecksum(byte *checksumPayload, byte payloadSize)
   *checksumPayload = CK_B;
 }
 
-void sendUBX(byte *UBXmsg, byte msgLength)
+void sendUbx(byte *ubxMsg, byte msgLength)
 {
   for (int i = 0; i < msgLength; i++)
   {
-    Serial2.write(UBXmsg[i]);
+    Serial2.write(ubxMsg[i]);
     Serial2.flush();
   }
 
@@ -300,10 +300,10 @@ void sendUBX(byte *UBXmsg, byte msgLength)
   Serial2.flush();
 }
 
-byte getUBX_ACK(byte *msgID)
+byte getUbxAck(byte *msgId)
 {
   byte CK_A = 0, CK_B = 0;
-  byte incoming_char;
+  byte incomingChar;
   unsigned long ackWait = millis();
   byte ackPacket[10] = {0xB5, 0x62, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
   int i = 0;
@@ -311,14 +311,14 @@ byte getUBX_ACK(byte *msgID)
   {
     if (Serial2.available())
     {
-      incoming_char = Serial2.read();
-      if (incoming_char == ackPacket[i])
+      incomingChar = Serial2.read();
+      if (incomingChar == ackPacket[i])
       {
         i++;
       }
       else if (i > 2)
       {
-        ackPacket[i] = incoming_char;
+        ackPacket[i] = incomingChar;
         i++;
       }
     }
@@ -342,7 +342,7 @@ byte getUBX_ACK(byte *msgID)
     CK_B = CK_B + CK_A;
   }
 
-  if (msgID[0] == ackPacket[6] && msgID[1] == ackPacket[7] && CK_A == ackPacket[8] && CK_B == ackPacket[9])
+  if (msgId[0] == ackPacket[6] && msgId[1] == ackPacket[7] && CK_A == ackPacket[8] && CK_B == ackPacket[9])
   {
     Serial.println("Success!");
     Serial.print("ACK Received! ");
@@ -396,12 +396,12 @@ void printHex(uint8_t *data, uint8_t length) // prints 8-bit data in hex
   Serial.println();
 }
 
-float calcGPSdist(float Alat, float Alon, float Blat, float Blon)
+float calcGpsDist(float aLat, float aLon, float bLat, float bLon)
 {
 
   // calculate the difference between the points
-  float diffLat = Alat - Blat;
-  float diffLon = Alon - Blon;
+  float diffLat = aLat - bLat;
+  float diffLon = aLon - bLon;
 
   // convert latitude degrees to meters
   diffLat *= 111111.1;

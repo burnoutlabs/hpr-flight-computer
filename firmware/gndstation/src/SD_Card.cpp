@@ -15,7 +15,7 @@ FsFile sustainerFile;
 FsFile boosterFile;
 FsFile settingsFile;
 
-void readRadioSettingsSD()
+void readRadioSettingsSd()
 {
   Serial.println(F("Reading User Settings from SD Card..."));
   // Open the settings file
@@ -23,19 +23,19 @@ void readRadioSettingsSD()
 
   // Read in the user defined variables
   // Station Settings
-  settings.LCD = (boolean)(parseNextVariable(true));
+  settings.enableLcd = (boolean)(parseNextVariable(true));
   Serial.print("LCD: ");
-  Serial.println(settings.LCD);
-  settings.LCDbrightness = (uint8_t)(parseNextVariable(true));
+  Serial.println(settings.enableLcd);
+  settings.lcdBrightness = (uint8_t)(parseNextVariable(true));
   Serial.print("brightness: ");
-  Serial.println(settings.LCDbrightness);
-  settings.LCDcontrast = (uint8_t)(parseNextVariable(true));
+  Serial.println(settings.lcdBrightness);
+  settings.lcdContrast = (uint8_t)(parseNextVariable(true));
   settings.displayMetric = (boolean)(parseNextVariable(true));
   if (settings.displayMetric)
   {
     unitConvert = 1.0F;
   }
-  settings.LCDcolorEvents = (boolean)(parseNextVariable(true));
+  settings.lcdColorEvents = (boolean)(parseNextVariable(true));
   parseNextVariable(false);
   for (byte i = 0; i < sizeof(settings.callSign); i++)
   {
@@ -47,20 +47,20 @@ void readRadioSettingsSD()
     Serial.print(settings.callSign[i]);
   }
   Serial.println(" ");
-  settings.enableSD = (boolean)(parseNextVariable(true));
+  settings.enableSd = (boolean)(parseNextVariable(true));
   Serial.print("SD: ");
-  Serial.println(settings.enableSD);
-  settings.enableGPS = (boolean)(parseNextVariable(true));
-  settings.blueTooth = (boolean)(parseNextVariable(true));
+  Serial.println(settings.enableSd);
+  settings.enableGps = (boolean)(parseNextVariable(true));
+  settings.bluetooth = (boolean)(parseNextVariable(true));
   settings.debugSerial = (boolean)(parseNextVariable(true));
   radio1.enable = (boolean)(parseNextVariable(true));
   radio1.frq = (float)(parseNextVariable(true));
-  radio1.FHSS = (boolean)(parseNextVariable(true));
-  radio1.TXpwr = (byte)(parseNextVariable(true));
+  radio1.fhss = (boolean)(parseNextVariable(true));
+  radio1.txPwr = (byte)(parseNextVariable(true));
   radio2.enable = (boolean)(parseNextVariable(true));
   radio2.frq = (float)(parseNextVariable(true));
-  radio2.FHSS = (boolean)(parseNextVariable(true));
-  radio2.TXpwr = (byte)(parseNextVariable(true));
+  radio2.fhss = (boolean)(parseNextVariable(true));
+  radio2.txPwr = (byte)(parseNextVariable(true));
   // close the settings file
   settingsFile.close();
   Serial.println("Done!");
@@ -200,11 +200,11 @@ void writePreflightData()
   dataString[strPosn] = ',';
   strPosn++;
   writeIntData(contCode);
-  writeIntData(GPSlock);
+  writeIntData(gpsLock);
   writeIntData(baseAlt);
-  writeIntData(baseGPSalt);
-  writeFloatData(GPSlatitude, 6);
-  writeFloatData(GPSlongitude, 6);
+  writeIntData(baseGpsAlt);
+  writeFloatData(gpsLatitude, 6);
+  writeFloatData(gpsLongitude, 6);
   dataString[strPosn] = '\r';
   strPosn++;
   dataString[strPosn] = '\n';
@@ -239,14 +239,14 @@ void writeInflightData()
   writeTimeStamp(sampleTime);
   writeFloatData((float)(accel) * 0.029927521, 4);
   writeIntData(velocity);
-  writeIntData(Alt);
+  writeIntData(alt);
   writeIntData(spin);
   writeFloatData((float)(offVert) * 0.1, 1);
-  writeIntData(GPSalt);
-  writeFloatData(GPSlatitude, 6);
-  writeFloatData(GPSlongitude, 6);
+  writeIntData(gpsAlt);
+  writeFloatData(gpsLatitude, 6);
+  writeFloatData(gpsLongitude, 6);
   writeIntData(signalStrength);
-  writeIntData(packetnum);
+  writeIntData(lastPacketNum);
   // end of sample - carriage return, newline, and null value
   dataString[strPosn] = '\r';
   strPosn++;
@@ -281,11 +281,11 @@ void writePostflightData()
   writeIntData(maxAltitude);
   writeIntData(maxVelocity);
   writeFloatData((float)(maxG) * 0.029927521, 4);
-  writeIntData(maxGPSalt);
-  writeIntData(GPSlock);
-  writeIntData(GPSalt);
-  writeFloatData(GPSlatitude, 6);
-  writeFloatData(GPSlongitude, 6);
+  writeIntData(maxGpsAlt);
+  writeIntData(gpsLock);
+  writeIntData(gpsAlt);
+  writeFloatData(gpsLatitude, 6);
+  writeFloatData(gpsLongitude, 6);
   if (parseSustainer)
   {
     sustainerFile.write(dataString, strPosn);

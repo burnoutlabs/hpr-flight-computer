@@ -26,7 +26,7 @@ extern FsFile sustainerFile;
 extern FsFile boosterFile;
 extern FsFile settingsFile;
 
-void readRadioSettingsSD();
+void readRadioSettingsSd();
 float parseNextVariable(boolean flag);
 void createSustainerFile();
 void createBoosterFile();

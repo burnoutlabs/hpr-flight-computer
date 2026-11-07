@@ -6,7 +6,7 @@
  * @section Functions
  *
  * - bool radioBegin(): Starts code and checks radio functionality.
- * - bool setRadioPWR(uint8_t pwr): Sets output power (0 - 20 dBm).
+ * - bool setRadioPwr(uint8_t pwr): Sets output power (0 - 20 dBm).
  * - bool setRadioFreq(float freq): Sets the radio frequency (expressed as MHz, e.g., 434.250).
  * - bool radioSendPkt(uint8_t* data, uint8_t len): Sends a radio packet from a byte array, with length len.
  * - bool radioRecvPkt(uint8_t* data): Receives a packet and places data from FIFO into array "data".
@@ -38,7 +38,7 @@ float radioFreq[9] = {433.250, 433.500, 433.625, 433.750, 433.875, 434.000, 434.
 //---------------------------
 
 byte radioMode = 0;
-bool TX = false;
+bool txInProgress = false;
 
 bool radioBegin()
 {
@@ -52,24 +52,24 @@ bool radioBegin()
   digitalWrite(activeRadio->rst, HIGH);
   delay(10);
 
-#define RegOpMode 0x01
-#define RegPreambleMsb 0x20
-#define RegPreambleLsb 0x21
-#define RegModemConfig1 0x1D
-#define RegModemConfig2 0x1E
-#define RegModemConfig3 0x26
+#define REG_OP_MODE 0x01
+#define REG_PREAMBLE_MSB 0x20
+#define REG_PREAMBLE_LSB 0x21
+#define REG_MODEM_CONFIG1 0x1D
+#define REG_MODEM_CONFIG2 0x1E
+#define REG_MODEM_CONFIG3 0x26
   uint8_t radioSetMode;
 
   // set radio to sleep mode
-  write8(RegOpMode, SleepMode);
+  write8(REG_OP_MODE, SLEEP_MODE);
   radioMode = 0;
   if (!activeRadio->enable)
   {
     return false;
   }
   delay(10);
-  debugVal = read8(RegOpMode);
-  if (debugVal != SleepMode)
+  debugVal = read8(REG_OP_MODE);
+  if (debugVal != SLEEP_MODE)
   {
     Serial.print("Set Sleep Mode Failed: ");
     Serial.println(debugVal, BIN);
@@ -77,14 +77,14 @@ bool radioBegin()
   }
 
   // set radio power
-  setRadioPWR(activeRadio->TXpwr);
+  setRadioPwr(activeRadio->txPwr);
 
   // set radio to Long Range Mode
-  radioSetMode = LoRaMode;
-  write8(RegOpMode, radioSetMode);
+  radioSetMode = LORA_MODE;
+  write8(REG_OP_MODE, radioSetMode);
   radioMode = 1;
   delay(10);
-  debugVal = read8(RegOpMode);
+  debugVal = read8(REG_OP_MODE);
   if (debugVal != radioSetMode)
   {
     Serial.print("Set LoRa Mode Failed: ");
@@ -94,9 +94,9 @@ bool radioBegin()
 
   // configure the modem to 125kHz bw, 4/5 cr, explicit header
   uint8_t modemConfig = 0b01110010;
-  write8(RegModemConfig1, modemConfig);
+  write8(REG_MODEM_CONFIG1, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig1);
+  debugVal = read8(REG_MODEM_CONFIG1);
   if (debugVal != modemConfig)
   {
     Serial.print("Config1 Failed: ");
@@ -106,9 +106,9 @@ bool radioBegin()
 
   // configure the modem to sf7, normal TX mode, CRC on, RX MSB 0
   modemConfig = 0b01110100;
-  write8(RegModemConfig2, modemConfig);
+  write8(REG_MODEM_CONFIG2, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig2);
+  debugVal = read8(REG_MODEM_CONFIG2);
   if (debugVal != modemConfig)
   {
     Serial.print("Config2 Failed: ");
@@ -118,9 +118,9 @@ bool radioBegin()
 
   // Set the Automatic Gain Control (AGC)
   modemConfig = 0x04;
-  write8(RegModemConfig3, modemConfig);
+  write8(REG_MODEM_CONFIG3, modemConfig);
   delay(10);
-  debugVal = read8(RegModemConfig3);
+  debugVal = read8(REG_MODEM_CONFIG3);
   if (debugVal != modemConfig)
   {
     Serial.print("Config3 Failed: ");
@@ -133,16 +133,16 @@ bool radioBegin()
   union
   {
     uint16_t val;
-    byte Byte[2];
+    byte bytes[2];
   } intUnion;
   intUnion.val = preambleLength;
-  write8(RegPreambleLsb, intUnion.Byte[0]);
-  write8(RegPreambleMsb, intUnion.Byte[1]);
+  write8(REG_PREAMBLE_LSB, intUnion.bytes[0]);
+  write8(REG_PREAMBLE_MSB, intUnion.bytes[1]);
   delay(10);
-  debugVal = read8(RegPreambleLsb);
-  intUnion.Byte[0] = debugVal;
-  debugVal = read8(RegPreambleMsb);
-  intUnion.Byte[1] = debugVal;
+  debugVal = read8(REG_PREAMBLE_LSB);
+  intUnion.bytes[0] = debugVal;
+  debugVal = read8(REG_PREAMBLE_MSB);
+  intUnion.bytes[1] = debugVal;
   if (intUnion.val != preambleLength)
   {
     Serial.print("Set Preamble Len Failed: ");
@@ -151,10 +151,10 @@ bool radioBegin()
   }
 
 // Set the FIFO buffer to the start
-#define RegFifoTxBase 0x0E
-  write8(RegFifoTxBase, 0x00);
+#define REG_FIFO_TX_BASE 0x0E
+  write8(REG_FIFO_TX_BASE, 0x00);
   delay(10);
-  debugVal = read8(RegFifoTxBase);
+  debugVal = read8(REG_FIFO_TX_BASE);
   if (debugVal != 0x00)
   {
     Serial.print("Set FIFO TX Base Failed: ");
@@ -162,10 +162,10 @@ bool radioBegin()
   }
 
 // Set the FIFO Rx Buffer base address to the start
-#define RegFifoRxBase 0x0F
-  write8(RegFifoRxBase, 0x00);
+#define REG_FIFO_RX_BASE 0x0F
+  write8(REG_FIFO_RX_BASE, 0x00);
   delay(10);
-  debugVal = read8(RegFifoRxBase);
+  debugVal = read8(REG_FIFO_RX_BASE);
   if (debugVal != 0x00)
   {
     Serial.print("Set FIFO RX Base Failed: ");
@@ -173,11 +173,11 @@ bool radioBegin()
   }
 
   // Set radio to Standby Mode
-  radioSetMode = StandbyMode;
-  write8(RegOpMode, radioSetMode);
+  radioSetMode = STANDBY_MODE;
+  write8(REG_OP_MODE, radioSetMode);
   delay(10);
-  debugVal = read8(RegOpMode);
-  if (debugVal != (LoRaMode | radioSetMode))
+  debugVal = read8(REG_OP_MODE);
+  if (debugVal != (LORA_MODE | radioSetMode))
   {
     Serial.print("Set Standby Mode Failed: ");
     Serial.println(debugVal, BIN);
@@ -185,13 +185,13 @@ bool radioBegin()
   }
 
 // clear interrupts
-#define RegIrqFlags 0x12
-#define RegIrqFlagsMask 0x11
-  write8(RegIrqFlagsMask, 0x00);
-  write8(RegIrqFlags, 0xFF);
+#define REG_IRQ_FLAGS 0x12
+#define REG_IRQ_FLAGS_MASK 0x11
+  write8(REG_IRQ_FLAGS_MASK, 0x00);
+  write8(REG_IRQ_FLAGS, 0xFF);
 
   // if FHSS, set the user frequency to the closest LoRa channel as the hail frequency
-  if (activeRadio->FHSS)
+  if (activeRadio->fhss)
   {
     activeRadio->hailChnl = telemetry::hailChannel(activeRadio->frq);
     activeRadio->frq = getFreq(activeRadio->hailChnl);
@@ -206,7 +206,7 @@ bool radioBegin()
   return successFlag;
 }
 
-bool setRadioPWR(uint8_t pwr)
+bool setRadioPwr(uint8_t pwr)
 {
 
 #define regPaDac 0x4D
@@ -262,8 +262,8 @@ bool radioRecvPkt(uint8_t *data)
 {
 
 // Check Error Flags
-#define RegIrqFlags 0x12
-  uint8_t flags = read8(RegIrqFlags);
+#define REG_IRQ_FLAGS 0x12
+  uint8_t flags = read8(REG_IRQ_FLAGS);
   bool flagError = false;
 
   // good packet recieved
@@ -282,7 +282,7 @@ bool radioRecvPkt(uint8_t *data)
   }
 
   // clear the flags
-  write8(RegIrqFlags, 0xFF);
+  write8(REG_IRQ_FLAGS, 0xFF);
 
   // if there was an error, then do not process the packet
   if (flagError)
@@ -290,32 +290,32 @@ bool radioRecvPkt(uint8_t *data)
     return false;
   }
 
-// set the RegFifoAddrPtr to RegFifoRxCurrentAddr
-#define RegFifoAddrPtr 0x0D
-#define RegFifoRxCurrentAddr 0x10
-  uint8_t val = read8(RegFifoRxCurrentAddr);
-  write8(RegFifoAddrPtr, val);
+// set the REG_FIFO_ADDR_PTR to REG_FIFO_RX_CURRENT_ADDR
+#define REG_FIFO_ADDR_PTR 0x0D
+#define REG_FIFO_RX_CURRENT_ADDR 0x10
+  uint8_t val = read8(REG_FIFO_RX_CURRENT_ADDR);
+  write8(REG_FIFO_ADDR_PTR, val);
 
 // read the number of bytes recieved
-#define RegRxNbBytes 0x13
-  uint8_t pktLen = read8(RegRxNbBytes);
+#define REG_RX_NB_BYTES 0x13
+  uint8_t pktLen = read8(REG_RX_NB_BYTES);
   len = pktLen;
 
   // read the packet
   burstRead(0x00, data, pktLen);
 
 // get SNR
-#define RegPktSNR 0x19
-  int8_t pktSNR = (int8_t)read8(RegPktSNR);
+#define REG_PKT_SNR 0x19
+  int8_t pktSnr = (int8_t)read8(REG_PKT_SNR);
 
 // get Rssi
-#define RegPktRssiValue 0x1A
-  pktRssi = read8(RegPktRssiValue);
+#define REG_PKT_RSSI_VALUE 0x1A
+  pktRssi = read8(REG_PKT_RSSI_VALUE);
 
   // Calculate Rssi from datasheet
-  if (pktSNR < 0)
+  if (pktSnr < 0)
   {
-    pktRssi += pktSNR / 4;
+    pktRssi += pktSnr / 4;
   }
   else
   {
@@ -337,20 +337,20 @@ bool radioRecvPkt(uint8_t *data)
 float readRadioFreq()
 {
 
-#define RegFrfMsb 0x06
-#define RegFrfMid 0x07
-#define RegFrfLsb 0x08
+#define REG_FRF_MSB 0x06
+#define REG_FRF_MID 0x07
+#define REG_FRF_LSB 0x08
 
   union
   {
     uint32_t val;
-    uint8_t Byte[4];
+    uint8_t bytes[4];
   } ulongUnion;
 
   // read back the frequency
-  ulongUnion.Byte[2] = read8(RegFrfMsb);
-  ulongUnion.Byte[1] = read8(RegFrfMid);
-  ulongUnion.Byte[0] = read8(RegFrfLsb);
+  ulongUnion.bytes[2] = read8(REG_FRF_MSB);
+  ulongUnion.bytes[1] = read8(REG_FRF_MID);
+  ulongUnion.bytes[0] = read8(REG_FRF_LSB);
   uint32_t frf = ulongUnion.val;
 
   float frq = 32 * (float)frf / 524288.0F;
@@ -364,34 +364,34 @@ bool setRadioFreq(float freq)
   boolean successFlag = true;
 
   // read the current mode
-  uint8_t currentMode = read8(RegOpMode);
+  uint8_t currentMode = read8(REG_OP_MODE);
 
   // set mode to standby
-  write8(RegOpMode, StandbyMode);
+  write8(REG_OP_MODE, STANDBY_MODE);
 
   uint32_t frf = ((freq * 1000000.0) / 32000000) * 524288;
   union
   {
     uint32_t val;
-    uint8_t Byte[4];
+    uint8_t bytes[4];
   } ulongUnion;
 
   ulongUnion.val = frf;
 
-#define RegFrfMsb 0x06
-#define RegFrfMid 0x07
-#define RegFrfLsb 0x08
+#define REG_FRF_MSB 0x06
+#define REG_FRF_MID 0x07
+#define REG_FRF_LSB 0x08
 
-  write8(RegFrfMsb, ulongUnion.Byte[2]);
-  write8(RegFrfMid, ulongUnion.Byte[1]);
-  write8(RegFrfLsb, ulongUnion.Byte[0]);
+  write8(REG_FRF_MSB, ulongUnion.bytes[2]);
+  write8(REG_FRF_MID, ulongUnion.bytes[1]);
+  write8(REG_FRF_LSB, ulongUnion.bytes[0]);
 
   // delay(10);
 
   // read back the frequency
-  ulongUnion.Byte[2] = read8(RegFrfMsb);
-  ulongUnion.Byte[1] = read8(RegFrfMid);
-  ulongUnion.Byte[0] = read8(RegFrfLsb);
+  ulongUnion.bytes[2] = read8(REG_FRF_MSB);
+  ulongUnion.bytes[1] = read8(REG_FRF_MID);
+  ulongUnion.bytes[0] = read8(REG_FRF_LSB);
 
   if (ulongUnion.val != frf)
   {
@@ -401,7 +401,7 @@ bool setRadioFreq(float freq)
   }
 
   // Set back to the previous mode
-  radioSetMode(RXmode);
+  radioSetMode(RX_MODE);
 
   return successFlag;
 }
@@ -409,18 +409,18 @@ bool setRadioFreq(float freq)
 bool radioSetMode(uint8_t mode)
 {
 
-#define RegOpMode 0x01
-#define RegDioMapping1 0x40
+#define REG_OP_MODE 0x01
+#define REG_DIO_MAPPING1 0x40
 
   // set radio mode
-  write8(RegOpMode, mode);
+  write8(REG_OP_MODE, mode);
   radioMode = mode;
 
   delay(1);
 
   // check mode
-  uint8_t val = read8(RegOpMode);
-  if (val != (LoRaMode | mode))
+  uint8_t val = read8(REG_OP_MODE);
+  if (val != (LORA_MODE | mode))
   {
     Serial.print("Set Mode Failed: ");
     Serial.println(val, HEX);
@@ -428,17 +428,17 @@ bool radioSetMode(uint8_t mode)
   }
 
   // set the IRQ to fire on TX sent
-  if (mode == TXmode)
+  if (mode == TX_MODE)
   {
-    write8(RegDioMapping1, 0x40);
-    radioFnctn = TXmode;
+    write8(REG_DIO_MAPPING1, 0x40);
+    radioFunction = TX_MODE;
   }
 
   // set the IRQ to fire on RX complete
-  if (mode == RXmode)
+  if (mode == RX_MODE)
   {
-    write8(RegDioMapping1, 0x00);
-    radioFnctn = RXmode;
+    write8(REG_DIO_MAPPING1, 0x00);
+    radioFunction = RX_MODE;
   }
 
   return true;
@@ -586,7 +586,7 @@ bool write8(byte reg, byte data)
   digitalWrite(activeRadio->cs, LOW);
 
   // Send data
-  SPI.transfer(writeMask | reg);
+  SPI.transfer(WRITE_MASK | reg);
   SPI.transfer(data);
 
   // end SPI transaction
@@ -604,7 +604,7 @@ bool burstWrite(byte reg, uint8_t *data, byte len)
   digitalWrite(activeRadio->cs, LOW);
 
   // Send data
-  SPI.transfer(writeMask | reg);
+  SPI.transfer(WRITE_MASK | reg);
   for (byte i = 0; i < len; i++)
   {
     SPI.transfer(*(data + i));
